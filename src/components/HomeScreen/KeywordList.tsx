@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
   },
   keyword: {
     borderRadius: 10,
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 13,
     backgroundColor: '#414141',
   },
   keywordText: {

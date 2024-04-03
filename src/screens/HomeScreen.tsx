@@ -1,7 +1,7 @@
 import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import Keyword from '@components/HomeScreen/Keyword';
+import KeywordList from '@components/HomeScreen/KeywordList';
 import ExhibitionList from '@components/HomeScreen/ExhibitionList';
 import SearchBar from '@components/common/SearchBar';
 
@@ -18,7 +18,7 @@ function HomeScreen(): React.JSX.Element {
         {/* 검색창 */}
         <SearchBar />
         {/* 키워드 */}
-        <Keyword />
+        <KeywordList />
         {/* 전시 목록 */}
         <ExhibitionList />
       </ScrollView>
