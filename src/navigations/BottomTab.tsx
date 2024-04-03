@@ -41,8 +41,7 @@ function BottomTab(): React.JSX.Element {
           borderBottomWidth: 1,
           borderBottomColor: '#292929',
           height: 90,
-          paddingTop: 24,
-          paddingBottom: 27,
+          paddingVertical: 27,
         },
       })}>
       <Tab.Screen
@@ -155,7 +154,7 @@ const styles = StyleSheet.create({
   tabBar: {
     fontSize: 10,
     fontWeight: '400',
-
+    marginTop: 6,
     textShadowOffset: {width: 0, height: 0},
     textShadowRadius: 2,
   },
