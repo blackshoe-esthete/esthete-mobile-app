@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     width: '100%',
     backgroundColor: '#030303',
-    paddingLeft: 20,
   },
 });
 

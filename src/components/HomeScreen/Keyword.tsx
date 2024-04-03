@@ -18,8 +18,8 @@ function Keyword(): React.JSX.Element {
           '야경',
           '스포츠',
         ]}
-        renderItem={({item}) => (
-          <View style={styles.keyword}>
+        renderItem={({item, index}) => (
+          <View style={[styles.keyword, index === 0 && {marginLeft: 20}]}>
             <Text style={styles.keywordText}>{item}</Text>
           </View>
         )}

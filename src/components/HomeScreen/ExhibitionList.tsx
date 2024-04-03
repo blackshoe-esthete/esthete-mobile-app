@@ -12,49 +12,36 @@ import exampleImg from '@assets/imgs/ex1.png';
 import anonymousImg from '@assets/imgs/anonymous.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import {useNavigation} from '@react-navigation/native';
+import HorizontalList from './HorizontalList';
 
 function ExhibitionList(): React.JSX.Element {
   const navigation = useNavigation();
 
   return (
     <ScrollView contentContainerStyle={styles.exhibitionContainer}>
-      <View style={styles.gap10}>
-        <Text style={styles.text}>당신을 위한 추천!</Text>
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.gap10}
-          data={[1, 2, 3, 4, 5, 6, 7, 8]}
-          renderItem={() => (
-            <Image style={styles.exhibitionImg} source={exampleImg} />
-          )}
-        />
-      </View>
-      <View style={styles.gap10}>
-        <Text style={styles.text}>이런 전시실은 어떠세요?</Text>
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.gap10}
-          data={[1, 2, 3, 4, 5, 6, 7, 8]}
-          renderItem={() => (
-            <Image style={styles.exhibitionImg} source={exampleImg} />
-          )}
-        />
-      </View>
-      <View style={styles.gap10}>
-        <Text style={styles.text}>선호 작가</Text>
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.gap10}
-          data={[1, 2, 3, 4, 5, 6, 7, 8]}
-          renderItem={() => (
-            <Image style={styles.personImg} source={anonymousImg} />
-          )}
-        />
-      </View>
-      <View style={styles.gap10}>
+      <HorizontalList
+        title="당신을 위한 추천!"
+        data={[1, 2, 3, 4, 5, 6, 7, 8]}
+        imgStyles={styles.exhibitionImg}
+        imgSource={exampleImg}
+      />
+      <HorizontalList
+        title="이런 전시실은 어떠세요?"
+        data={[1, 2, 3, 4, 5, 6, 7, 8]}
+        imgStyles={styles.exhibitionImg}
+        imgSource={exampleImg}
+      />
+      <HorizontalList
+        title="선호 작가"
+        data={[1, 2, 3, 4, 5, 6, 7, 8]}
+        imgStyles={styles.personImg}
+        imgSource={anonymousImg}
+      />
+      <HorizontalList
+        title="내 주변"
+        data={[1, 2, 3, 4, 5, 6, 7, 8]}
+        imgStyles={[styles.exhibitionImg, {marginBottom: 70}]}
+        imgSource={exampleImg}>
         <View
           style={{
             flexDirection: 'row',
@@ -83,16 +70,7 @@ function ExhibitionList(): React.JSX.Element {
             </Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.gap10, {paddingBottom: 70}]}
-          data={[1, 2, 3, 4, 5, 6, 7, 8]}
-          renderItem={() => (
-            <Image style={styles.exhibitionImg} source={exampleImg} />
-          )}
-        />
-      </View>
+      </HorizontalList>
     </ScrollView>
   );
 }
@@ -112,6 +90,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '700',
+    marginLeft: 20,
   },
   exhibitionImg: {
     width: 150,
@@ -123,8 +102,5 @@ const styles = StyleSheet.create({
     height: 10,
     marginLeft: 10,
     marginRight: 10.5,
-  },
-  gap10: {
-    gap: 10,
   },
 });
