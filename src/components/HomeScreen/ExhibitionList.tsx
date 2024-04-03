@@ -5,13 +5,17 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import exampleImg from '@assets/imgs/ex1.png';
 import anonymousImg from '@assets/imgs/anonymous.png';
 import arrowIcon from '@assets/icons/arrow.png';
+import {useNavigation} from '@react-navigation/native';
 
 function ExhibitionList(): React.JSX.Element {
+  const navigation = useNavigation();
+
   return (
     <ScrollView contentContainerStyle={styles.exhibitionContainer}>
       <View style={styles.gap10}>
@@ -58,7 +62,8 @@ function ExhibitionList(): React.JSX.Element {
             alignItems: 'center',
           }}>
           <Text style={styles.text}>내 주변</Text>
-          <View
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Map')}
             style={{
               flexDirection: 'row',
               gap: 10,
@@ -76,7 +81,7 @@ function ExhibitionList(): React.JSX.Element {
                 resizeMode="contain"
               />
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <FlatList
           horizontal={true}
