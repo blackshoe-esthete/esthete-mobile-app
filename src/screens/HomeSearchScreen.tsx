@@ -1,12 +1,9 @@
-import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
-import Keyword from '@components/HomeScreen/Keyword';
-import ExhibitionList from '@components/HomeScreen/ExhibitionList';
 import SearchBar from '@components/common/SearchBar';
+import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
+import {ScrollView, StyleSheet, View} from 'react-native';
 
-function HomeScreen(): React.JSX.Element {
-  // StatusBar의 색과 호환하기 위함
+function SearchScreen(): React.JSX.Element {
   const {top} = useSafeAreaInsets();
 
   return (
@@ -15,16 +12,13 @@ function HomeScreen(): React.JSX.Element {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}>
-        {/* 검색창 */}
         <SearchBar />
-        {/* 키워드 */}
-        <Keyword />
-        {/* 전시 목록 */}
-        <ExhibitionList />
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+export default SearchScreen;
 
 const styles = StyleSheet.create({
   topInset: {
@@ -32,9 +26,8 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     width: '100%',
+    height: '100%',
     backgroundColor: '#030303',
     paddingLeft: 20,
   },
 });
-
-export default HomeScreen;

@@ -7,8 +7,10 @@ import {
   View,
 } from 'react-native';
 import searchIcon from '@assets/icons/search.png';
+import {useNavigation} from '@react-navigation/native';
 
 function SearchBar(): React.JSX.Element {
+  const navigation = useNavigation();
   return (
     <View style={styles.textInput}>
       <TextInput
@@ -17,7 +19,7 @@ function SearchBar(): React.JSX.Element {
         placeholderTextColor="#DADADA"
         style={[styles.text, {fontWeight: '400'}]}
       />
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Search')}>
         <Image
           source={searchIcon}
           style={{
