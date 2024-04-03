@@ -13,7 +13,7 @@ function MapScreen(): React.JSX.Element {
       <View style={[styles.topInset, {height: top}]} />
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={styles.wrapper}>
+        style={[styles.wrapper, {top: top + 21}]}>
         <Image source={backspaceLogo} style={styles.icon} />
       </TouchableOpacity>
       <MapView
@@ -45,16 +45,15 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     ...StyleSheet.absoluteFillObject,
-    top: 37,
     left: 20,
     width: 20,
     height: 20,
-    zIndex: 1,
+    zIndex: 2,
   },
   icon: {
     width: 8.5,
     height: 20,
-    zIndex: 1,
+    zIndex: 2,
   },
   map: {
     ...StyleSheet.absoluteFillObject,
