@@ -41,7 +41,8 @@ function BottomTab(): React.JSX.Element {
           borderBottomWidth: 1,
           borderBottomColor: '#292929',
           height: 90,
-          paddingVertical: 27,
+          paddingTop: 27,
+          paddingBottom: 26,
         },
       })}>
       <Tab.Screen
