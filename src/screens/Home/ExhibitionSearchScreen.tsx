@@ -1,4 +1,5 @@
 import React from 'react';
+<<<<<<< HEAD
 import {StyleSheet, FlatList} from 'react-native';
 import SearchExhibitionItem from '@components/HomeScreen/SearchExhibitionItem';
 
@@ -27,4 +28,11 @@ const styles = StyleSheet.create({
   },
 });
 
+=======
+
+function ExhibitionSearchScreen(): React.JSX.Element {
+  return <></>;
+}
+
+>>>>>>> 295449c ([EST-86] Add: 전시회/작가 검색 TopTab)
 export default ExhibitionSearchScreen;
