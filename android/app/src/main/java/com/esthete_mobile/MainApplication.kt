@@ -44,10 +44,10 @@ class MainApplication : Application(), ReactApplication {
     ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
   }
 
-  override fun getPackages(): List<ReactPackage> {
-    return listOf(
-        MainReactPackage(),
-        PagerViewPackage()
-    )
-  }
+  // override fun getPackages(): List<ReactPackage> {
+  //   return listOf(
+  //       MainReactPackage(),
+  //       PagerViewPackage()
+  //   )
+  // }
 }
