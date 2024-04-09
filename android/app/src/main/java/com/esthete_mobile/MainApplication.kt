@@ -11,6 +11,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
+import com.reactnativepagerview.PagerViewPackage;
 
 class MainApplication : Application(), ReactApplication {
 
@@ -41,5 +42,12 @@ class MainApplication : Application(), ReactApplication {
       load()
     }
     ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
+  }
+
+  override fun getPackages(): List<ReactPackage> {
+    return listOf(
+        MainReactPackage(),
+        PagerViewPackage()
+    )
   }
 }
