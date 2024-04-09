@@ -2,6 +2,7 @@ import React from 'react';
 import SearchBar from '@components/common/SearchBar';
 import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView, StyleSheet, View} from 'react-native';
+import HomeSearchTopTab from '@navigations/HomeSearchTopTab';
 
 function SearchScreen(): React.JSX.Element {
   const {top} = useSafeAreaInsets();
@@ -13,6 +14,7 @@ function SearchScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}>
         <SearchBar />
+        <HomeSearchTopTab />
       </ScrollView>
     </SafeAreaView>
   );
