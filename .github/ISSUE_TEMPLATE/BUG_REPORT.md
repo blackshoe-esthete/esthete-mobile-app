@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 ---
 name: Bug Report
@@ -36,3 +37,5 @@ assignees: 'username'
 =======
 참고자료나 알리면 좋은 사항을 추가해주세요.
 >>>>>>> 36f645c (template 업데이트)
+=======
+>>>>>>> 59cc54a (issue_template update)

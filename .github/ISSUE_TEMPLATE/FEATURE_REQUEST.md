@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 ---
 name: Feature Request
@@ -32,3 +33,5 @@ assignees: 'username'
 ## 추가 내용
 문제를 해결하기 위한 추가적인 정보를 알려주세요.
 >>>>>>> 36f645c (template 업데이트)
+=======
+>>>>>>> 59cc54a (issue_template update)
