@@ -1,3 +1,11 @@
+---
+name: Bug Report
+about: Suggest a solution for the problem
+title: ''
+labels: 'bugfix'
+assignees: 'username'
+---
+
 ## 버그 설명
 어떤 버그인지 자세히 알려주세요.
 
