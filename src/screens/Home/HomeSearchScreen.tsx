@@ -3,6 +3,7 @@ import SearchBar from '@components/common/SearchBar';
 import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import HomeSearchTopTab from '@navigations/HomeSearchTopTab';
+import cancelIcon from '@assets/icons/cancel.png';
 
 function SearchScreen(): React.JSX.Element {
   const {top} = useSafeAreaInsets();
@@ -13,7 +14,7 @@ function SearchScreen(): React.JSX.Element {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}>
-        <SearchBar />
+        <SearchBar iconSource={cancelIcon} to={'Main'} />
         <HomeSearchTopTab />
       </ScrollView>
     </SafeAreaView>

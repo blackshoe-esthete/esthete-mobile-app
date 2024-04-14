@@ -27,7 +27,7 @@ function App(): React.JSX.Element {
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="Search"
+            name="HomeSearch"
             component={HomeSearchScreen}
             options={{headerShown: false}}
           />
