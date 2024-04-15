@@ -69,7 +69,7 @@ const _CaptureButton: React.FC<Props> = ({
   //camera roll 에 접근할 수 있는지
   useEffect(() => {
     cameraHook.hasAndroidPermission;
-  })
+  });
 
   //#region Camera Capture
   const takePhoto = useCallback(async () => {
@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
     borderRadius: CAPTURE_BUTTON_SIZE / 2,
     borderWidth: 8,
     borderColor: '#666666',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
 });
