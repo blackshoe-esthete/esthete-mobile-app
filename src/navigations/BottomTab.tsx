@@ -14,6 +14,9 @@ import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
 import {useNavigation} from '@react-navigation/native';
+import CaptureScreen from '@screens/CaptureScreen';
+import { PermissionScreen } from '@screens/PermissionScreen';
+import { Example } from '@screens/Example';
 
 const Tab = createBottomTabNavigator();
 
@@ -60,15 +63,7 @@ function BottomTab(): React.JSX.Element {
       />
       <Tab.Screen
         name="Filters"
-        component={HomeScreen}
-        listeners={{
-          tabPress: e => {
-            // 탭 버튼 클릭을 방지합니다. 이동 전에 추가적인 확인이 필요하다면 여기서 처리하세요.
-            e.preventDefault();
-            // 'FilterCreationScreen'으로 이동합니다.
-            navigation.navigate('FilterCreation');
-          },
-        }}
+        component={Example}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
