@@ -31,7 +31,8 @@ function HomeSearchTopTab(): React.JSX.Element {
           borderBottomWidth: 1,
           borderBottomColor: '#D6D6D6',
         },
-      })}>
+      })}
+      initialRouteName="전시회">
       <Tab.Screen name="전시회" component={ExhibitionSearchScreen} />
       <Tab.Screen name="작가" component={AuthorSearchScreen} />
     </Tab.Navigator>
