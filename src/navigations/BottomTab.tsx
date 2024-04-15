@@ -13,6 +13,9 @@ import updatingIcon from '@assets/icons/updating.png';
 import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
+import CaptureScreen from '@screens/CaptureScreen';
+import { PermissionScreen } from '@screens/PermissionScreen';
+import { Example } from '@screens/Example';
 
 const Tab = createBottomTabNavigator();
 
@@ -67,7 +70,7 @@ function BottomTab(): React.JSX.Element {
       />
       <Tab.Screen
         name="Filters"
-        component={HomeScreen}
+        component={Example}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
