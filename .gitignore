@@ -64,3 +64,15 @@ yarn-error.log
 
 # testing
 /coverage
+
+# environment file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging.local
+.env.development
+.env.test
+.env.production
+.env.staging
