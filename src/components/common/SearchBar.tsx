@@ -1,23 +1,31 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   Image,
   StyleSheet,
   TextInput,
+  TextStyle,
   TouchableOpacity,
   View,
 } from 'react-native';
 import searchIcon from '@assets/icons/search.png';
 import {useNavigation} from '@react-navigation/native';
 
-function SearchBar(): React.JSX.Element {
+interface searchBarProps{
+  left?: number,
+  label?: string
+}
+
+function SearchBar({left, label}: PropsWithChildren<searchBarProps>): React.JSX.Element {
   const navigation = useNavigation();
+  const textLeft: TextStyle | undefined = left ? {marginLeft : left} : undefined;
+  console.log(label);
   return (
-    <View style={styles.textInput}>
+    <View style={[styles.textInput, textLeft]}>
       <TextInput
         editable
-        placeholder="전시회, 작가 검색"
+        placeholder={label? label : "전시회, 작가 검색"}
         placeholderTextColor="#DADADA"
-        style={[styles.text, {fontWeight: '400'}]}
+        style={[styles.text, {fontWeight: '400',}]}
       />
       <TouchableOpacity onPress={() => navigation.navigate('Search')}>
         <Image
