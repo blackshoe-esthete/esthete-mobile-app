@@ -12,15 +12,17 @@ import {useNavigation} from '@react-navigation/native';
 
 interface searchBarProps{
   left?: number,
-  label?: string
+  label?: string,
+  width?: number,
 }
 
-function SearchBar({left, label}: PropsWithChildren<searchBarProps>): React.JSX.Element {
+function SearchBar({left, label, width}: PropsWithChildren<searchBarProps>): React.JSX.Element {
   const navigation = useNavigation();
   const textLeft: TextStyle | undefined = left ? {marginLeft : left} : undefined;
+  const boxWidth: TextStyle | undefined = width ? {width: width} : undefined;
   console.log(label);
   return (
-    <View style={[styles.textInput, textLeft]}>
+    <View style={[styles.textInput, textLeft, boxWidth]}>
       <TextInput
         editable
         placeholder={label? label : "전시회, 작가 검색"}
