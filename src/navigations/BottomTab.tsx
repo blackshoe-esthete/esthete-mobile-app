@@ -13,10 +13,10 @@ import updatingIcon from '@assets/icons/updating.png';
 import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
-import CaptureScreen from '@screens/CaptureScreen';
+import CaptureScreen from '@screens/Camera/CaptureScreen';
 import { PermissionScreen } from '@screens/PermissionScreen';
 import { Example } from '@screens/Example';
-import FilterSearchScreen from '@screens/FilterSearchScreen';
+import FilterSearchScreen from '@screens/FilterSearch/FilterSearchScreen';
 
 const Tab = createBottomTabNavigator();
 
