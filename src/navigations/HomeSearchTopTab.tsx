@@ -27,7 +27,6 @@ function HomeSearchTopTab(): React.JSX.Element {
         tabBarStyle: {
           backgroundColor: '#000',
           marginTop: 16,
-          marginHorizontal: 20,
           borderBottomWidth: 1,
           borderBottomColor: '#D6D6D6',
         },

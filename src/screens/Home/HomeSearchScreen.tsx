@@ -11,8 +11,8 @@ function SearchScreen(): React.JSX.Element {
   return (
     <SafeAreaView edges={['bottom']}>
       <View style={[styles.topInset, {paddingTop: top}]} />
+      <SearchBar iconSource={cancelIcon} to={'Main'} />
       <View style={styles.container}>
-        <SearchBar iconSource={cancelIcon} to={'Main'} />
         <HomeSearchTopTab />
       </View>
     </SafeAreaView>
