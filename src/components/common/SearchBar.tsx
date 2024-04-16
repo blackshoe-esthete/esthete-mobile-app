@@ -14,6 +14,7 @@ type SearchBarProps = {
   to: string;
   left?: number;
   label?: string;
+  width?: number;
 };
 
 function SearchBar({
@@ -21,12 +22,14 @@ function SearchBar({
   to,
   left,
   label,
+  width,
 }: PropsWithChildren<SearchBarProps>): React.JSX.Element {
   const navigation = useNavigation();
   const textLeft: TextStyle | undefined = left ? {marginLeft: left} : undefined;
+  const boxWidth: TextStyle | undefined = width ? {width: width} : undefined;
   console.log(label);
   return (
-    <View style={[styles.textInput, textLeft]}>
+    <View style={[styles.textInput, textLeft, boxWidth]}>
       <TextInput
         editable
         placeholder={label ? label : '전시회, 작가 검색'}
