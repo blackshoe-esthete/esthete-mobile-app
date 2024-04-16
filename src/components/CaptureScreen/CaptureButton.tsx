@@ -29,18 +29,18 @@ const START_RECORDING_DELAY = 200
 const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.1
 
 interface Props extends ViewProps {
-  camera: React.RefObject<Camera>
-  onMediaCaptured: (media: PhotoFile | VideoFile, type: 'photo' | 'video') => void
+  camera: React.RefObject<Camera>;
+  onMediaCaptured: (media: PhotoFile | VideoFile, type: 'photo' | 'video') => void;
 
-  minZoom: number
-  maxZoom: number
-  cameraZoom: Reanimated.SharedValue<number>
+  minZoom: number;
+  maxZoom: number;
+  cameraZoom: Reanimated.SharedValue<number>;
 
-  flash: 'off' | 'on'
+  flash: 'off' | 'on';
 
-  enabled: boolean
+  enabled: boolean;
 
-  setIsPressingButton: (isPressingButton: boolean) => void
+  setIsPressingButton: (isPressingButton: boolean) => void;
 }
 
 const _CaptureButton: React.FC<Props> = ({
@@ -55,10 +55,10 @@ const _CaptureButton: React.FC<Props> = ({
   style,
   ...props
 }): React.ReactElement => {
-  const pressDownDate = useRef<Date | undefined>(undefined)
-  const isRecording = useRef(false)
-  const recordingProgress = useSharedValue(0)
-  const isPressingButton = useSharedValue(false)
+  const pressDownDate = useRef<Date | undefined>(undefined);
+  const isRecording = useRef(false);
+  const recordingProgress = useSharedValue(0);
+  const isPressingButton = useSharedValue(false);
 
   //#region Camera Capture
   const takePhoto = useCallback(async () => {
@@ -279,7 +279,7 @@ const _CaptureButton: React.FC<Props> = ({
   )
 }
 
-export const CaptureButton = React.memo(_CaptureButton)
+export const CaptureButton = React.memo(_CaptureButton);
 
 const styles = StyleSheet.create({
   flex: {

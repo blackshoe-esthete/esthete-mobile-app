@@ -1,6 +1,6 @@
 import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Routes } from './Routes';
+import { Routes } from '../Routes';
 import {
   PinchGestureHandler,
   PinchGestureHandlerGestureEvent,
@@ -30,15 +30,16 @@ import {
   VideoFile,
 } from 'react-native-vision-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { usePreferredCameraDevice } from '@hooks/usePreferredCamera';
+import { useIsFocused } from '@react-navigation/core';
+import { CaptureButton } from '@components/CaptureScreen/CaptureButton';
+import { useIsForeground } from '@hooks/useIsForeground';
+import { SAFE_AREA_PADDING, MAX_ZOOM_FACTOR, CAPTURE_BUTTON_SIZE } from '../../../Constants';
 
 Reanimated.addWhitelistedNativeProps({
   zoom: true,
 });
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
-
-type Props = NativeStackScreenProps<Routes, 'CameraPage'>
-
+//안드로이드 버전 사진촬영 함수
 const requestCameraPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -63,7 +64,8 @@ const requestCameraPermission = async () => {
   }
 };
 
-function CaptureScreen(): React.JSX.Element {
+type Props = NativeStackScreenProps<Routes, 'CameraPage'>
+function CaptureScreen({navigation} : Props): React.JSX.Element {
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [enableNightMode, setEnableNightMode] = useState(false);
@@ -72,16 +74,18 @@ function CaptureScreen(): React.JSX.Element {
   );
   const [cameraPermission, setCameraPermission] = useState<CameraPermissionStatus>();
   const [microphonePermission, setMicrophonePermission] = useState<CameraPermissionStatus>();
-  const onFlipCameraPressed = useCallback(() => {
-    setCameraPosition(p => (p === 'back' ? 'front' : 'back'));
-  }, []);
   const device = useCameraDevice(cameraPosition);
-
   const zoom = useSharedValue(device?.neutralZoom ?? 0);
   const camera = useRef<Camera>(null);
   const isPressingButton = useSharedValue(false);
-
   const zoomOffset = useSharedValue(0);
+  const isFocussed = useIsFocused(); //현재 화면이 활성화
+  const isForeground = useIsForeground(); //현재 페이지 활성화
+  const isActive = isFocussed && isForeground;
+  const minZoom = device?.minZoom ?? 1;
+  const maxZoom = Math.min(device?.maxZoom ?? 1, MAX_ZOOM_FACTOR);
+  const supportsFlash = device?.hasFlash ?? false;
+
   //pinch할때마다 zoom의 배율이 달라짐
   const gesture = Gesture.Pinch()
     .onBegin(() => {
@@ -100,6 +104,41 @@ function CaptureScreen(): React.JSX.Element {
     () => ({zoom: zoom.value}),
     [zoom],
   );
+
+  // 카메라 촬영했는지 여부
+  const setIsPressingButton = useCallback(
+    (_isPressingButton: boolean) => {
+      isPressingButton.value = _isPressingButton
+    },
+    [isPressingButton],
+  )
+  const onError = useCallback((error: CameraRuntimeError) => {
+    console.error(error);
+  }, []);
+
+  //카메라 촬영버튼 클릭 여부 초기화
+  const onInitialized = useCallback(() => {
+    console.log('Camera initialized!')
+    setIsCameraInitialized(true)
+  }, []);;
+
+  //사진 촬영 useCallback()
+  const onMediaCaptured = useCallback(
+    (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
+      console.log(`Media captured! ${JSON.stringify(media)}`)
+      // navigation.navigate('MediaPage', {
+      //   path: media.path,
+      //   type: type,
+      // });
+      navigation.navigate('HomeScreen');
+    },
+    [navigation],
+  );
+
+  //두번 클릭해서 카메라 방향 반대 useCallback()
+  const onFlipCameraPressed = useCallback(() => {
+    setCameraPosition((p) => (p === 'back' ? 'front' : 'back'))
+  }, []);
 
   //클릭한 곳으로 focus
   const onFocusTap = useCallback(
@@ -139,20 +178,16 @@ function CaptureScreen(): React.JSX.Element {
     setMicrophonePermission(b);
   }, [cameraPermission, microphonePermission]);
 
-  if(device == null){
-    console.log("디바스가 연결이 안됨");
-    console.log(Camera.getCameraPermissionStatus());
-  }
+  // if(device == null){
+  //   console.log("디바스가 연결이 안됨");
+  //   console.log(Camera.getCameraPermissionStatus());
+  // }
   const requestCameraPermission = React.useCallback( async () => {
     const permission = await Camera.requestCameraPermission();
     if (permission == 'denied'){
       console.log("Permission not granted");  
       await Linking.openSettings();
     }
-  }, []);
-
-  const onError = useCallback((error: CameraRuntimeError) => {
-    console.error(error);
   }, []);
 
   return (
@@ -176,6 +211,17 @@ function CaptureScreen(): React.JSX.Element {
           </Reanimated.View>
         </GestureDetector>
       )} 
+      <CaptureButton
+        style={styles.captureButton}
+        camera={camera}
+        onMediaCaptured={onMediaCaptured}
+        cameraZoom={zoom}
+        minZoom={minZoom}
+        maxZoom={maxZoom}
+        flash={supportsFlash ? flash : 'off'}
+        enabled={isCameraInitialized && isActive}
+        setIsPressingButton={setIsPressingButton}
+      />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
@@ -191,6 +237,6 @@ const styles = StyleSheet.create({
   captureButton: {
     position: 'absolute',
     alignSelf: 'center',
-    // bottom: SAFE_AREA_PADDING.paddingBottom,
+    bottom: SAFE_AREA_PADDING.paddingBottom,
   },
 });
