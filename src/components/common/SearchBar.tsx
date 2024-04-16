@@ -6,10 +6,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import searchIcon from '@assets/icons/search.png';
 import {useNavigation} from '@react-navigation/native';
 
-function SearchBar(): React.JSX.Element {
+type SearchBarProps = {
+  iconSource: File | Blob | string;
+  to: string;
+};
+
+function SearchBar({iconSource, to}: SearchBarProps): React.JSX.Element {
   const navigation = useNavigation();
   return (
     <View style={styles.textInput}>
@@ -19,9 +23,9 @@ function SearchBar(): React.JSX.Element {
         placeholderTextColor="#DADADA"
         style={[styles.text, {fontWeight: '400'}]}
       />
-      <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+      <TouchableOpacity onPress={() => navigation.navigate(to)}>
         <Image
-          source={searchIcon}
+          source={iconSource}
           style={{
             width: 18,
             height: 18,

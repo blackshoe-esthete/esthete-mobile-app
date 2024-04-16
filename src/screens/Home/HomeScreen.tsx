@@ -4,6 +4,7 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import KeywordList from '@components/HomeScreen/KeywordList';
 import ExhibitionList from '@components/HomeScreen/ExhibitionList';
 import SearchBar from '@components/common/SearchBar';
+import searchIcon from '@assets/icons/search.png';
 
 function HomeScreen(): React.JSX.Element {
   // StatusBar의 색과 호환하기 위함
@@ -16,7 +17,7 @@ function HomeScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}>
         {/* 검색창 */}
-        <SearchBar />
+        <SearchBar iconSource={searchIcon} to={'HomeSearch'} />
         {/* 키워드 */}
         <KeywordList />
         {/* 전시 목록 */}
