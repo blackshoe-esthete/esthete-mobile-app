@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import {
   Image,
   StyleSheet,
   TextInput,
+  TextStyle,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -11,15 +12,24 @@ import {useNavigation} from '@react-navigation/native';
 type SearchBarProps = {
   iconSource: File | Blob | string;
   to: string;
+  left?: number;
+  label?: string;
 };
 
-function SearchBar({iconSource, to}: SearchBarProps): React.JSX.Element {
+function SearchBar({
+  iconSource,
+  to,
+  left,
+  label,
+}: PropsWithChildren<SearchBarProps>): React.JSX.Element {
   const navigation = useNavigation();
+  const textLeft: TextStyle | undefined = left ? {marginLeft: left} : undefined;
+  console.log(label);
   return (
-    <View style={styles.textInput}>
+    <View style={[styles.textInput, textLeft]}>
       <TextInput
         editable
-        placeholder="전시회, 작가 검색"
+        placeholder={label ? label : '전시회, 작가 검색'}
         placeholderTextColor="#DADADA"
         style={[styles.text, {fontWeight: '400'}]}
       />
