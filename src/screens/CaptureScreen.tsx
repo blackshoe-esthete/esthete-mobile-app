@@ -7,8 +7,9 @@ import {
   TapGestureHandler,
   Gesture,
   GestureDetector,
+  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import {StyleSheet, View, GestureResponderEvent, Linking} from 'react-native';
+import {StyleSheet, View, GestureResponderEvent, Linking, PermissionsAndroid} from 'react-native';
 import Reanimated, {
   useAnimatedProps,
   useSharedValue,
@@ -37,27 +38,44 @@ Reanimated.addWhitelistedNativeProps({
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 
 type Props = NativeStackScreenProps<Routes, 'CameraPage'>
+
+const requestCameraPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      {
+        title: "Sample Photo App Camera Permission",
+        message:
+        "Sample Photo App needs access to your camera " +
+        "so you can take awesome pictures.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      }
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("You can use the camera");
+    } else {
+      console.log("Camera permission denied");
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
 function CaptureScreen(): React.JSX.Element {
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [enableNightMode, setEnableNightMode] = useState(false);
   const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
-    'back',
+    'front',
   );
   const [cameraPermission, setCameraPermission] = useState<CameraPermissionStatus>();
   const [microphonePermission, setMicrophonePermission] = useState<CameraPermissionStatus>();
   const onFlipCameraPressed = useCallback(() => {
     setCameraPosition(p => (p === 'back' ? 'front' : 'back'));
   }, []);
-  //디바이스 설정
-  // const [preferredDevice] = usePreferredCameraDevice()
-  // let device = useCameraDevice(cameraPosition)
-
-  // if (preferredDevice != null && preferredDevice.position === cameraPosition) {
-  //   //사용자가 처음에 하나로 선택함
-  //   device = preferredDevice
-  // }  
-  const device = useCameraDevice('back');
+  const device = useCameraDevice(cameraPosition);
 
   const zoom = useSharedValue(device?.neutralZoom ?? 0);
   const camera = useRef<Camera>(null);
@@ -109,66 +127,27 @@ function CaptureScreen(): React.JSX.Element {
     setFlash(f => (f === 'off' ? 'on' : 'off'));
   }, []);
 
+  //안드로이드 버전 카메라 허용
   useEffect(() => {
-  let a = Camera.getCameraPermissionStatus();
-  setCameraPermission(a);
-  let b = Camera.getMicrophonePermissionStatus();
-  setMicrophonePermission(b);
+    requestCameraPermission();
+  }, []);
+
+  useEffect(() => {
+    let a = Camera.getCameraPermissionStatus();
+    setCameraPermission(a);
+    let b = Camera.getMicrophonePermissionStatus();
+    setMicrophonePermission(b);
   }, [cameraPermission, microphonePermission]);
 
   if(device == null){
     console.log("디바스가 연결이 안됨");
     console.log(Camera.getCameraPermissionStatus());
   }
-
-  // const requestCameraPermission = async () => {
-  //   try {
-  //     const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA, {
-  //       title: 'Cool Photo App Camera Permission',
-  //       message:
-  //         'Cool Photo App needs access to your camera ' + 'so you can take awesome pictures.',
-  //       buttonNeutral: 'Ask Me Later',
-  //       buttonNegative: 'Cancel',
-  //       buttonPositive: 'OK',
-  //     });
-  //     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //       console.log('You can use the camera');
-  //     } else {
-  //       console.log('Camera permission denied');
-  //     }
-  //   } catch (err) {
-  //     console.warn(err);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   requestCameraPermission();
-  // }, []);
-
-  // const requestPermissions = async()=> {
-  //   let cameraPermission: CameraPermissionStatus = 'denied';
-  //   let microphonePermission: CameraPermissionStatus = 'denied';
-  //   try {
-  //     cameraPermission = await Camera.requestCameraPermission();
-  //     microphonePermission = await Camera.requestMicrophonePermission();
-  //   } catch (e) {
-  //     console.log(e, 'requestPermissions');
-  //   }
-  //   return {
-  //     camera: cameraPermission,
-  //     microphone: microphonePermission,
-  //   };
-  // };
-  // useEffect(() => {
-  //   requestPermissions();
-  // }, []);
-
   const requestCameraPermission = React.useCallback( async () => {
     const permission = await Camera.requestCameraPermission();
-    if (permission == 'denied')
-    {
-    console.log("Permission not granted");  
-    await Linking.openSettings();
+    if (permission == 'denied'){
+      console.log("Permission not granted");  
+      await Linking.openSettings();
     }
   }, []);
 
@@ -177,33 +156,28 @@ function CaptureScreen(): React.JSX.Element {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <GestureHandlerRootView>
+      <SafeAreaView style={styles.container}>
       {device != null && (
-        // <GestureDetector gesture={gesture}>
-        //   <Reanimated.View
-        //     onTouchEnd={onFocusTap}
-        //     style={StyleSheet.absoluteFill}>
-        //     <TapGestureHandler onEnded={onDoubleTap} numberOfTaps={2}>
-        //       <ReanimatedCamera
-        //         ref={camera}
-        //         style={StyleSheet.absoluteFill}
-        //         device={device}
-        //         isActive={true}
-        //         photo={true}
-        //         animatedProps={animatedProps}
-        //       />
-        //     </TapGestureHandler>
-        //   </Reanimated.View>
-        // </GestureDetector>*/}
-        <Camera 
-          ref={camera}
-          device={device}
-          isActive={true}
-          style={StyleSheet.absoluteFill}
-        />
+        <GestureDetector gesture={gesture}>
+          <Reanimated.View
+            onTouchEnd={onFocusTap}
+            style={StyleSheet.absoluteFill}>
+            <TapGestureHandler onEnded={onDoubleTap} numberOfTaps={2}>
+              <ReanimatedCamera
+                ref={camera}
+                style={StyleSheet.absoluteFill}
+                device={device}
+                isActive={true}
+                photo={true}
+                animatedProps={animatedProps}
+              />
+            </TapGestureHandler>
+          </Reanimated.View>
+        </GestureDetector>
       )} 
-      
-    </SafeAreaView>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
