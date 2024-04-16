@@ -17,6 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 import CaptureScreen from '@screens/CaptureScreen';
 import { PermissionScreen } from '@screens/PermissionScreen';
 import { Example } from '@screens/Example';
+import FilterSearchScreen from '@screens/FilterSearchScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -63,7 +64,7 @@ function BottomTab(): React.JSX.Element {
       />
       <Tab.Screen
         name="Filters"
-        component={Example}
+        component={FilterSearchScreen}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
