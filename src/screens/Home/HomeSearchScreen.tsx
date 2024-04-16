@@ -30,5 +30,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#030303',
     paddingHorizontal: 20,
+    paddingBottom: 300,
   },
 });

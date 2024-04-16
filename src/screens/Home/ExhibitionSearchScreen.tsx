@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     gap: 20,
     backgroundColor: '#030303',
-    paddingBottom: 70,
   },
 });
 

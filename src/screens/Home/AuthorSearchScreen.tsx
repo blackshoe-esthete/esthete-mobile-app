@@ -22,7 +22,6 @@ function AuthorSearchScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 3,
-    paddingBottom: 30,
   },
 });
 
