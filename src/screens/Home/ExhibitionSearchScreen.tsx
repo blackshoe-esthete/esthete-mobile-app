@@ -1,5 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
 import {StyleSheet, FlatList} from 'react-native';
 import SearchExhibitionItem from '@components/HomeScreen/SearchExhibitionItem';
 
@@ -15,24 +14,18 @@ function ExhibitionSearchScreen(): React.JSX.Element {
       renderItem={({item}) => <SearchExhibitionItem />}
       keyExtractor={item => item.id}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[styles.container, {paddingBottom: '70%'}]}
     />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    // flex: 1,
     paddingTop: 10,
     gap: 20,
     backgroundColor: '#030303',
   },
 });
 
-=======
-
-function ExhibitionSearchScreen(): React.JSX.Element {
-  return <></>;
-}
-
->>>>>>> 295449c ([EST-86] Add: 전시회/작가 검색 TopTab)
 export default ExhibitionSearchScreen;

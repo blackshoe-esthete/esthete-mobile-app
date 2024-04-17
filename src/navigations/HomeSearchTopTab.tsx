@@ -27,19 +27,11 @@ function HomeSearchTopTab(): React.JSX.Element {
         tabBarStyle: {
           backgroundColor: '#000',
           marginTop: 16,
-<<<<<<< HEAD
           borderBottomWidth: 1,
           borderBottomColor: '#D6D6D6',
         },
       })}
       initialRouteName="전시회">
-=======
-          marginHorizontal: 20,
-          borderBottomWidth: 1,
-          borderBottomColor: '#D6D6D6',
-        },
-      })}>
->>>>>>> 295449c ([EST-86] Add: 전시회/작가 검색 TopTab)
       <Tab.Screen name="전시회" component={ExhibitionSearchScreen} />
       <Tab.Screen name="작가" component={AuthorSearchScreen} />
     </Tab.Navigator>
