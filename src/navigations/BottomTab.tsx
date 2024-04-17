@@ -18,6 +18,12 @@ import CaptureScreen from '@screens/Camera/CaptureScreen';
 import {PermissionScreen} from '@screens/PermissionScreen';
 import {Example} from '@screens/Example';
 import FilterSearchScreen from '@screens/FilterSearch/FilterSearchScreen';
+import {
+  NavigationContainer,
+  NavigationProp,
+  RouteProp,
+} from '@react-navigation/native';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
 
@@ -63,8 +69,7 @@ function BottomTab(): React.JSX.Element {
         }}
       />
       <Tab.Screen
-        name="Filters"
-        component={FilterSearchScreen}
+        name="CameraPage"
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
@@ -80,8 +85,10 @@ function BottomTab(): React.JSX.Element {
                 resizeMode="contain"
               />
             ),
-        }}
-      />
+          tabBarStyle: {display: 'none'},
+        }}>
+        {(props: any) => <CaptureScreen {...props} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Addition"
         component={HomeScreen}
