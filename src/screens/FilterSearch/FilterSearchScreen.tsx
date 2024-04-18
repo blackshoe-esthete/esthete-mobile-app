@@ -15,6 +15,9 @@ import back from '@assets/icons/backspace_white.png';
 import {useNavigation} from '@react-navigation/native';
 import MasonryList from '@react-native-seoul/masonry-list';
 import RenderItem from '@components/FilterSearchScreen/RenderItem';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {Routes} from '../Routes';
+type Props = NativeStackScreenProps<Routes, 'FilterSearchPage'>;
 
 type ImageItem = {
   id: string;
@@ -30,8 +33,8 @@ const data: ImageItem[] = [
   {id: '3', source: require('../../assets/imgs/filter_ex3.png'), author: '작가3', name: '필터3', like: false, likeNum: '5k'},
 ];
 
-function FilterSearchScreen(): React.JSX.Element {
-  const navigation = useNavigation();
+function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
+  // const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
 
   return (
