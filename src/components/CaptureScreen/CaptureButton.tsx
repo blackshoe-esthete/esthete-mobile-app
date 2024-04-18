@@ -1,12 +1,14 @@
-import React, { useCallback, useRef } from 'react'
-import { StyleSheet, View, ViewProps } from 'react-native'
+import React, { useCallback, useRef } from 'react';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
   State,
   TapGestureHandler,
   TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler'
+  Gesture, 
+  GestureDetector
+} from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
   Easing,
@@ -18,30 +20,28 @@ import Reanimated, {
   useAnimatedGestureHandler,
   useSharedValue,
   withRepeat,
-} from 'react-native-reanimated'
-import type { Camera, PhotoFile, VideoFile } from 'react-native-vision-camera'
+  useHandler,
+} from 'react-native-reanimated';
+import type { Camera, PhotoFile, VideoFile } from 'react-native-vision-camera';
 import { CAPTURE_BUTTON_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH } from '../../../Constants';
+import Animated from 'react-native-reanimated';
 
-const PAN_GESTURE_HANDLER_FAIL_X = [-SCREEN_WIDTH, SCREEN_WIDTH]
-const PAN_GESTURE_HANDLER_ACTIVE_Y = [-2, 2]
+const PAN_GESTURE_HANDLER_FAIL_X = [-SCREEN_WIDTH, SCREEN_WIDTH];
+const PAN_GESTURE_HANDLER_ACTIVE_Y = [-2, 2];
 
-const START_RECORDING_DELAY = 200
-const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.1
+const START_RECORDING_DELAY = 200;
+const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.1;
 
 interface Props extends ViewProps {
   camera: React.RefObject<Camera>;
   onMediaCaptured: (media: PhotoFile | VideoFile, type: 'photo' | 'video') => void;
-
   minZoom: number;
   maxZoom: number;
   cameraZoom: Reanimated.SharedValue<number>;
-
   flash: 'off' | 'on';
-
   enabled: boolean;
-
   setIsPressingButton: (isPressingButton: boolean) => void;
-}
+};
 
 const _CaptureButton: React.FC<Props> = ({
   camera,
@@ -63,36 +63,36 @@ const _CaptureButton: React.FC<Props> = ({
   //#region Camera Capture
   const takePhoto = useCallback(async () => {
     try {
-      if (camera.current == null) throw new Error('Camera ref is null!')
+      if (camera.current == null) throw new Error('Camera ref is null!');
 
-      console.log('Taking photo...')
+      console.log('Taking photo...');
       const photo = await camera.current.takePhoto({
         qualityPrioritization: 'quality',
         flash: flash,
         enableShutterSound: false,
-      })
-      onMediaCaptured(photo, 'photo')
+      });
+      onMediaCaptured(photo, 'photo');
     } catch (e) {
-      console.error('Failed to take photo!', e)
+      console.error('Failed to take photo!', e);
     }
-  }, [camera, flash, onMediaCaptured])
+  }, [camera, flash, onMediaCaptured]);
 
   const onStoppedRecording = useCallback(() => {
-    isRecording.current = false
-    cancelAnimation(recordingProgress)
-    console.log('stopped recording video!')
-  }, [recordingProgress])
+    isRecording.current = false;
+    cancelAnimation(recordingProgress);
+    console.log('stopped recording video!');
+  }, [recordingProgress]);
   const stopRecording = useCallback(async () => {
     try {
-      if (camera.current == null) throw new Error('Camera ref is null!')
+      if (camera.current == null) throw new Error('Camera ref is null!');
 
-      console.log('calling stopRecording()...')
-      await camera.current.stopRecording()
-      console.log('called stopRecording()!')
+      console.log('calling stopRecording()...');
+      await camera.current.stopRecording();
+      console.log('called stopRecording()!');
     } catch (e) {
-      console.error('failed to stop recording!', e)
+      console.error('failed to stop recording!', e);
     }
-  }, [camera])
+  }, [camera]);
   const startRecording = useCallback(() => {
     try {
       if (camera.current == null) throw new Error('Camera ref is null!')
@@ -181,24 +181,26 @@ const _CaptureButton: React.FC<Props> = ({
   )
   //#endregion
   //#region Pan handler
-  const panHandler = useRef<PanGestureHandler>()
-  const onPanGestureEvent = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, { offsetY?: number; startY?: number }>({
-    onStart: (event, context) => {
-      context.startY = event.absoluteY
-      const yForFullZoom = context.startY * 0.7
-      const offsetYForFullZoom = context.startY - yForFullZoom
-
-      // extrapolate [0 ... 1] zoom -> [0 ... Y_FOR_FULL_ZOOM] finger position
-      context.offsetY = interpolate(cameraZoom.value, [minZoom, maxZoom], [0, offsetYForFullZoom], Extrapolate.CLAMP)
+  // const panHandler = Gesture.Pan();
+  const panHandler = useRef<PanGestureHandler>();
+  const onPanGestureEvent = useHandler<PanGestureHandlerGestureEvent, { offsetY?: number; startY?: number }>({
+    onStart: (event: any, context: any) => {
+      context.startY = event.absoluteY;
+      const yForFullZoom = context.startY * 0.7;
+      const offsetYForFullZoom = context.startY - yForFullZoom;
+  
+      // Extrapolate [0 ... 1] zoom -> [0 ... Y_FOR_FULL_ZOOM] finger position
+      context.offsetY = interpolate(cameraZoom.value, [minZoom, maxZoom], [0, offsetYForFullZoom], Extrapolate.CLAMP);
     },
-    onActive: (event, context) => {
-      const offset = context.offsetY ?? 0
-      const startY = context.startY ?? SCREEN_HEIGHT
-      const yForFullZoom = startY * 0.7
-
-      cameraZoom.value = interpolate(event.absoluteY - offset, [yForFullZoom, startY], [maxZoom, minZoom], Extrapolate.CLAMP)
+    onActive: (event: any, context: any) => {
+      const offset = context.offsetY ?? 0;
+      const startY = context.startY ?? SCREEN_HEIGHT;
+      const yForFullZoom = startY * 0.7;
+  
+      cameraZoom.value = interpolate(event.absoluteY - offset, [yForFullZoom, startY], [maxZoom, minZoom], Extrapolate.CLAMP);
     },
-  })
+  });
+  // const panHandler = Gesture.Pan()
   //#endregion
 
   const shadowStyle = useAnimatedStyle(
@@ -254,28 +256,28 @@ const _CaptureButton: React.FC<Props> = ({
   }, [enabled, isPressingButton])
 
   return (
-    <TapGestureHandler
-      enabled={enabled}
-      ref={tapHandler}
-      onHandlerStateChange={onHandlerStateChanged}
-      shouldCancelWhenOutside={false}
-      maxDurationMs={99999999} // <-- this prevents the TapGestureHandler from going to State.FAILED when the user moves his finger outside of the child view (to zoom)
-      simultaneousHandlers={panHandler}>
-      <Reanimated.View {...props} style={[buttonStyle, style]}>
-        <PanGestureHandler
+    // <TapGestureHandler
+    //   enabled={enabled}
+    //   ref={tapHandler}
+    //   onHandlerStateChange={onHandlerStateChanged}
+    //   shouldCancelWhenOutside={false}
+    //   maxDurationMs={99999999} // <-- this prevents the TapGestureHandler from going to State.FAILED when the user moves his finger outside of the child view (to zoom)
+    //   simultaneousHandlers={panHandler}>
+      <Animated.View {...props} style={[buttonStyle, style]}>
+        {/* <PanGestureHandler
           enabled={enabled}
           ref={panHandler}
           failOffsetX={PAN_GESTURE_HANDLER_FAIL_X}
           activeOffsetY={PAN_GESTURE_HANDLER_ACTIVE_Y}
-          onGestureEvent={onPanGestureEvent}
-          simultaneousHandlers={tapHandler}>
+          // onGestureEvent={onPanGestureEvent}
+          simultaneousHandlers={tapHandler}> */}
           <Reanimated.View style={styles.flex}>
             <Reanimated.View style={[styles.shadow, shadowStyle]} />
             <View style={styles.button} />
           </Reanimated.View>
-        </PanGestureHandler>
-      </Reanimated.View>
-    </TapGestureHandler>
+        {/* </PanGestureHandler> */}
+      </Animated.View>
+    // </TapGestureHandler>
   )
 }
 
