@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import SearchAuthorItem from '@components/HomeScreen/SearchAuthorItem';
 import React from 'react';
 import {StyleSheet, FlatList} from 'react-native';
@@ -15,7 +14,7 @@ function AuthorSearchScreen(): React.JSX.Element {
       renderItem={({item}) => <SearchAuthorItem />}
       keyExtractor={item => item.id}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[styles.container, {paddingBottom: '70%'}]}
     />
   );
 }
@@ -26,12 +25,4 @@ const styles = StyleSheet.create({
   },
 });
 
-=======
-import React from 'react';
-
-function AuthorSearchScreen(): React.JSX.Element {
-  return <></>;
-}
-
->>>>>>> 295449c ([EST-86] Add: 전시회/작가 검색 TopTab)
 export default AuthorSearchScreen;

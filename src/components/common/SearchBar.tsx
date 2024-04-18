@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   textInput: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 17,
     paddingHorizontal: 20,
     marginTop: 30,
@@ -53,5 +54,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '700',
+    padding: 0,
+    margin: 0,
   },
 });
