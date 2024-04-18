@@ -4,5 +4,6 @@ export type Routes = {
     path: string
     type: 'video' | 'photo'
   }
-  HomeScreen: undefined
+  HomeScreen: undefined,
+  FilterSearchPage: undefined
 }
