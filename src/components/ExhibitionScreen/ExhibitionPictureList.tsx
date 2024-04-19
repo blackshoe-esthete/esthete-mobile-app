@@ -4,7 +4,7 @@ import MasonryList from 'reanimated-masonry-list';
 import {ImageItem} from '../../types';
 import RenderImage from '../common/RenderImage';
 
-const ExhibitionPictureList = () => {
+const ExhibitionPictureList: React.FC = () => {
   const data: ImageItem[] = [
     {id: '4', source: require('src/assets/imgs/pic-2.png')},
     {id: '1', source: require('src/assets/imgs/pic-1.png')},
@@ -18,14 +18,14 @@ const ExhibitionPictureList = () => {
 
   return (
     <View style={styles.container}>
-      <MasonryList
+      {/* <MasonryList
         data={data}
         keyExtractor={item => item.id}
         numColumns={2}
         renderItem={({item, i}) => (
           <RenderImage item={item as ImageItem} index={i} />
         )}
-      />
+      /> */}
     </View>
   );
 };
