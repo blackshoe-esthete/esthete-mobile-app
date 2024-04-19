@@ -2,16 +2,16 @@ import React from 'react';
 import {Image, Text, View, StyleSheet, Dimensions} from 'react-native';
 
 const ExhibitionMainPicture = ({entered}: {entered: boolean}) => {
-  const thumbanilGalleryImage = require('../../assets/images/thumbnail-gallery-image.png');
+  const thumbanilGalleryImage = require('@assets/images/thumbnail-gallery-image.png');
   let playButton;
   if (entered) {
-    playButton = require('../../assets/icons/pause-btn.png');
+    playButton = require('@asset/icons/pause-btn.png');
   } else {
-    playButton = require('../../assets/icons/play-btn.png');
+    playButton = require('@assets/icons/play-btn.png');
   }
-  const backIcon = require('../../assets/icons/backspace-icon.png');
+  const backIcon = require('@assets/icons/backspace-icon.png');
 
-  const profileImage = require('../../assets/images/profile.png');
+  const profileImage = require('@assets/images/profile.png');
   return (
     <View style={styles.container}>
       <Image source={thumbanilGalleryImage} />

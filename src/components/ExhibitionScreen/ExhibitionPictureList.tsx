@@ -6,14 +6,14 @@ import RenderImage from '../common/RenderImage';
 
 const ExhibitionPictureList = () => {
   const data: ImageItem[] = [
-    {id: '4', source: require('../../assets/images/pic-2.png')},
-    {id: '1', source: require('../../assets/images/pic-1.png')},
-    {id: '3', source: require('../../assets/images/pic-3.png')},
-    {id: '2', source: require('../../assets/images/pic-1.png')},
-    {id: '5', source: require('../../assets/images/pic-1.png')},
-    {id: '6', source: require('../../assets/images/pic-2.png')},
-    {id: '7', source: require('../../assets/images/pic-3.png')},
-    {id: '8', source: require('../../assets/images/pic-1.png')},
+    {id: '4', source: require('@assets/images/pic-2.png')},
+    {id: '1', source: require('@assets/images/pic-1.png')},
+    {id: '3', source: require('@assets/images/pic-3.png')},
+    {id: '2', source: require('@assets/images/pic-1.png')},
+    {id: '5', source: require('@assets/images/pic-1.png')},
+    {id: '6', source: require('@assets/images/pic-2.png')},
+    {id: '7', source: require('@assets/images/pic-3.png')},
+    {id: '8', source: require('@assets/images/pic-1.png')},
   ];
 
   return (
