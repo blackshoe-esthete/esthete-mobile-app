@@ -8,6 +8,7 @@ import BottomTab from '@navigations/BottomTab';
 import HomeSearchScreen from './src/screens/Home/HomeSearchScreen';
 import MapScreen from './src/screens/Home/MapScreen';
 import ExhibitionScreen from '@screens/Exhibition/ExhibitionScreen';
+import ExhibitionEnteredScreen from '@screens/Exhibition/ExhibitionEnteredScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,11 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="Exhibition"
             component={ExhibitionScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="ExhibitionEntered"
+            component={ExhibitionEnteredScreen}
             options={{headerShown: false}}
           />
         </Stack.Navigator>
