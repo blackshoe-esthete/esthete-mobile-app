@@ -7,6 +7,7 @@ import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import BottomTab from '@navigations/BottomTab';
 import HomeSearchScreen from './src/screens/Home/HomeSearchScreen';
 import MapScreen from './src/screens/Home/MapScreen';
+import ExhibitionScreen from '@screens/Exhibition/ExhibitionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,11 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="HomeSearch"
             component={HomeSearchScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Exhibition"
+            component={ExhibitionScreen}
             options={{headerShown: false}}
           />
         </Stack.Navigator>
