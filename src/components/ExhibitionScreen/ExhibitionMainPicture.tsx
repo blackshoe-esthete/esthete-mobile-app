@@ -1,5 +1,13 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {Image, Text, View, StyleSheet, Dimensions} from 'react-native';
+import {
+  Image,
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 
 const ExhibitionMainPicture = ({entered}: {entered: boolean}) => {
   const thumbanilGalleryImage = require('../../assets/imgs/thumbnail-gallery-image.png');
@@ -12,12 +20,22 @@ const ExhibitionMainPicture = ({entered}: {entered: boolean}) => {
   const backIcon = require('../../assets/icons/backspace-icon.png');
 
   const profileImage = require('../../assets/imgs/profile-img.png');
+
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <Image source={thumbanilGalleryImage} />
       <View style={styles.overlayContainer}>
         <View style={styles.overlayFlex}>
-          <Image source={backIcon} />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              flexDirection: 'row',
+              padding: 10,
+              alignItems: 'center',
+            }}>
+            <Image source={backIcon} />
+          </TouchableOpacity>
           <Image source={playButton} />
         </View>
 

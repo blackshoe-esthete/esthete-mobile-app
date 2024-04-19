@@ -7,7 +7,9 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 type HorizontalListProps = {
   imgStyles: StyleProp<ImageStyle>;
@@ -24,6 +26,8 @@ function HorizontalList({
   imgSource,
   children,
 }: HorizontalListProps): React.JSX.Element {
+  const navigation = useNavigation();
+
   return (
     <>
       <View style={styles.gap10}>
@@ -34,14 +38,22 @@ function HorizontalList({
           contentContainerStyle={styles.gap10}
           data={data}
           renderItem={({index}) => (
-            <Image
-              style={[
-                imgStyles,
-                index === 0 && {marginLeft: 20},
-                index === data.length - 1 && {marginRight: 20},
-              ]}
-              source={imgSource}
-            />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Exhibition')}
+              style={{
+                flexDirection: 'row',
+                gap: 10,
+                alignItems: 'center',
+              }}>
+              <Image
+                style={[
+                  imgStyles,
+                  index === 0 && {marginLeft: 20},
+                  index === data.length - 1 && {marginRight: 20},
+                ]}
+                source={imgSource}
+              />
+            </TouchableOpacity>
           )}
         />
       </View>

@@ -1,11 +1,12 @@
 import React from 'react';
 
-import {View, ScrollView, Button} from 'react-native';
-import {StyleSheet} from 'react-native';
+import {View, ScrollView, Button, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 
 const ExhibitionScreen = () => {
+  const navigation = useNavigation();
   return (
     <View>
       <ScrollView
@@ -24,7 +25,13 @@ const ExhibitionScreen = () => {
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <Button title="Visit" color="#000" onPress={() => {}} />
+        <Button
+          title="Visit"
+          color="#000"
+          onPress={() => {
+            navigation.navigate('ExhibitionEntered');
+          }}
+        />
       </View>
     </View>
   );
