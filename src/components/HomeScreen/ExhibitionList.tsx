@@ -56,18 +56,14 @@ function ExhibitionList(): React.JSX.Element {
               gap: 10,
               alignItems: 'center',
             }}>
-            <Text
-              style={[
-                styles.text,
-                {color: '#D6D6D6', fontSize: 12, fontWeight: '400'},
-              ]}>
+            <Text style={{color: '#D6D6D6', fontSize: 12, fontWeight: '400'}}>
               지도 보기
-              <Image
-                source={arrowIcon}
-                style={styles.arrowIcon}
-                resizeMode="contain"
-              />
             </Text>
+            <Image
+              source={arrowIcon}
+              style={styles.arrowIcon}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
         </View>
       </HorizontalList>
@@ -100,7 +96,6 @@ const styles = StyleSheet.create({
   arrowIcon: {
     width: 4.5,
     height: 10,
-    marginLeft: 10,
     marginRight: 10.5,
   },
 });
