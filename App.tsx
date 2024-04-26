@@ -4,7 +4,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
-import BottomTab from '@navigations/BottomTab';
+import BottomTab from './src/navigations/BottomTab';
 import HomeSearchScreen from './src/screens/Home/HomeSearchScreen';
 import MapScreen from './src/screens/Home/MapScreen';
 
