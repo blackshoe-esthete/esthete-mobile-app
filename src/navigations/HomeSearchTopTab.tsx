@@ -15,7 +15,7 @@ function HomeSearchTopTab(): React.JSX.Element {
             style={{
               color: focused ? '#FFF' : '#D6D6D6',
               fontSize: 16,
-              fontWeight: focused ? 600 : 400,
+              fontWeight: focused ? '600' : '400',
             }}>
             {route.name}
           </Text>
