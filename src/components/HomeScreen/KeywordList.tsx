@@ -1,6 +1,17 @@
 import React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 
+const dummyData = [
+  '초상화',
+  '풍경',
+  '거리',
+  '음식',
+  '패션',
+  '건축',
+  '야경',
+  '스포츠',
+];
+
 function Keyword(): React.JSX.Element {
   return (
     <View style={styles.keywordContainer}>
@@ -8,18 +19,14 @@ function Keyword(): React.JSX.Element {
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.gap10}
-        data={[
-          '초상화',
-          '풍경',
-          '거리',
-          '음식',
-          '패션',
-          '건축',
-          '야경',
-          '스포츠',
-        ]}
+        data={dummyData}
         renderItem={({item, index}) => (
-          <View style={[styles.keyword, index === 0 && {marginLeft: 20}]}>
+          <View
+            style={[
+              styles.keyword,
+              index === 0 && {marginLeft: 20},
+              index === dummyData.length - 1 && {marginRight: 20},
+            ]}>
             <Text style={styles.keywordText}>{item}</Text>
           </View>
         )}

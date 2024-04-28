@@ -1,37 +1,31 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import {
   Image,
   StyleSheet,
   TextInput,
-  TextStyle,
   TouchableOpacity,
   View,
 } from 'react-native';
-import searchIcon from '@assets/icons/search.png';
 import {useNavigation} from '@react-navigation/native';
 
-interface searchBarProps{
-  left?: number,
-  label?: string,
-  width?: number,
-}
+type SearchBarProps = {
+  iconSource: File | Blob | string;
+  to: string;
+};
 
-function SearchBar({left, label, width}: PropsWithChildren<searchBarProps>): React.JSX.Element {
+function SearchBar({iconSource, to}: SearchBarProps): React.JSX.Element {
   const navigation = useNavigation();
-  const textLeft: TextStyle | undefined = left ? {marginLeft : left} : undefined;
-  const boxWidth: TextStyle | undefined = width ? {width: width} : undefined;
-  console.log(label);
   return (
-    <View style={[styles.textInput, textLeft, boxWidth]}>
+    <View style={styles.textInput}>
       <TextInput
         editable
-        placeholder={label? label : "전시회, 작가 검색"}
+        placeholder="전시회, 작가 검색"
         placeholderTextColor="#DADADA"
-        style={[styles.text, {fontWeight: '400',}]}
+        style={[styles.text, {fontWeight: '400'}]}
       />
-      <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+      <TouchableOpacity onPress={() => navigation.navigate(to)}>
         <Image
-          source={searchIcon}
+          source={iconSource}
           style={{
             width: 18,
             height: 18,
@@ -48,6 +42,7 @@ const styles = StyleSheet.create({
   textInput: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 17,
     paddingHorizontal: 20,
     marginTop: 30,
@@ -59,5 +54,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '700',
+    padding: 0,
+    margin: 0,
   },
 });

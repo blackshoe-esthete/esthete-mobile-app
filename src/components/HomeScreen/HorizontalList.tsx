@@ -35,7 +35,11 @@ function HorizontalList({
           data={data}
           renderItem={({index}) => (
             <Image
-              style={[imgStyles, index === 0 && {marginLeft: 20}]}
+              style={[
+                imgStyles,
+                index === 0 && {marginLeft: 20},
+                index === data.length - 1 && {marginRight: 20},
+              ]}
               source={imgSource}
             />
           )}
