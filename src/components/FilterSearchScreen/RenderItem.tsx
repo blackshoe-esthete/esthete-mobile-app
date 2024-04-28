@@ -61,32 +61,30 @@ const styles = StyleSheet.create({
     height: 38,
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
+    width: 'auto',
     paddingRight: 40,
-    marginHorizontal: 10,
-    // backgroundColor: "white"
+    paddingLeft: 10,
   },
-  textInText:{
+  textInText: {
     display: 'flex',
     width: '100%',
-    // backgroundColor: "white",
     flexDirection: 'row',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   profileSize: {
     width: 20,
     height: 20,
-    marginRight: 7
+    marginRight: 7,
   },
   filterName: {
     fontSize: 16,
     color: '#fff',
-    fontWeight: '700'
+    fontWeight: '700',
   },
   authorName: {
     fontSize: 12,
     color: '#fff',
-    fontWeight: '500'
+    fontWeight: '500',
   },
 });
 
