@@ -15,6 +15,7 @@ import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPi
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
+import CommentInputBox from '@components/common/CommentInputBox';
 
 const ExhibitionEnteredScreen = () => {
   const screenHeight = Dimensions.get('window').height;
@@ -126,6 +127,7 @@ const ExhibitionEnteredScreen = () => {
           {...panResponder.panHandlers}>
           <View style={styles.commentModalHeader}></View>
           <Text style={styles.commentTitle}>전시회 방명록</Text>
+          <CommentInputBox />
         </Animated.View>
       </Modal>
     </View>
