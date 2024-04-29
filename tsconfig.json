@@ -14,5 +14,9 @@
       "@types/*": ["src/types/*"],
       "@apis/*": ["src/api/*"]
     }
-  }
+  },
+  "include": [
+    "src/**/*", 
+    "typings.d.ts", 
+  ]
 }
