@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
   textBox: {
     height: 38,
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
+    paddingTop: 5,
     width: 'auto',
     paddingRight: 40,
     paddingLeft: 10,
