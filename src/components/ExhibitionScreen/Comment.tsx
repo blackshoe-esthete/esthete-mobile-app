@@ -7,6 +7,7 @@ type CommentProps = {
   userName: string;
   commentDate: string;
   commentText: string;
+  setModalVisible: (arg0: boolean) => void;
 };
 
 const Comment = ({
@@ -14,6 +15,7 @@ const Comment = ({
   userName,
   commentDate,
   commentText,
+  setModalVisible,
 }: CommentProps) => {
   const navigation = useNavigation();
   const [onLike, setOnLike] = useState(false);
@@ -24,7 +26,8 @@ const Comment = ({
     setOnLike(!onLike);
   };
 
-  const onNotificationPress = () => {
+  const onReportPress = () => {
+    setModalVisible(false);
     navigation.navigate('ExhibitionReport');
   };
 
@@ -50,7 +53,7 @@ const Comment = ({
           }
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={onNotificationPress} style={styles.touchArea}>
+      <TouchableOpacity onPress={onReportPress} style={styles.touchArea}>
         <Image source={require('src/assets/icons/siren.png')} />
       </TouchableOpacity>
     </View>
