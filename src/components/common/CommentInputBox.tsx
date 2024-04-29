@@ -5,11 +5,21 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Button,
+  Text,
+  TouchableOpacity,
+  Keyboard,
 } from 'react-native';
 
 const CommentInputBox = () => {
   const [text, setText] = useState('');
+
+  const onSend = () => {
+    if (text) {
+      console.log(text);
+      Keyboard.dismiss();
+      setText('');
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -23,9 +33,9 @@ const CommentInputBox = () => {
           placeholder="(전시회명)에 대한 리뷰 남기기"
           style={styles.input}
         />
-        <View style={styles.sendBbutton}>
-          <Button title="전송" />
-        </View>
+        <TouchableOpacity onPress={onSend} style={styles.sendBbutton}>
+          <Text style={styles.buttonText}>전송</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -59,12 +69,18 @@ const styles = StyleSheet.create({
   sendBbutton: {
     position: 'absolute',
     right: 30,
-    top: '33%',
-    paddingHorizontal: 6,
+    top: '35%',
+    width: 50,
+    padding: 10,
     borderRadius: 8,
     backgroundColor: '#646464',
     color: '#ffffff',
     fontSize: 13,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 13,
+    textAlign: 'center',
   },
 });
 

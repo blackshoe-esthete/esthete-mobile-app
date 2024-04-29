@@ -16,8 +16,25 @@ import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictur
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
+import Comment from '@components/ExhibitionScreen/Comment';
 
 const ExhibitionEnteredScreen = () => {
+  const comments = [
+    {
+      userId: '1',
+      userImg: '../../assets/imgs/anonymous.png',
+      userName: '프로필명',
+      commentDate: '2024.03.17',
+      commentText: '전시회명에 대한 리뷰를 달아주세요',
+    },
+    {
+      userId: '2',
+      userImg: '../../assets/imgs/anonymous.png',
+      userName: '프로필명',
+      commentDate: '2024.03.17',
+      commentText: '전시회명에 대한 리뷰를 달아주세요',
+    },
+  ];
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
 
@@ -127,6 +144,15 @@ const ExhibitionEnteredScreen = () => {
           {...panResponder.panHandlers}>
           <View style={styles.commentModalHeader}></View>
           <Text style={styles.commentTitle}>전시회 방명록</Text>
+          {comments.map((comment, index) => (
+            <Comment
+              key={index}
+              userImg={comment.userImg}
+              userName={comment.userName}
+              commentDate={comment.commentDate}
+              commentText={comment.commentText}
+            />
+          ))}
           <CommentInputBox />
         </Animated.View>
       </Modal>
