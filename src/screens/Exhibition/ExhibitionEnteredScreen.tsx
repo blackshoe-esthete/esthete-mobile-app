@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,10 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  Animated,
+  PanResponder,
+  Dimensions,
 } from 'react-native';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
@@ -13,9 +17,57 @@ import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 
 const ExhibitionEnteredScreen = () => {
+  const screenHeight = Dimensions.get('window').height;
+  const modalHeight = screenHeight * 0.9;
+
+  const [isModalVisible, setModalVisible] = useState(false);
+  const animatedHeight = useRef(new Animated.Value(0)).current;
+
   const likesIcon = require('../../assets/icons/likes.png');
   const commentsIcon = require('../../assets/icons/comments.png');
   const navigation = useNavigation();
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (e, gestureState) => {
+        if (gestureState.dy > 0) {
+          animatedHeight.setValue(gestureState.dy);
+        }
+      },
+      onPanResponderRelease: (e, gestureState) => {
+        if (gestureState.dy > 100) {
+          closeModal();
+        } else {
+          Animated.spring(animatedHeight, {
+            toValue: 0,
+            useNativeDriver: false,
+          }).start();
+        }
+      },
+    }),
+  ).current;
+
+  const openModal = () => {
+    setModalVisible(true);
+    Animated.timing(animatedHeight, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const closeModal = () => {
+    Animated.timing(animatedHeight, {
+      toValue: screenHeight,
+      duration: 100,
+      useNativeDriver: false,
+    }).start(() => {
+      setModalVisible(false);
+      animatedHeight.setValue(0);
+    });
+  };
+
   return (
     <View>
       <ScrollView
@@ -27,7 +79,9 @@ const ExhibitionEnteredScreen = () => {
           </View>
           <View style={styles.flexContainer}>
             <Image source={likesIcon} />
-            <Image source={commentsIcon} />
+            <TouchableOpacity onPress={openModal}>
+              <Image source={commentsIcon} />
+            </TouchableOpacity>
           </View>
           <View style={styles.pictures}>
             <ExhibitionPictureList />
@@ -58,6 +112,22 @@ const ExhibitionEnteredScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={closeModal}>
+        <View style={styles.modalOverlay} />
+        <Animated.View
+          style={[
+            styles.modalContainer,
+            {height: modalHeight, transform: [{translateY: animatedHeight}]},
+          ]}
+          {...panResponder.panHandlers}>
+          <View style={styles.commentModalHeader}></View>
+          <Text style={styles.commentTitle}>전시회 방명록</Text>
+        </Animated.View>
+      </Modal>
     </View>
   );
 };
@@ -119,5 +189,39 @@ const styles = StyleSheet.create({
     width: '95%',
     height: 200,
     marginBottom: 107,
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#030303',
+    borderRadius: 20,
+  },
+  commentModalHeader: {
+    marginTop: 15,
+    marginLeft: '50%',
+    transform: [{translateX: -20}],
+    justifyContent: 'center',
+    width: 40,
+    height: 5,
+    borderRadius: 5,
+    backgroundColor: '#555',
+  },
+  commentTitle: {
+    marginLeft: '50%',
+    transform: [{translateX: -38}],
+    marginTop: 24,
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
