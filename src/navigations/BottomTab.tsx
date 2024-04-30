@@ -77,8 +77,8 @@ function BottomTab(): React.JSX.Element {
                 resizeMode="contain"
               />
             ),
-            tabBarStyle: { display: 'none' }
-      }}>
+          tabBarStyle: {display: 'none'},
+        }}>
         {/* {(props: any) => <CaptureScreen {...props} />} */}
       </Tab.Screen>
       <Tab.Screen
