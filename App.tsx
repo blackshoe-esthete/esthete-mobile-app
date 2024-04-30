@@ -8,6 +8,7 @@ import BottomTab from './src/navigations/BottomTab';
 import HomeSearchScreen from './src/screens/Home/HomeSearchScreen';
 import MapScreen from './src/screens/Home/MapScreen';
 import FilterCreationScreen from './src/screens/FilterCreation/FilterCreationScreen';
+import FilterCreationDescScreen from './src/screens/FilterCreation/FilterCreationDescScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,11 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="FilterCreation"
               component={FilterCreationScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="FilterCreationDesc"
+              component={FilterCreationDescScreen}
               options={{headerShown: false}}
             />
           </Stack.Group>

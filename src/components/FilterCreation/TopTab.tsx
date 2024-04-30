@@ -5,9 +5,10 @@ import backspaceIcon from '@assets/icons/backspace_white.png';
 
 interface TopTabProps {
   text: string;
+  to: string;
 }
 
-function TopTab({text}: TopTabProps): React.JSX.Element {
+function TopTab({text, to}: TopTabProps): React.JSX.Element {
   const navigation = useNavigation();
   return (
     <View style={styles.topTab}>
@@ -18,7 +19,9 @@ function TopTab({text}: TopTabProps): React.JSX.Element {
           resizeMode="contain"
         />
       </TouchableOpacity>
-      <Text style={styles.text}>{text}</Text>
+      <TouchableOpacity onPress={() => navigation.navigate(to)}>
+        <Text style={styles.text}>{text}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
