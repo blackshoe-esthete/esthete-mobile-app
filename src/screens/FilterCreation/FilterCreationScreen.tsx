@@ -5,36 +5,24 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import photoIcon from '@assets/icons/photo.png';
 import circleIcon from '@assets/icons/circle.png';
-import backspaceIcon from '@assets/icons/backspace_white.png';
 import exampleImage from '@assets/imgs/ex2.jpeg';
-import {useNavigation} from '@react-navigation/native';
+import TopTab from '@components/FilterCreation/TopTab';
 
 function FilterCreationScreen(): React.JSX.Element {
   const [sliderValue, setSliderValue] = useState(1);
   const {top} = useSafeAreaInsets();
-  const navigation = useNavigation();
 
   return (
     <SafeAreaView edges={['bottom']} style={{flex: 1}}>
       <View style={[styles.topInset, {paddingTop: top}]} />
       <View style={styles.container}>
-        <View style={styles.topTab}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              source={backspaceIcon}
-              style={styles.backspaceIcon}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          <Text style={[styles.text, {fontWeight: '500'}]}>다음 단계</Text>
-        </View>
+        <TopTab text={'다음 단계'} />
         <Image
           source={exampleImage}
           style={styles.image}
@@ -44,20 +32,15 @@ function FilterCreationScreen(): React.JSX.Element {
           <View style={styles.sliderContainer}>
             <View>
               <View
-                style={{
-                  width: 24,
-                  alignItems: 'center',
-                  position: 'absolute',
-                  top: -15,
-                  left:
-                    sliderValue * ((Dimensions.get('window').width - 100) / 2),
-                }}>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: 'white',
-                    fontSize: 12,
-                  }}>
+                style={[
+                  styles.sliderValueWrapper,
+                  {
+                    left:
+                      sliderValue *
+                      ((Dimensions.get('window').width - 100) / 2),
+                  },
+                ]}>
+                <Text style={styles.sliderValueText}>
                   {Math.floor(sliderValue * 100)}
                 </Text>
               </View>
@@ -142,6 +125,17 @@ const styles = StyleSheet.create({
     gap: 17,
     paddingTop: 30,
     paddingBottom: 20,
+  },
+  sliderValueWrapper: {
+    width: 24,
+    alignItems: 'center',
+    position: 'absolute',
+    top: -15,
+  },
+  sliderValueText: {
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 12,
   },
   slider: {
     width: Dimensions.get('window').width - 80,
