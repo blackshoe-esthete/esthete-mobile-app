@@ -1,8 +1,8 @@
 import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import KeywordList from '@components/HomeScreen/KeywordList';
-import ExhibitionList from '@components/HomeScreen/ExhibitionList';
+import KeywordList from '@components/Home/KeywordList';
+import ExhibitionList from '@components/Home/ExhibitionList';
 import SearchBar from '@components/common/SearchBar';
 import searchIcon from '@assets/icons/search.png';
 
