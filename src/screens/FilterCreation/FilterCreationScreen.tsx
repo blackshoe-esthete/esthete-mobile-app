@@ -13,6 +13,7 @@ import photoIcon from '@assets/icons/photo.png';
 import circleIcon from '@assets/icons/circle.png';
 import exampleImage from '@assets/imgs/ex2.jpeg';
 import TopTab from '@components/FilterCreation/TopTab';
+import exampleImage from '@assets/imgs/ex2.jpeg';
 
 function FilterCreationScreen(): React.JSX.Element {
   const [sliderValue, setSliderValue] = useState(1);
