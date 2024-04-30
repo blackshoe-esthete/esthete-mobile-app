@@ -10,6 +10,7 @@ import MapScreen from './src/screens/Home/MapScreen';
 import ExhibitionScreen from '@screens/Exhibition/ExhibitionScreen';
 import ExhibitionEnteredScreen from '@screens/Exhibition/ExhibitionEnteredScreen';
 import ExhibitionReportScreen from '@screens/Exhibition/ExhibitionReportScreen';
+import FilterCreationScreen from './src/screens/FilterCreation/FilterCreationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,36 +28,47 @@ function App(): React.JSX.Element {
     <SafeAreaProvider>
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator>
-          <Stack.Screen
-            name="Main"
-            component={BottomTab}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Map"
-            component={MapScreen}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="HomeSearch"
-            component={HomeSearchScreen}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Exhibition"
-            component={ExhibitionScreen}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="ExhibitionEntered"
-            component={ExhibitionEnteredScreen}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="ExhibitionReport"
-            component={ExhibitionReportScreen}
-            options={{headerShown: false}}
-          />
+          <Stack.Group>
+            <Stack.Screen
+              name="Main"
+              component={BottomTab}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Map"
+              component={MapScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="HomeSearch"
+              component={HomeSearchScreen}
+              options={{headerShown: false}}
+            />
+          </Stack.Group>
+          <Stack.Group> 
+            <Stack.Screen
+              name="Exhibition"
+              component={ExhibitionScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ExhibitionEntered"
+              component={ExhibitionEnteredScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ExhibitionReport"
+              component={ExhibitionReportScreen}
+              options={{headerShown: false}}
+            />
+          </Stack.Group>
+          <Stack.Group>
+            <Stack.Screen
+              name="FilterCreation"
+              component={FilterCreationScreen}
+              options={{headerShown: false}}
+            />
+          </Stack.Group>
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
