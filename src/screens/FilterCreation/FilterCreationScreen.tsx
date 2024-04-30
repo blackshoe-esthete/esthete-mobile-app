@@ -22,7 +22,7 @@ function FilterCreationScreen(): React.JSX.Element {
     <SafeAreaView edges={['bottom']} style={{flex: 1}}>
       <View style={[styles.topInset, {paddingTop: top}]} />
       <View style={styles.container}>
-        <TopTab text={'다음 단계'} />
+        <TopTab text={'다음 단계'} to={'FilterCreationDesc'} />
         <Image
           source={exampleImage}
           style={styles.image}
