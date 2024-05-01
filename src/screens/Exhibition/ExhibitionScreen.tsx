@@ -11,19 +11,20 @@ const ExhibitionScreen = () => {
     <View>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollContentContainer}>
+        scrollEnabled={false}>
         <View style={styles.container}>
           <View style={styles.contentContainer}>
             <View style={styles.mainPicture}>
               <ExhibitionMainPicture entered={false} />
             </View>
-
-            <View style={styles.pictures}>
-              <ExhibitionPictureList />
-            </View>
           </View>
         </View>
+
+        <View style={styles.pictures}>
+          <ExhibitionPictureList isVisited={false} />
+        </View>
       </ScrollView>
+
       <View style={styles.buttonContainer}>
         <Button
           title="Visit"
@@ -45,9 +46,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#030303',
   },
-  scrollContentContainer: {
-    flexGrow: 1,
-  },
   contentContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -55,8 +53,6 @@ const styles = StyleSheet.create({
   },
   mainPicture: {
     flex: 1,
-    aspectRatio: 1,
-    width: '100%',
   },
   pictures: {
     marginTop: 10,
