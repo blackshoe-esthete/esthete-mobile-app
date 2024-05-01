@@ -1,25 +1,7 @@
 import React, {useCallback, useEffect, useRef} from 'react';
 import {StyleSheet, View, ViewProps, TouchableOpacity} from 'react-native';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-  TapGestureHandlerStateChangeEvent,
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
 import Reanimated, {
-  cancelAnimation,
-  Easing,
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
   useSharedValue,
-  withRepeat,
-  useHandler,
 } from 'react-native-reanimated';
 import type {Camera, PhotoFile, VideoFile} from 'react-native-vision-camera';
 import {
@@ -29,7 +11,7 @@ import {
 } from '../../../Constants';
 import Animated from 'react-native-reanimated';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import cameraHook from '@hooks/CaeraRollPermission';
+import cameraHook from '@hooks/CameraRollPermission';
 
 const PAN_GESTURE_HANDLER_FAIL_X = [-SCREEN_WIDTH, SCREEN_WIDTH];
 const PAN_GESTURE_HANDLER_ACTIVE_Y = [-2, 2];
