@@ -38,10 +38,13 @@ const ExhibitionEnteredScreen = () => {
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
 
+  const [onLike, setOnLike] = useState(false);
+
   const [isModalVisible, setModalVisible] = useState(false);
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
   const likesIcon = require('../../assets/icons/likes.png');
+  const fillLikesIcon = require('../../assets/icons/push-likes.png');
   const commentsIcon = require('../../assets/icons/comments.png');
   const navigation = useNavigation();
 
@@ -88,21 +91,21 @@ const ExhibitionEnteredScreen = () => {
 
   return (
     <View>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollContentContainer}>
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
           <View style={styles.mainPicture}>
             <ExhibitionMainPicture entered={true} />
           </View>
           <View style={styles.flexContainer}>
-            <Image source={likesIcon} />
+            <TouchableOpacity onPress={() => setOnLike(!onLike)}>
+              <Image source={onLike ? fillLikesIcon : likesIcon} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={openModal}>
               <Image source={commentsIcon} />
             </TouchableOpacity>
           </View>
           <View style={styles.pictures}>
-            <ExhibitionPictureList />
+            <ExhibitionPictureList isVisited={true} />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoText}>
@@ -151,6 +154,7 @@ const ExhibitionEnteredScreen = () => {
               userName={comment.userName}
               commentDate={comment.commentDate}
               commentText={comment.commentText}
+              setModalVisible={setModalVisible}
             />
           ))}
           <CommentInputBox />
@@ -168,9 +172,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#030303',
-  },
-  scrollContentContainer: {
-    flexGrow: 1,
   },
   mainPicture: {
     flex: 1,

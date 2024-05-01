@@ -28,7 +28,7 @@ const Comment = ({
 
   const onReportPress = () => {
     setModalVisible(false);
-    navigation.navigate('ExhibitionReport');
+    navigation.navigate('ExhibitionReport', {reportType: '댓글'});
   };
 
   return (
