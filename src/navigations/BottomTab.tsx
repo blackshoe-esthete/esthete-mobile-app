@@ -13,6 +13,7 @@ import updatingIcon from '@assets/icons/updating.png';
 import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
+import FilterNav from './FilterNav';
 import {useNavigation} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
@@ -60,15 +61,7 @@ function BottomTab(): React.JSX.Element {
       />
       <Tab.Screen
         name="Filters"
-        component={HomeScreen}
-        listeners={{
-          tabPress: e => {
-            // 탭 버튼 클릭을 방지합니다. 이동 전에 추가적인 확인이 필요하다면 여기서 처리하세요.
-            e.preventDefault();
-            // 'FilterCreationScreen'으로 이동합니다.
-            navigation.navigate('FilterCreation');
-          },
-        }}
+        component={FilterNav}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
@@ -84,8 +77,10 @@ function BottomTab(): React.JSX.Element {
                 resizeMode="contain"
               />
             ),
-        }}
-      />
+            tabBarStyle: { display: 'none' }
+      }}>
+        {/* {(props: any) => <CaptureScreen {...props} />} */}
+      </Tab.Screen>
       <Tab.Screen
         name="Addition"
         component={HomeScreen}
