@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: SAFE_AREA_PADDING.paddingTop,
+    // top: SAFE_AREA_PADDING.paddingTop,
     left: SAFE_AREA_PADDING.paddingLeft,
     width: 40,
     height: 40,
