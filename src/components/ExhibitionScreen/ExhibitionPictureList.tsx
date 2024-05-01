@@ -1,10 +1,30 @@
-import React from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 import MasonryList from 'reanimated-masonry-list';
 import {ImageItem} from '../../types';
 import RenderImage from '../common/RenderImage';
+import ImageModal from '@components/common/ImageModal';
+import {useNavigation} from '@react-navigation/native';
 
-const ExhibitionPictureList: React.FC = () => {
+interface ExhibitionPictureListProps {
+  isVisited: boolean;
+}
+
+const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({
+  isVisited,
+}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentImage, setCurrentImage] = useState<ImageItem | null>(null);
+
+  const navigation = useNavigation();
+
+  const openModal = (item: ImageItem) => {
+    if (isVisited) {
+      setCurrentImage(item);
+      setModalVisible(true);
+    }
+  };
+
   const data: ImageItem[] = [
     {id: '4', source: require('src/assets/imgs/pic-2.png')},
     {id: '1', source: require('src/assets/imgs/pic-1.png')},
@@ -18,14 +38,25 @@ const ExhibitionPictureList: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* <MasonryList
+      <MasonryList
         data={data}
         keyExtractor={item => item.id}
         numColumns={2}
         renderItem={({item, i}) => (
-          <RenderImage item={item as ImageItem} index={i} />
+          <TouchableOpacity onPress={() => openModal(item as ImageItem)}>
+            <RenderImage item={item as ImageItem} index={i} />
+          </TouchableOpacity>
         )}
-      /> */}
+      />
+      <ImageModal
+        visible={modalVisible}
+        image={currentImage}
+        onClose={() => setModalVisible(false)}
+        onReport={() => {
+          setModalVisible(false);
+          navigation.navigate('ExhibitionReport', {reportType: '사진'});
+        }}
+      />
     </View>
   );
 };
