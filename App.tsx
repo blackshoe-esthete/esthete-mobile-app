@@ -7,6 +7,9 @@ import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import BottomTab from './src/navigations/BottomTab';
 import HomeSearchScreen from './src/screens/Home/HomeSearchScreen';
 import MapScreen from './src/screens/Home/MapScreen';
+import ExhibitionScreen from '@screens/Exhibition/ExhibitionScreen';
+import ExhibitionEnteredScreen from '@screens/Exhibition/ExhibitionEnteredScreen';
+import ExhibitionReportScreen from '@screens/Exhibition/ExhibitionReportScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +40,21 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="HomeSearch"
             component={HomeSearchScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Exhibition"
+            component={ExhibitionScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="ExhibitionEntered"
+            component={ExhibitionEnteredScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="ExhibitionReport"
+            component={ExhibitionReportScreen}
             options={{headerShown: false}}
           />
         </Stack.Navigator>
