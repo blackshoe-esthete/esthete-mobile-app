@@ -1,8 +1,12 @@
 import React from 'react';
-import {Image, View, StyleSheet, Text} from 'react-native';
+import {Image, View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import unlike from '@assets/icons/unlike.png';
 import like from '@assets/icons/like.png';
 import profile from '@assets/imgs/anonymous.png';
+import {Routes} from '../../screens/Routes';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+type RootStackNavigationProp = NativeStackNavigationProp<Routes>;
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
 type ImageItem = {
   id: string;
@@ -14,6 +18,8 @@ type ImageItem = {
 };
 
 function RenderItem({item}: {item: ImageItem; index: number}) {
+  const navigation = useNavigation< RootStackNavigationProp>();
+
   return (
     <View style={{flex: 1}}>
       <View style={styles.likeBox}>
@@ -24,7 +30,9 @@ function RenderItem({item}: {item: ImageItem; index: number}) {
         )}
         <Text style={styles.num}>{item.likeNum}</Text>
       </View>
-      <Image source={item.source} style={styles.image} />
+      <TouchableOpacity onPress={()=>navigation.navigate('FilterIndexScreen')}>
+        <Image source={item.source} style={styles.image} />
+      </TouchableOpacity>
       <View style={styles.textBox}>
         <Text style={styles.filterName}>{item.name}</Text>
         <View style={styles.textInText}>
@@ -60,7 +68,6 @@ const styles = StyleSheet.create({
   textBox: {
     height: 38,
     flexDirection: 'row',
-    // alignItems: 'center',
     paddingTop: 5,
     width: 'auto',
     paddingRight: 40,

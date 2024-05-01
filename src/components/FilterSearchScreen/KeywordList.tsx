@@ -1,24 +1,28 @@
 import React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 
-function Keyword(): React.JSX.Element {
+function Keyword({dummy, marginProp, marginVertical}: any): React.JSX.Element {
   return (
-    <View style={styles.keywordContainer}>
+    <View style={[styles.keywordContainer, {marginTop: marginProp, marginVertical: marginVertical}]}>
       <FlatList
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.gap10}
-        data={[
-          '따뜻한',
-          '부드러운',
-          '평화로운',
-          '차가운',
-          '빈티지한',
-          '몽환적인',
-          '싱그러운',
-        ]}
+        data={
+          dummy
+            ? dummy
+            : [
+                '따뜻한',
+                '부드러운',
+                '평화로운',
+                '차가운',
+                '빈티지한',
+                '몽환적인',
+                '싱그러운',
+              ]
+        }
         renderItem={({item, index}) => (
-          <View style={[styles.keyword, index === 0 && {marginLeft: 20}]}>
+          <View style={[styles.keyword]}>
             <Text style={styles.keywordText}>{item}</Text>
           </View>
         )}
@@ -33,7 +37,7 @@ const styles = StyleSheet.create({
   keywordContainer: {
     flexDirection: 'row',
     gap: 9,
-    marginVertical: 30,
+    // marginVertical: 30,
   },
   keyword: {
     borderRadius: 10,
