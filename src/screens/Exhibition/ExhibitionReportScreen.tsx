@@ -19,7 +19,19 @@ const reportOptions = [
   '기타',
 ];
 
-const ExhibitionReportScreen = () => {
+type ExhibitionReportScreenProps = {
+  route: {
+    params: {
+      reportType: '댓글' | '사진';
+    };
+  };
+};
+
+const ExhibitionReportScreen: React.FC<ExhibitionReportScreenProps> = ({
+  route,
+}) => {
+  const {reportType} = route.params;
+
   const navigation = useNavigation();
   const [selectedOptions, setSelectedOptions] = useState(
     new Array(reportOptions.length).fill(false),
@@ -44,7 +56,7 @@ const ExhibitionReportScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.header}>댓글 신고하기</Text>
+        <Text style={styles.header}>{reportType} 신고하기</Text>
         <Text style={styles.description}>
           해당 신고할 경우, 신고자의 서비스 사용이 제한될 수 있으니{'\n'}
           신중하게 신고해주세요.
@@ -92,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 70,
+    marginTop: 60,
   },
   header: {
     color: '#fff',
