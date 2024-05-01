@@ -1,41 +1,23 @@
-import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {
   StyleSheet,
   View,
-  GestureResponderEvent,
   Linking,
   PermissionsAndroid,
-  Pressable,
   Image,
   TouchableOpacity,
 } from 'react-native';
-import Reanimated, {
-  useAnimatedProps,
-  useSharedValue,
-  interpolate,
-  Extrapolation,
-  runOnJS,
-} from 'react-native-reanimated';
+import Reanimated, {useSharedValue} from 'react-native-reanimated';
 import {
   Camera,
   CameraPermissionStatus,
-  CameraDevice,
-  CameraProps,
   CameraRuntimeError,
   PhotoFile,
   useCameraDevice,
-  useCameraDevices,
-  useCameraFormat,
-  useFrameProcessor,
   VideoFile,
-  TakePhotoOptions,
 } from 'react-native-vision-camera';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useIsFocused} from '@react-navigation/core';
@@ -46,15 +28,14 @@ import {
   MAX_ZOOM_FACTOR,
   CAPTURE_BUTTON_SIZE,
 } from '../../../Constants';
-import {useNavigation} from '@react-navigation/native';
-import Animated from 'react-native-reanimated';
 import backIcon from '@assets/icons/backspace_white.png';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import ratio1 from '@assets/icons/ratio_1_1.png';
 import ratio2 from '@assets/icons/ratio_4_3.png';
 import ratio3 from '@assets/icons/ratio_9_16.png';
 import search from '@assets/icons/search_blackback.png';
-import edit from '@assets/icons/filter_apply.png';
+import edit from '@assets/icons/_edit-icon.png';
+import CameraFn from '@components/CaptureScreen/Camera';
 
 Reanimated.addWhitelistedNativeProps({
   zoom: true,
@@ -87,7 +68,6 @@ const requestCameraPermission = async () => {
 
 type Props = NativeStackScreenProps<Routes, 'CameraPage'>;
 function CaptureScreen({navigation, route}: Props): React.JSX.Element {
-  // const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
@@ -97,6 +77,8 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
     'front',
   );
   const [cameraRatio, setCameraRatio] = useState(0); //카메라 비율 조절
+  const [aspect, setAspect] = useState(1 / 1);
+  const [icon, setIcon] = useState(ratio1);
   const [photo, setPhoto] = useState<PhotoFile>();
   const [cameraPermission, setCameraPermission] =
     useState<CameraPermissionStatus>();
@@ -113,37 +95,6 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const minZoom = device?.minZoom ?? 1;
   const maxZoom = Math.min(device?.maxZoom ?? 1, MAX_ZOOM_FACTOR);
   const supportsFlash = device?.hasFlash ?? false;
-
-  //pinch할때마다 zoom의 배율이 달라짐
-  const pinchGesture = Gesture.Pinch()
-    .onBegin(e => {
-      'worklet';
-      zoomOffset.value = zoom.value;
-    })
-    .onUpdate(event => {
-      'worklet';
-      const z = zoomOffset.value * event.scale;
-      zoom.value = interpolate(
-        z,
-        [1, 10],
-        [device?.minZoom ?? 1, device?.maxZoom ?? 16],
-        Extrapolation.CLAMP,
-      );
-    });
-
-  const animatedProps = useAnimatedProps<CameraProps>(
-    () => ({zoom: zoom.value}),
-    [zoom],
-  );
-  //두번 클릭해서 카메라 방향 반대 useCallback()
-  const tapGesture = Gesture.Tap()
-    .maxDuration(250)
-    .numberOfTaps(2)
-    .onStart(() => {
-      'worklet';
-      runOnJS(setCameraPosition)(p => (p === 'back' ? 'front' : 'back'));
-    });
-  const composed = Gesture.Simultaneous(pinchGesture, tapGesture);
 
   // 카메라 촬영했는지 여부
   const setIsPressingButton = useCallback(
@@ -166,58 +117,35 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
       console.log(`Media captured! ${JSON.stringify(media)}`);
-      navigation.navigate('MediaPage', {
-        path: media.path,
-        type: type,
-      });
-      // navigation.navigate('HomeScreen');
+      // navigation.navigate('MediaPage', {
+      //   path: media.path,
+      //   type: type,
+      // });
     },
     [navigation],
   );
-  //사진촬영 함수 재정의
-  const onTakePicture = async () => {
-    const photo = await camera.current?.takePhoto();
-    setPhoto(photo);
-  };
 
   //ratio 버튼 클릭할때마다 달라지는 화면배율
-  const rationFn = () => {
-    setCameraRatio(() => (cameraRatio + 1) % 3);
-  };
-  let format = useCameraFormat(device, [
-    {photoAspectRatio: 4 / 3},
-    {videoResolution: {width: 3048, height: 2160}},
-    {fps: 60},
-  ]);
   const changeRatio = useCallback(() => {
-    if (cameraRatio == 0) {
-      let format = useCameraFormat(device, [
-        {photoAspectRatio: 1 / 1},
-        {videoResolution: {width: 3048, height: 2160}},
-        {fps: 60},
-      ]);
-      return <Image source={ratio1} style={styles.ratioIcon} />;
-    } else if (cameraRatio == 1) {
-      format = useCameraFormat(device, [
-        {photoAspectRatio: 4 / 3},
-        {videoResolution: {width: 3048, height: 2160}},
-        {fps: 60},
-      ]);
-      return <Image source={ratio2} style={styles.ratioIcon} />;
-    } else {
-      let format = useCameraFormat(device, [
-        {photoAspectRatio: 16 / 9},
-        {videoResolution: {width: 3048, height: 2160}},
-        {fps: 60},
-      ]);
-      return <Image source={ratio3} style={styles.ratioIcon} />;
+    setCameraRatio((cameraRatio + 1) % 3);
+  }, [cameraRatio]);
+  const getRatioIcon = useCallback(() => {
+    switch (cameraRatio) {
+      case 0:
+        return {aspect: 1 / 1, iconSource: ratio1};
+      case 1:
+        return {aspect: 4 / 3, iconSource: ratio2};
+      case 2:
+        return {aspect: 16 / 9, iconSource: ratio3};
+      default:
+        return {aspect: 1 / 1, iconSource: ratio1}; // 기본값 설정
     }
   }, [cameraRatio]);
-  // const format = useCameraFormat(device, [
-  //   { videoAspectRatio: 16 / 9 },
-  //   { videoResolution: { width: 3048, height: 2160 } },
-  //   { fps: 60 }
-  // ])
+  useEffect(() => {
+    const ratioInfo = getRatioIcon();
+    setAspect(ratioInfo.aspect);
+    setIcon(ratioInfo.iconSource);
+  }, [cameraRatio]);
 
   //사진업로드 함수
   const uploadPhoto = async () => {
@@ -226,23 +154,6 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
     const data = await result.blob();
     //데이터를 s3나 네트워크를 통해 업로드
   };
-
-  //클릭한 곳으로 focus
-  const onFocusTap = useCallback(
-    ({nativeEvent: event}: GestureResponderEvent) => {
-      if (!device?.supportsFocus) return;
-      camera.current?.focus({
-        x: event.locationX,
-        y: event.locationY,
-      });
-    },
-    [device?.supportsFocus],
-  );
-
-  //디바이스가 바뀔때마다 zoom 값 초기화
-  useEffect(() => {
-    zoom.value = device?.neutralZoom ?? 1;
-  }, [zoom, device]);
 
   //플래시 활성화
   const onFlashPressed = useCallback(() => {
@@ -276,52 +187,39 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={backIcon} style={styles.icon} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={rationFn}>
-            {changeRatio()}
+          <TouchableOpacity onPress={changeRatio}>
+            <Image source={icon} style={styles.ratioIcon} />
           </TouchableOpacity>
         </View>
         {photo ? (
           <Image source={{uri: photo.path}} style={StyleSheet.absoluteFill} />
         ) : (
           <>
-            {/* <Pressable style={styles.button} onPress={onTakePicture} /> */}
+            {/* 카메라 기능 function */}
+            {camera && <CameraFn ratio={aspect} ref={camera} />}
 
-            {device != null && (
-              <GestureDetector gesture={composed}>
-                <Animated.View onTouchEnd={onFocusTap} style={{flex: 0.8}}>
-                  <ReanimatedCamera
-                    ref={camera}
-                    style={StyleSheet.absoluteFill}
-                    format={format}
-                    // style={{flex:0.8}}
-                    device={device}
-                    //isActive={true}
-                    isActive={true && !photo}
-                    photo={true}
-                    animatedProps={animatedProps}
-                  />
-                </Animated.View>
-              </GestureDetector>
-            )}
-            {/* <CaptureButton
-              style={styles.captureButton}
-              camera={camera}
-              // onMediaCaptured={onMediaCaptured}
-              onMediaCaptured={onTakePicture}
-              cameraZoom={zoom}
-              minZoom={minZoom}
-              maxZoom={maxZoom}
-              flash={supportsFlash ? flash : 'off'}
-              enabled={isCameraInitialized && isActive}
-              setIsPressingButton={setIsPressingButton}
-            /> */}
             <View style={styles.bottom}>
               <View style={styles.bottomIconBox}>
                 <TouchableOpacity>
-                  <Image source={edit} style={{marginLeft: 50}}/>
+                  <Image source={edit} style={{marginLeft: 50}} />
                 </TouchableOpacity>
-                <Pressable style={styles.button} onPress={onTakePicture} />
-                <TouchableOpacity >
+                <CaptureButton
+                  style={styles.button}
+                  camera={camera}
+                  onMediaCaptured={onMediaCaptured}
+                  cameraZoom={zoom}
+                  minZoom={minZoom}
+                  maxZoom={maxZoom}
+                  flash={supportsFlash ? flash : 'off'}
+                  enabled={isCameraInitialized && isActive}
+                  setIsPressingButton={setIsPressingButton}
+                />
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('FilterSearchSingle', {
+                      screen: 'FilterSearchPage',
+                    })
+                  }>
                   <Image source={search} style={{marginRight: 50}} />
                 </TouchableOpacity>
               </View>
@@ -342,19 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#030303',
   },
-  captureBox: {
-    bottom: 109,
-    height: 105,
-    zIndex: 1,
-  },
-  // captureButton: {
-  //   position: 'absolute',
-  //   alignSelf: 'center',
-  //   bottom: SAFE_AREA_PADDING.paddingBottom,
-  // },
   button: {
-    // width: CAPTURE_BUTTON_SIZE,
-    // height: CAPTURE_BUTTON_SIZE,
     width: 30,
     height: 30,
     borderRadius: CAPTURE_BUTTON_SIZE / 2,
@@ -385,16 +271,10 @@ const styles = StyleSheet.create({
     height: 109,
   },
   bottomIconBox: {
-    // backgroundColor: 'white',
-    // bottom: 0,
     height: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  bottomIcon: {
-    width: 30,
-    height: 30,
   },
 });
