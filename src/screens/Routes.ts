@@ -1,9 +1,11 @@
 export type Routes = {
-  CameraPage: undefined
+  CameraPage: undefined;
   MediaPage: {
-    path: string
-    type: 'video' | 'photo'
-  }
-  HomeScreen: undefined,
-  FilterSearchPage: undefined
-}
+    path: string;
+    type: 'video' | 'photo';
+  };
+  HomeScreen: undefined;
+  FilterSearchPage: undefined;
+  FilterIndexScreen: undefined;
+  FilterSearchSingle: {screen: string} | undefined;
+};

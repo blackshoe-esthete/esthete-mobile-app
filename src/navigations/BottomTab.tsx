@@ -14,16 +14,6 @@ import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
 import {useNavigation} from '@react-navigation/native';
-import CaptureScreen from '@screens/Camera/CaptureScreen';
-import {PermissionScreen} from '@screens/PermissionScreen';
-import {Example} from '@screens/Example';
-import FilterSearchScreen from '@screens/FilterSearch/FilterSearchScreen';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {
-  NavigationContainer,
-  NavigationProp,
-  RouteProp,
-} from '@react-navigation/native';
 import FilterNav from './FilterNav';
 
 const Tab = createBottomTabNavigator();
@@ -70,8 +60,7 @@ function BottomTab(): React.JSX.Element {
         }}
       />
       <Tab.Screen
-        // name="CameraPage"
-        name="FilterNav"
+        name="Filters"
         component={FilterNav}
         options={{
           tabBarIcon: ({focused}) =>
