@@ -1,4 +1,4 @@
-import SearchAuthorItem from '@components/HomeScreen/SearchAuthorItem';
+import SearchAuthorItem from '@components/Home/SearchAuthorItem';
 import React from 'react';
 import {StyleSheet, FlatList} from 'react-native';
 

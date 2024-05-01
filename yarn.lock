@@ -1207,6 +1207,11 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
+"@freakycoder/react-native-bounceable@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@freakycoder/react-native-bounceable/-/react-native-bounceable-1.0.3.tgz#79de6fa99fb8357a5e52cc095ecdb1786f4b1514"
+  integrity sha512-+iMq2tnqxCwFjitbPUz9nZ+VfJ8OU9waIlDJAAsoq1229QEwCmERCNy5zVtDsz75q3i4FLXX/n7fimdMzmP21A==
+
 "@hapi/hoek@^9.0.0", "@hapi/hoek@^9.3.0":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-9.3.0.tgz#8368869dcb735be2e7f5cb7647de78e167a251fb"
@@ -1537,11 +1542,6 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@react-native-camera-roll/camera-roll@^7.5.2":
-  version "7.5.2"
-  resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-7.5.2.tgz#2b248a835fbb8b53d04fc0c2957adba1474d9c99"
-  integrity sha512-XiVIrW17EFXrFzqB48q6cQOaYeVnw0iC3tH+Jhl+MAHDYGLJp+ulzxCNNwngaMvnVAA5Q2mUMzRocUiJPy8q0g==
-
 "@react-native-community/cli-clean@12.3.6":
   version "12.3.6"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-12.3.6.tgz#e8a7910bebc97266fd5068649013a03958021fc4"
@@ -1699,6 +1699,10 @@
   integrity sha512-sqpaDwSP4w94yIrUvhGknKlyN3KZDE1nfnULyiSwhmXrjbQ5c7W38a3HzKl8p9CeEfnsfdklAevnEz8vdTaxxQ==
   dependencies:
     dooboolab-welcome "^1.3.2"
+"@react-native-community/slider@^4.5.2":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.5.2.tgz#c3835788dbc1bd83d3778b83ca15533c805db149"
+  integrity sha512-DbFyCyI7rwl0FkBkp0lzEVp+5mNfS5qU/nM2sK2aSguWhj0Odkt1aKHP2iW/ljruOhgS/O4dEixXlne4OdZJDQ==
 
 "@react-native/assets-registry@0.73.1":
   version "0.73.1"
@@ -2468,15 +2472,15 @@ babel-plugin-jest-hoist@^29.6.3:
     "@types/babel__core" "^7.1.14"
     "@types/babel__traverse" "^7.0.6"
 
-babel-plugin-module-resolver@^5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-module-resolver/-/babel-plugin-module-resolver-5.0.1.tgz#3cac9f08e88c8772bd5f6a74c7225f243719cef0"
-  integrity sha512-GURLA5SmmThX9h0tHaZPLGKYerTDdWhghR7sh1xPy1upXim+9DV2ZRG6z61PaVgG5Tt403wj8X/eBiZcrr9zmA==
+babel-plugin-module-resolver@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/babel-plugin-module-resolver/-/babel-plugin-module-resolver-5.0.2.tgz#cdeac5d4aaa3b08dd1ac23ddbf516660ed2d293e"
+  integrity sha512-9KtaCazHee2xc0ibfqsDeamwDps6FZNo5S0Q81dUqEuFzVwPhcT4J5jOqIVvgCA3Q/wO9hKYxN/Ds3tIsp5ygg==
   dependencies:
     find-babel-config "^2.1.1"
     glob "^9.3.3"
     pkg-up "^3.1.0"
-    reselect "^5.1.0"
+    reselect "^4.1.7"
     resolve "^1.22.8"
 
 babel-plugin-polyfill-corejs2@^0.4.10:
@@ -3091,9 +3095,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.668:
-  version "1.4.741"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.741.tgz#0ca6502689294beeef260889f35331e2c857451d"
-  integrity sha512-AyTBZqDoS7/mvQK22gOQpjxbeV8iPeUBTvYlEh/1S9dKAHgQdxuF49g9rLbj0cRKtqH8PzLJzqT3nAdl+qoZTA==
+  version "1.4.744"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.744.tgz#d19cdfdbd81bd800b71773702bcbaa129a3b2e8f"
+  integrity sha512-nAGcF0yeKKfrP13LMFr5U1eghfFSvFLg302VUFzWlcjPOnUYd52yU5x6PBYrujhNbc4jYmZFrGZFK+xasaEzVA==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -5772,10 +5776,12 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-native-fast-image@^8.6.3:
-  version "8.6.3"
-  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
-  integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
+react-native-bouncy-checkbox@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-bouncy-checkbox/-/react-native-bouncy-checkbox-4.0.0.tgz#bffa706d1a70eb6211c5997d29ceef61cda3e4a8"
+  integrity sha512-U/V4PEBiTYSZlVKdbA7B1plIFo0/zSs0IRYq7nFh5ONI+zCYyDVfYLU/k4CCh5+zhV6Pm0ZgvZ/6GYya8A9avw==
+  dependencies:
+    "@freakycoder/react-native-bounceable" "^1.0.3"
 
 react-native-gesture-handler@^2.16.0:
   version "2.16.0"
@@ -5805,11 +5811,6 @@ react-native-pager-view@^6.3.0:
   resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.3.0.tgz#7e734e84b1692f877591335373f6fd92f0d67aa6"
   integrity sha512-ufJOoVa9pFL1J/yb4hpsCqp8n1qTlcF5VvwqvCacHX//D7hSeRscsiIXg1u1pXNWwllvACb+mqxec/3Uj2mxrA==
 
-react-native-pressable-opacity@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/react-native-pressable-opacity/-/react-native-pressable-opacity-1.0.10.tgz#799df1a913d3b28f42ada765465fe7723eb7166d"
-  integrity sha512-Py9YH9TlS3Lv1so5JCj6bgiqkeYYGupF4ZImlpoyhhId/t/RiSqR68LlASOHgdctqQuqVJObQiFfzX8oZI9+6w==
-
 react-native-reanimated@^3.8.1:
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.8.1.tgz#45c13d4bedebef8df3d5a8756f25072de65960d7"
@@ -5837,22 +5838,12 @@ react-native-screens@^3.30.1:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
-react-native-static-safe-area-insets@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-static-safe-area-insets/-/react-native-static-safe-area-insets-2.2.0.tgz#dd86b6a38f43964fac8df8c0e6bc8e062527786c"
-  integrity sha512-TLTW2e2kRK3COSK8gMZzwp4wHguFCtcO18itDLn5av/xQblXt9ylu84o+qD9aKJCBfvtNzGOvqqTKqC5GJRZ/g==
-
 react-native-tab-view@^3.5.2:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-3.5.2.tgz#2789b8af6148b16835869566bf13dc3b0e6c1b46"
   integrity sha512-nE5WqjbeEPsWQx4mtz81QGVvgHRhujTNIIZiMCx3Bj6CBFDafbk7XZp9ocmtzXUQaZ4bhtVS43R4FIiR4LboJw==
   dependencies:
     use-latest-callback "^0.1.5"
-
-react-native-vision-camera@^3.9.2:
-  version "3.9.2"
-  resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-3.9.2.tgz#d6656a4c0af929916d5e6b57af5adfe94ff8c65a"
-  integrity sha512-watHRWbeH7CBYq/5sPj2fpZj87V8J5nGdmYO61aYsDLuJ2Pkij7anAzBf8B8oZiyoSUuYpAzX4lIIi+LjWVedA==
 
 react-native@0.73.6:
   version "0.73.6"
@@ -5954,6 +5945,13 @@ readline@^1.3.0:
   resolved "https://registry.yarnpkg.com/readline/-/readline-1.3.0.tgz#c580d77ef2cfc8752b132498060dc9793a7ac01c"
   integrity sha512-k2d6ACCkiNYz222Fs/iNze30rRJ1iIicW7JuX/7/cozvih6YCkFZH+J6mAFDVgv0dRBaAyr4jDqC95R2y4IADg==
 
+reanimated-masonry-list@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/reanimated-masonry-list/-/reanimated-masonry-list-1.0.1.tgz#0dcb60f1d2fc52c962e27a2ed58d0204b4c9dae6"
+  integrity sha512-uSdw1VEUYhNxEvQufSdekMhEiUbpYsQEWXuMlpDgyfqb2P27sY1jGXvWfhyCm6t/X00lXKbyfaUJeWw4JHYS/w==
+  dependencies:
+    dooboolab-welcome "^1.3.2"
+
 recast@^0.21.0:
   version "0.21.5"
   resolved "https://registry.yarnpkg.com/recast/-/recast-0.21.5.tgz#e8cd22bb51bcd6130e54f87955d33a2b2e57b495"
@@ -6045,10 +6043,10 @@ require-main-filename@^2.0.0:
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-2.0.0.tgz#d0b329ecc7cc0f61649f62215be69af54aa8989b"
   integrity sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==
 
-reselect@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/reselect/-/reselect-5.1.0.tgz#c479139ab9dd91be4d9c764a7f3868210ef8cd21"
-  integrity sha512-aw7jcGLDpSgNDyWBQLv2cedml85qd95/iszJjN988zX1t7AVRJi19d9kto5+W7oCfQ94gyo40dVbT6g2k4/kXg==
+reselect@^4.1.7:
+  version "4.1.8"
+  resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.1.8.tgz#3f5dc671ea168dccdeb3e141236f69f02eaec524"
+  integrity sha512-ab9EmR80F/zQTMNeneUr4cv+jSwPJgIlvEmVwLerwrWVbpLlBuls9XHzIeTFy4cegU2NHBp3va0LKOzU5qFEYQ==
 
 resolve-cwd@^3.0.0:
   version "3.0.0"

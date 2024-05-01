@@ -14,10 +14,12 @@ import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
 import FilterNav from './FilterNav';
+import {useNavigation} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 function BottomTab(): React.JSX.Element {
+  const navigation = useNavigation();
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -26,7 +28,7 @@ function BottomTab(): React.JSX.Element {
         tabBarLabel: ({focused}) => (
           <Text
             style={[
-              styles.tabBar,
+              styles.tabBarText,
               {
                 color: focused ? '#FFD600' : '#FFFFFF',
                 textShadowColor: focused ? '#FFD600' : 'transparent',
@@ -35,16 +37,7 @@ function BottomTab(): React.JSX.Element {
             {route.name}
           </Text>
         ),
-        tabBarStyle: {
-          backgroundColor: '#030303',
-          borderTopWidth: 1,
-          borderTopColor: '#292929',
-          borderBottomWidth: 1,
-          borderBottomColor: '#292929',
-          height: 90,
-          paddingTop: 27,
-          paddingBottom: 26,
-        },
+        tabBarStyle: styles.tabBar,
       })}>
       <Tab.Screen
         name="Exhibitions"
@@ -156,6 +149,16 @@ export default BottomTab;
 
 const styles = StyleSheet.create({
   tabBar: {
+    backgroundColor: '#030303',
+    borderTopWidth: 1,
+    borderTopColor: '#292929',
+    borderBottomWidth: 1,
+    borderBottomColor: '#292929',
+    height: 90,
+    paddingTop: 27,
+    paddingBottom: 26,
+  },
+  tabBarText: {
     fontSize: 10,
     fontWeight: '400',
     marginTop: 6,
