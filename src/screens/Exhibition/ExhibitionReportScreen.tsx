@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'space-between',
     marginTop: 70,
   },
   header: {
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     padding: 25,
-    width: 170,
+    width: '48%',
     height: 70,
   },
   submitButtonText: {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     padding: 25,
-    width: 170,
+    width: '48%',
     height: 70,
   },
   cancelButtonText: {

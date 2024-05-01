@@ -12,7 +12,7 @@ const RenderImage = ({item}: {item: ImageItem; index: number}) => {
 
 const styles = StyleSheet.create({
   image: {
-    margin: 6,
+    gap: 6,
   },
 });
 
