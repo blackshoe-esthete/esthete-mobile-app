@@ -14,9 +14,10 @@ type SearchBarProps = {
   iconSource: File | Blob | string;
   to: string;
   back?: boolean;
+  placeHolder? : string;
 };
 
-function SearchBar({iconSource, to, back}: SearchBarProps): React.JSX.Element {
+function SearchBar({iconSource, to, back, placeHolder}: SearchBarProps): React.JSX.Element {
   const navigation = useNavigation();
   if (back) {
     return (
@@ -27,7 +28,7 @@ function SearchBar({iconSource, to, back}: SearchBarProps): React.JSX.Element {
         <View style={[styles.textInput, {marginTop: 0, width: '95%'}]}>
           <TextInput
             editable
-            placeholder="전시회, 작가 검색"
+            placeholder= {placeHolder ? placeHolder : "전시회, 작가 검색"}
             placeholderTextColor="#DADADA"
             style={[styles.text, {fontWeight: '400'}]}
           />
