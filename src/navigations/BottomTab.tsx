@@ -13,10 +13,12 @@ import updatingIcon from '@assets/icons/updating.png';
 import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
+import {useNavigation} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 function BottomTab(): React.JSX.Element {
+  const navigation = useNavigation();
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -25,7 +27,7 @@ function BottomTab(): React.JSX.Element {
         tabBarLabel: ({focused}) => (
           <Text
             style={[
-              styles.tabBar,
+              styles.tabBarText,
               {
                 color: focused ? '#FFD600' : '#FFFFFF',
                 textShadowColor: focused ? '#FFD600' : 'transparent',
@@ -34,16 +36,7 @@ function BottomTab(): React.JSX.Element {
             {route.name}
           </Text>
         ),
-        tabBarStyle: {
-          backgroundColor: '#030303',
-          borderTopWidth: 1,
-          borderTopColor: '#292929',
-          borderBottomWidth: 1,
-          borderBottomColor: '#292929',
-          height: 90,
-          paddingTop: 27,
-          paddingBottom: 26,
-        },
+        tabBarStyle: styles.tabBar,
       })}>
       <Tab.Screen
         name="Exhibitions"
@@ -68,6 +61,14 @@ function BottomTab(): React.JSX.Element {
       <Tab.Screen
         name="Filters"
         component={HomeScreen}
+        listeners={{
+          tabPress: e => {
+            // 탭 버튼 클릭을 방지합니다. 이동 전에 추가적인 확인이 필요하다면 여기서 처리하세요.
+            e.preventDefault();
+            // 'FilterCreationScreen'으로 이동합니다.
+            navigation.navigate('FilterCreation');
+          },
+        }}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
@@ -153,6 +154,16 @@ export default BottomTab;
 
 const styles = StyleSheet.create({
   tabBar: {
+    backgroundColor: '#030303',
+    borderTopWidth: 1,
+    borderTopColor: '#292929',
+    borderBottomWidth: 1,
+    borderBottomColor: '#292929',
+    height: 90,
+    paddingTop: 27,
+    paddingBottom: 26,
+  },
+  tabBarText: {
     fontSize: 10,
     fontWeight: '400',
     marginTop: 6,
