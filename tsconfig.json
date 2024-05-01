@@ -14,5 +14,6 @@
       "@types/*": ["src/types/*"],
       "@apis/*": ["src/api/*"]
     }
-  }
+  },
+  "include": ["src", "src/types/*"]
 }
