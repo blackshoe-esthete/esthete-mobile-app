@@ -12,6 +12,7 @@ import Slider from '@react-native-community/slider';
 import photoIcon from '@assets/icons/photo.png';
 import circleIcon from '@assets/icons/circle.png';
 import exampleImage from '@assets/imgs/ex2.jpeg';
+// import exampleImage from '@assets/imgs/ex3.png';
 import TopTab from '@components/FilterCreation/TopTab';
 
 function FilterCreationScreen(): React.JSX.Element {
@@ -28,74 +29,71 @@ function FilterCreationScreen(): React.JSX.Element {
           style={styles.image}
           resizeMode="contain"
         />
-        <View style={{flex: 1}}>
-          <View style={styles.sliderContainer}>
-            <View>
-              <View
-                style={[
-                  styles.sliderValueWrapper,
-                  {
-                    left:
-                      sliderValue *
-                      ((Dimensions.get('window').width - 100) / 2),
-                  },
-                ]}>
-                <Text style={styles.sliderValueText}>
-                  {Math.floor(sliderValue * 100)}
-                </Text>
-              </View>
-              <Slider
-                minimumValue={0}
-                maximumValue={2}
-                value={sliderValue}
-                onValueChange={value => setSliderValue(value)}
-                minimumTrackTintColor="#FFFFFF"
-                maximumTrackTintColor="#FFFFFF"
-                style={styles.slider}
-                thumbImage={circleIcon}
-              />
+        <View style={styles.sliderContainer}>
+          <View>
+            <View
+              style={[
+                styles.sliderValueWrapper,
+                {
+                  left:
+                    sliderValue * ((Dimensions.get('window').width - 100) / 2),
+                },
+              ]}>
+              <Text style={styles.sliderValueText}>
+                {Math.floor(sliderValue * 100)}
+              </Text>
             </View>
-            <Image source={photoIcon} style={styles.photoIcon} />
+            <Slider
+              minimumValue={0}
+              maximumValue={2}
+              value={sliderValue}
+              onValueChange={value => setSliderValue(value)}
+              minimumTrackTintColor="#FFFFFF"
+              maximumTrackTintColor="#FFFFFF"
+              style={styles.slider}
+              thumbImage={circleIcon}
+            />
           </View>
+          <Image source={photoIcon} style={styles.photoIcon} />
         </View>
-        <ScrollView
-          contentContainerStyle={styles.filterContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>선명도</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>노출</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>밝기</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>대비</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>채도</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>ISO</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={[styles.text, {fontSize: 13}]}>하이라이트</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>그림자</Text>
-          </View>
-        </ScrollView>
       </View>
+      <ScrollView
+        contentContainerStyle={styles.filterContainer}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}>
+        <View style={[styles.filterWrapper, {marginLeft: 20}]}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>선명도</Text>
+        </View>
+        <View style={styles.filterWrapper}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>노출</Text>
+        </View>
+        <View style={styles.filterWrapper}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>밝기</Text>
+        </View>
+        <View style={styles.filterWrapper}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>대비</Text>
+        </View>
+        <View style={styles.filterWrapper}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>채도</Text>
+        </View>
+        <View style={styles.filterWrapper}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>색조</Text>
+        </View>
+        <View style={styles.filterWrapper}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>온도</Text>
+        </View>
+        <View style={[styles.filterWrapper, {marginRight: 20}]}>
+          <View style={styles.circle} />
+          <Text style={styles.text}>흑백</Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -106,7 +104,7 @@ const styles = StyleSheet.create({
   topInset: {
     backgroundColor: '#030303',
   },
-  container: {flex: 1, paddingHorizontal: 20},
+  container: {flex: 11, paddingHorizontal: 20},
   topTab: {
     flexDirection: 'row',
     paddingVertical: 20,
@@ -123,14 +121,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 17,
-    paddingTop: 30,
-    paddingBottom: 20,
+    paddingTop: 35,
+    // paddingBottom: 20,
+    // backgroundColor: 'yellow',
   },
   sliderValueWrapper: {
-    width: 24,
+    width: 25,
     alignItems: 'center',
     position: 'absolute',
     top: -15,
+    paddingRight: 2,
   },
   sliderValueText: {
     textAlign: 'center',
@@ -145,7 +145,8 @@ const styles = StyleSheet.create({
   filterContainer: {
     flexDirection: 'row',
     gap: 30,
-    marginTop: 15,
+    // flex: 0.8,
+    // marginTop: 15,
     // backgroundColor: 'red',
   },
   filterWrapper: {justifyContent: 'center', alignItems: 'center', gap: 15},
