@@ -6,7 +6,7 @@ import profile from '@assets/imgs/anonymous.png';
 import {Routes} from '../../screens/Routes';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 type RootStackNavigationProp = NativeStackNavigationProp<Routes>;
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 type ImageItem = {
   id: string;
