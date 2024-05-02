@@ -187,7 +187,7 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={backIcon} style={styles.icon} />
           </TouchableOpacity>
-          <View 
+          <View
           // style={{flexDirection: 'row', width: 'auto', gap: 10}}
           >
             {/* <TouchableOpacity onPress={togglePosition}>
