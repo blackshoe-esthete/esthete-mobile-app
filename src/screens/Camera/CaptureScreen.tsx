@@ -15,6 +15,7 @@ import {
   Camera,
   CameraPermissionStatus,
   CameraRuntimeError,
+  Orientation,
   PhotoFile,
   useCameraDevice,
   VideoFile,
@@ -36,6 +37,7 @@ import ratio3 from '@assets/icons/ratio_9_16.png';
 import search from '@assets/icons/search_blackback.png';
 import edit from '@assets/icons/_edit-icon.png';
 import CameraFn from '@components/CaptureScreen/Camera';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 Reanimated.addWhitelistedNativeProps({
   zoom: true,
@@ -88,13 +90,45 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const zoom = useSharedValue(device?.neutralZoom ?? 0);
   const camera = useRef<Camera>(null);
   const isPressingButton = useSharedValue(false);
-  const zoomOffset = useSharedValue(0);
   const isFocussed = useIsFocused(); //현재 화면이 활성화
   const isForeground = useIsForeground(); //현재 페이지 활성화
   const isActive = isFocussed && isForeground;
   const minZoom = device?.minZoom ?? 1;
   const maxZoom = Math.min(device?.maxZoom ?? 1, MAX_ZOOM_FACTOR);
   const supportsFlash = device?.hasFlash ?? false;
+
+  const orientationToRotationAngle = (orientation: Orientation) => {
+    switch (orientation) {
+      case 'portrait':
+        return 90;
+      case 'portrait-upside-down':
+        return 180;
+      case 'landscape-left':
+        return 90;
+      case 'landscape-right':
+        return 0;
+      default:
+        return 0;
+    }
+  };
+  const [uri, setUri] = useState(`file://`+ photo?.path);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (device && photo?.path) {
+        const newUri =( await ImageResizer.createResizedImage(
+          `file://` + photo.path || "",
+          1200,
+          720,
+          'JPEG',
+          90,
+          orientationToRotationAngle(device.sensorOrientation)
+        )).uri;
+        setUri(newUri);
+      }
+    };
+    fetchData();
+  }, [device, photo?.path]);
 
   // 카메라 촬영했는지 여부
   const setIsPressingButton = useCallback(
@@ -107,7 +141,7 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
     console.error(error);
   }, []);
 
-  //카메라 촬영버튼 클릭 여부 초기화
+  // //카메라 촬영버튼 클릭 여부 초기화
   const onInitialized = useCallback(() => {
     console.log('Camera initialized!');
     setIsCameraInitialized(true);
@@ -117,10 +151,11 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
       console.log(`Media captured! ${JSON.stringify(media)}`);
-      // navigation.navigate('MediaPage', {
-      //   path: media.path,
-      //   type: type,
-      // });
+      navigation.navigate('MediaPage', {
+        path: media.path,
+        // path: uri,
+        type: type,
+      });
     },
     [navigation],
   );
@@ -191,41 +226,44 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
             <Image source={icon} style={styles.ratioIcon} />
           </TouchableOpacity>
         </View>
-        {photo ? (
-          <Image source={{uri: photo.path}} style={StyleSheet.absoluteFill} />
-        ) : (
-          <>
-            {/* 카메라 기능 function */}
-            {camera && <CameraFn ratio={aspect} ref={camera} />}
 
-            <View style={styles.bottom}>
-              <View style={styles.bottomIconBox}>
-                <TouchableOpacity>
-                  <Image source={edit} style={{marginLeft: 50}} />
-                </TouchableOpacity>
-                <CaptureButton
-                  style={styles.button}
-                  camera={camera}
-                  onMediaCaptured={onMediaCaptured}
-                  cameraZoom={zoom}
-                  minZoom={minZoom}
-                  maxZoom={maxZoom}
-                  flash={supportsFlash ? flash : 'off'}
-                  enabled={isCameraInitialized && isActive}
-                  setIsPressingButton={setIsPressingButton}
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('FilterSearchSingle', {
-                      screen: 'FilterSearchPage',
-                    })
-                  }>
-                  <Image source={search} style={{marginRight: 50}} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </>
+        {/* 카메라 기능 function */}
+        {camera && (
+          <CameraFn
+            ratio={aspect}
+            ref={camera}
+            // position={cameraPosition}
+            onInitialized={isCameraInitialized}
+            func={onInitialized}
+          />
         )}
+
+        <View style={styles.bottom}>
+          <View style={styles.bottomIconBox}>
+            <TouchableOpacity>
+              <Image source={edit} style={{marginLeft: 50}} />
+            </TouchableOpacity>
+            <CaptureButton
+              style={styles.button}
+              camera={camera}
+              onMediaCaptured={onMediaCaptured}
+              cameraZoom={zoom}
+              minZoom={minZoom}
+              maxZoom={maxZoom}
+              flash={supportsFlash ? flash : 'off'}
+              enabled={isCameraInitialized && isActive}
+              setIsPressingButton={setIsPressingButton}
+            />
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('FilterSearchSingle', {
+                  screen: 'FilterSearchPage',
+                })
+              }>
+              <Image source={search} style={{marginRight: 50}} />
+            </TouchableOpacity>
+          </View>
+        </View>
       </SafeAreaView>
     </GestureHandlerRootView>
   );
