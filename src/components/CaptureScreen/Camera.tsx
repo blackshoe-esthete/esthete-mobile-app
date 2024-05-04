@@ -97,7 +97,7 @@ const CameraFn = forwardRef<Camera, Props>(
       .numberOfTaps(2)
       .onStart(() => {
         'worklet';
-        runOnJS(togglePosition);        
+        runOnJS(togglePosition);  
       });
     const composed = Gesture.Simultaneous(pinchGesture, tapGesture);
 
