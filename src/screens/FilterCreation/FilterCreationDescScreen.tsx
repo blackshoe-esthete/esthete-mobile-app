@@ -17,15 +17,7 @@ import exampleImage from '@assets/imgs/ex2.jpeg';
 import TopTab from '@components/FilterCreation/TopTab';
 import plusIcon from '@assets/icons/cancel.png';
 
-const mood = [
-  '따뜻한',
-  '부드러운',
-  '평화로운',
-  '차가운',
-  '빈티지한',
-  '몽환적인',
-  '싱그러운',
-];
+const mood = ['따뜻한', '부드러운', '평화로운', '차가운', '빈티지한', '몽환적인', '싱그러운'];
 
 interface FilterCreationDescScreenProps {
   // Define the props for the component here
@@ -65,25 +57,15 @@ function FilterCreationDescScreen(): React.JSX.Element {
         </View>
         <View style={{gap: 20, marginVertical: 30, paddingHorizontal: 20}}>
           <View style={styles.textInput}>
-            <TextInput
-              style={styles.text}
-              placeholder="필터명을 작성해주세요"
-              placeholderTextColor="#D6D6D6"
-            />
+            <TextInput style={styles.text} placeholder="필터명을 작성해주세요" placeholderTextColor="#D6D6D6" />
           </View>
           <View style={styles.textInput}>
-            <TextInput
-              style={styles.text}
-              placeholder="필터 설명을 작성해주세요"
-              placeholderTextColor="#D6D6D6"
-            />
+            <TextInput style={styles.text} placeholder="필터 설명을 작성해주세요" placeholderTextColor="#D6D6D6" />
           </View>
         </View>
         <View style={{gap: 10}}>
           <View style={{paddingHorizontal: 20}}>
-            <Text style={{color: '#FFF', fontSize: 14}}>
-              어떤 느낌의 필터인가요?
-            </Text>
+            <Text style={{color: '#FFF', fontSize: 14}}>어떤 느낌의 필터인가요?</Text>
           </View>
           <FlatList
             horizontal={true}
@@ -105,30 +87,16 @@ function FilterCreationDescScreen(): React.JSX.Element {
           />
         </View>
         <View style={{gap: 10, marginVertical: 30, paddingHorizontal: 20}}>
-          <Text style={{color: '#FFF', fontSize: 14}}>
-            필터를 사용할 사진을 선택해주세요!
-          </Text>
+          <Text style={{color: '#FFF', fontSize: 14}}>필터를 사용할 사진을 선택해주세요!</Text>
           <View style={{flexDirection: 'row', gap: 10}}>
             <Pressable style={styles.imgBox}>
-              <Image
-                source={plusIcon}
-                style={styles.plusIcon}
-                resizeMode="contain"
-              />
+              <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
             </Pressable>
             <Pressable style={styles.imgBox}>
-              <Image
-                source={plusIcon}
-                style={styles.plusIcon}
-                resizeMode="contain"
-              />
+              <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
             </Pressable>
             <Pressable style={styles.imgBox}>
-              <Image
-                source={plusIcon}
-                style={styles.plusIcon}
-                resizeMode="contain"
-              />
+              <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
             </Pressable>
           </View>
         </View>
