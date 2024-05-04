@@ -1,41 +1,9 @@
 import React, {useCallback, useEffect, useRef} from 'react';
 import {StyleSheet, View, ViewProps, TouchableOpacity} from 'react-native';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-  TapGestureHandlerStateChangeEvent,
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
-import Reanimated, {
-  cancelAnimation,
-  Easing,
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  useSharedValue,
-  withRepeat,
-  useHandler,
-} from 'react-native-reanimated';
+import Reanimated, {useSharedValue} from 'react-native-reanimated';
 import type {Camera, PhotoFile, VideoFile} from 'react-native-vision-camera';
-import {
-  CAPTURE_BUTTON_SIZE,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-} from '../../../Constants';
-import Animated from 'react-native-reanimated';
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import cameraHook from '@hooks/CaeraRollPermission';
-
-const PAN_GESTURE_HANDLER_FAIL_X = [-SCREEN_WIDTH, SCREEN_WIDTH];
-const PAN_GESTURE_HANDLER_ACTIVE_Y = [-2, 2];
-
-const START_RECORDING_DELAY = 200;
-const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.1;
+import {CAPTURE_BUTTON_SIZE} from '../../../Constants';
+import cameraHook from '@hooks/CameraRollPermission';
 
 interface Props extends ViewProps {
   camera: React.RefObject<Camera>;
@@ -63,13 +31,11 @@ const _CaptureButton: React.FC<Props> = ({
   style,
   ...props
 }): React.ReactElement => {
-  const pressDownDate = useRef<Date | undefined>(undefined);
-  const isPressingButton = useSharedValue(false);
-
+  
   //camera roll 에 접근할 수 있는지
   useEffect(() => {
     cameraHook.hasAndroidPermission;
-  })
+  });
 
   //#region Camera Capture
   const takePhoto = useCallback(async () => {
@@ -137,6 +103,6 @@ const styles = StyleSheet.create({
     borderRadius: CAPTURE_BUTTON_SIZE / 2,
     borderWidth: 8,
     borderColor: '#666666',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
 });

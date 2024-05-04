@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@bam.tech/react-native-image-resizer": "^3.0.9",
     "@react-native-camera-roll/camera-roll": "^7.5.2",
     "@react-native-community/slider": "^4.5.2",
     "@react-native-seoul/masonry-list": "^1.4.2",
@@ -32,7 +33,8 @@
     "react-native-static-safe-area-insets": "^2.2.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-vision-camera": "^3.9.2",
-    "reanimated-masonry-list": "^1.0.1"
+    "reanimated-masonry-list": "^1.0.1",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
