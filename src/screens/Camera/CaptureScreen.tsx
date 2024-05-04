@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useRef, useEffect} from 'react';
+import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -37,8 +37,8 @@ import ratio3 from '@assets/icons/ratio_9_16.png';
 import search from '@assets/icons/search_blackback.png';
 import edit from '@assets/icons/_edit-icon.png';
 import CameraFn from '@components/CaptureScreen/Camera';
-import ImageResizer from '@bam.tech/react-native-image-resizer';
-
+import convert from '@assets/icons/convert_white.png';
+import useCameraStore from '../../store/camera-store';
 Reanimated.addWhitelistedNativeProps({
   zoom: true,
 });
@@ -75,9 +75,8 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   // const [flash, setFlash] = useState<TakePhotoOptions['flash']>('off');
   const [enableNightMode, setEnableNightMode] = useState(false);
-  const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
-    'front',
-  );
+  const currentPosition = useCameraStore(state => state.getCurrentPosition());
+  const togglePosition = useCameraStore(state => state.togglePosition);
   const [cameraRatio, setCameraRatio] = useState(0); //카메라 비율 조절
   const [aspect, setAspect] = useState(1 / 1);
   const [icon, setIcon] = useState(ratio1);
@@ -86,7 +85,7 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
     useState<CameraPermissionStatus>();
   const [microphonePermission, setMicrophonePermission] =
     useState<CameraPermissionStatus>();
-  const device = useCameraDevice(cameraPosition);
+  const device = useCameraDevice(currentPosition);
   const zoom = useSharedValue(device?.neutralZoom ?? 0);
   const camera = useRef<Camera>(null);
   const isPressingButton = useSharedValue(false);
@@ -96,39 +95,6 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const minZoom = device?.minZoom ?? 1;
   const maxZoom = Math.min(device?.maxZoom ?? 1, MAX_ZOOM_FACTOR);
   const supportsFlash = device?.hasFlash ?? false;
-
-  const orientationToRotationAngle = (orientation: Orientation) => {
-    switch (orientation) {
-      case 'portrait':
-        return 90;
-      case 'portrait-upside-down':
-        return 180;
-      case 'landscape-left':
-        return 90;
-      case 'landscape-right':
-        return 0;
-      default:
-        return 0;
-    }
-  };
-  const [uri, setUri] = useState(`file://`+ photo?.path);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (device && photo?.path) {
-        const newUri =( await ImageResizer.createResizedImage(
-          `file://` + photo.path || "",
-          1200,
-          720,
-          'JPEG',
-          90,
-          orientationToRotationAngle(device.sensorOrientation)
-        )).uri;
-        setUri(newUri);
-      }
-    };
-    fetchData();
-  }, [device, photo?.path]);
 
   // 카메라 촬영했는지 여부
   const setIsPressingButton = useCallback(
@@ -153,7 +119,6 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
       console.log(`Media captured! ${JSON.stringify(media)}`);
       navigation.navigate('MediaPage', {
         path: media.path,
-        // path: uri,
         type: type,
       });
     },
@@ -222,9 +187,14 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={backIcon} style={styles.icon} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={changeRatio}>
-            <Image source={icon} style={styles.ratioIcon} />
-          </TouchableOpacity>
+          <View style={{flexDirection: 'row', width: 'auto', gap: 10}}>
+            <TouchableOpacity onPress={togglePosition}>
+              <Image source={convert} style={{width: 30, height:30, backgroundColor: 'white'}} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={changeRatio}>
+              <Image source={icon} style={styles.ratioIcon} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* 카메라 기능 function */}
@@ -232,7 +202,7 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
           <CameraFn
             ratio={aspect}
             ref={camera}
-            // position={cameraPosition}
+            position={currentPosition}
             onInitialized={isCameraInitialized}
             func={onInitialized}
           />

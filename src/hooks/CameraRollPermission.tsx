@@ -54,4 +54,10 @@ async function savePicture(props : cameraSaveProps) {
   CameraRoll.save(tag, { type: album })
 };
 
+async function getPicture(props: cameraSaveProps){
+  // const file = await camera.current.takePhoto()
+// const result = await fetch(`file://${file.path}`)
+// const data = await result.blob();
+}
+
 export default {savePicture, hasAndroidPermission};

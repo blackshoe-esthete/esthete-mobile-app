@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   PermissionsAndroid,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import {SAFE_AREA_PADDING} from '../../../Constants';
 import {useIsForeground} from '../../hooks/useIsForeground';
@@ -19,6 +20,8 @@ import {useIsFocused} from '@react-navigation/core';
 import FastImage, {OnLoadEvent} from 'react-native-fast-image';
 import {Orientation, useCameraDevice} from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
+// import useCameraStore from '@store/camera-store';
+import useCameraStore from '../../store/camera-store';
 
 const requestSavePermission = async (): Promise<boolean> => {
   // On Android 13 and above, scoped storage is used instead and no permission is needed
@@ -55,6 +58,7 @@ function MediaPage({navigation, route}: Props): React.ReactElement {
     console.log('media has loaded.');
     setHasMediaLoaded(true);
   }, []);
+  const {width, height} = useWindowDimensions();
 
   const onSavePressed = useCallback(async () => {
     try {
@@ -82,7 +86,8 @@ function MediaPage({navigation, route}: Props): React.ReactElement {
     }
   }, [path, type]);
 
-  const device = useCameraDevice('front');
+  const currentPosition = useCameraStore(state => state.getCurrentPosition());
+  const device = useCameraDevice(currentPosition);
   const orientationToRotationAngle = (orientation: Orientation) => {
     switch (orientation) {
       case 'portrait':
@@ -126,8 +131,8 @@ function MediaPage({navigation, route}: Props): React.ReactElement {
   outputPath
   */
 
-  const source = useMemo(() => ({ uri }), [uri]);
-  // const source = useMemo(() => ({uri: `file://${path}`}), [path]);
+  // const source = useMemo(() => ({ uri: uri }), [uri]);
+  const source = useMemo(() => ({uri: `file://${path}`}), [path]);
 
 
   const screenStyle = useMemo(
@@ -171,6 +176,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
+  },
+  imageSize: {
+
   },
   closeButton: {
     position: 'absolute',
