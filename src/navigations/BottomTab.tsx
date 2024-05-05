@@ -15,6 +15,8 @@ import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
 import FilterNav from './FilterNav';
 import {useNavigation} from '@react-navigation/native';
+import GalleryStack from './GalleryStack';
+import MyGalleryScreen from '@components/MyGalleryScreen/MyHeader';
 
 const Tab = createBottomTabNavigator();
 
@@ -122,8 +124,9 @@ function BottomTab(): React.JSX.Element {
         }}
       />
       <Tab.Screen
-        name="My Gallerty"
-        component={HomeScreen}
+        name="MyGallery"
+        // component={MyGalleryScreen}
+        component={GalleryStack}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
