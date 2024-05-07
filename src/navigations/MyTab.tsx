@@ -1,14 +1,20 @@
 import MyHeader from '@components/MyGalleryScreen/MyHeader';
 import MyCollections from '@screens/MyGallery/MyCollections';
 import MyFilter from '@screens/MyGallery/MyFilter';
-import React, {useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {View, useWindowDimensions, StyleSheet, StatusBar, Text} from 'react-native';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { Routes } from '@screens/Routes';
+import useNavigateStore from '../store/navigate-store';
 
-function MyTab(): React.JSX.Element {
+type Props = NativeStackScreenProps<Routes, 'MyTab'>;
+function MyTab({navigation, route}: Props): React.JSX.Element {
   const layout = useWindowDimensions();
-
+  // const {status, changeStatus, getStatue} = useNavigateStore();
+  const status = useNavigateStore();
+  const focusChange = useNavigateStore(state => state.getFalse);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'first', title: '전시'},
@@ -38,7 +44,13 @@ function MyTab(): React.JSX.Element {
       style={{ backgroundColor: '#030303' }}
     />
   );
-  
+
+  useEffect(()=>{
+    if(status){
+      navigation.navigate('MyMenu');
+    }
+  }, [status]);
+
   return (
     <SafeAreaProvider>
       <MyHeader />
