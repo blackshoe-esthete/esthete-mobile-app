@@ -13,11 +13,7 @@ function TopTab({text, to}: TopTabProps): React.JSX.Element {
   return (
     <View style={styles.topTab}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Image
-          source={backspaceIcon}
-          style={styles.backspaceIcon}
-          resizeMode="contain"
-        />
+        <Image source={backspaceIcon} style={styles.backspaceIcon} resizeMode="contain" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate(to)}>
         <Text style={styles.text}>{text}</Text>
@@ -32,7 +28,7 @@ const styles = StyleSheet.create({
   container: {flex: 1, paddingHorizontal: 20},
   topTab: {
     flexDirection: 'row',
-    paddingVertical: 20,
+    paddingVertical: 19,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
