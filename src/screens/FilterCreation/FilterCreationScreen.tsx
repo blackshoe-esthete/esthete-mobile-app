@@ -20,8 +20,10 @@ import {
   grayscale,
 } from 'react-native-image-filter-kit';
 import {brightness, filters} from '@utils/filter';
+import {useNavigation} from '@react-navigation/native';
 
 function FilterCreationScreen(): React.JSX.Element {
+  const navigation = useNavigation();
   const [filterType, setFilterType] = useState('sharpen');
   const [sliderValue, setSliderValue] = useState<{[key: string]: number}>({
     sharpen: 0,
@@ -85,9 +87,9 @@ function FilterCreationScreen(): React.JSX.Element {
               thumbImage={circleIcon}
             />
           </View>
-          {/* <TouchableOpacity onPress={() => CameraRoll.getPhotos({first: 10})}> */}
-          <Image source={photoIcon} style={styles.photoIcon} />
-          {/* </TouchableOpacity> */}
+          <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery')}>
+            <Image source={photoIcon} style={styles.photoIcon} />
+          </TouchableOpacity>
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.filterContainer} horizontal showsHorizontalScrollIndicator={false}>
