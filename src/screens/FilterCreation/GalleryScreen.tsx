@@ -10,6 +10,8 @@ import backspaceIcon from '@assets/icons/backspace_white.png';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
+import {RootStackParamList} from '@types/navigations';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -17,25 +19,41 @@ interface GalleryItem extends PhotoIdentifier {
   thumbnailUri?: string; // 추가
 }
 
-function GalleryScreen(): React.JSX.Element {
+// `GalleryScreenProps`를 `RootStackParamList`의 'FilterCreationGallery' 타입을 사용하여 정의합니다.
+type GalleryScreenProps = NativeStackScreenProps<RootStackParamList, 'FilterCreationGallery'>;
+
+function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
+  const {type, index} = route.params;
+
   const navigation = useNavigation();
   //스크롤 될 때마다 사진을 불러올 경우 현재의 갤러리를 어디까지 불러왔는지에 대한 저장 값
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
-  //   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
-  const {selectedImageUri, setSelectedImageUri, setFilteredImageUri} = useFilterCreationStore();
+
+  const {selectedImageUri, setSelectedImageUri, setFilteredImageUri, additionalImageUri, setAdditionalImageUri} =
+    useFilterCreationStore();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const selectImage = async (item: GalleryItem, index: number) => {
     if (Platform.OS === 'ios') {
       const originalUri = await phPathToFilePath(item.node.image.uri, item.node.image.width, item.node.image.height);
-      setSelectedImageUri(originalUri);
-      setFilteredImageUri(originalUri);
+      setImageUri(originalUri);
     } else {
-      setSelectedImageUri(item.node.image.uri);
-      setFilteredImageUri(item.node.image.uri);
+      setImageUri(item.node.image.uri);
     }
     setSelectedImageIndex(index);
+  };
+
+  const setImageUri = async (uri: string) => {
+    switch (type) {
+      case 'main':
+        setSelectedImageUri(uri);
+        setFilteredImageUri(uri);
+        break;
+      case 'sub':
+        setAdditionalImageUri(uri, index as number);
+        break;
+    }
   };
 
   const getGalleryPhotos = async () => {
@@ -58,22 +76,6 @@ function GalleryScreen(): React.JSX.Element {
       // ios인 경우는 ph:// 형식으로 사진이 저장됩니다.
       // 이미지를 읽을 수 없는 오류가 생기기 때문에
       // react-native-fs의 파일 시스템을 이용하여 변환 시켜줍니다.
-      /*
-      //   const newGalleryList = [...galleryList];
-      if (Platform.OS === 'ios') {
-        for await (const item of edges) {
-          const thumbnailUri = await phPathToFilePath(item.node.image.uri, 360, 360);
-        const originalUri = await phPathToFilePath(
-            item.node.image.uri,
-            item.node.image.width,
-            item.node.image.height,
-        );
-        const uri = {thumbnailUri, originalUri};
-          item.node.image.uri = thumbnailUri;
-        newGalleryList.push(uri);
-        }
-      }
-      */
       const newGalleryList = [...galleryList];
 
       if (Platform.OS === 'ios') {
@@ -126,18 +128,36 @@ function GalleryScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* 선택한 이미지 */}
-      <View
-        style={{
-          backgroundColor: selectedImageUri ? '#171717' : '#D9D9D9',
-          width: SCREEN_WIDTH - 40,
-          height: SCREEN_WIDTH - 40,
-          marginHorizontal: 20,
-        }}>
-        {selectedImageUri && (
-          <Image source={{uri: selectedImageUri}} style={{width: '100%', height: '100%'}} resizeMode="contain" />
-        )}
-      </View>
+      {/* 이미지 */}
+      {type === 'main' ? (
+        <View
+          style={[
+            styles.imageBackground,
+            {
+              backgroundColor: selectedImageUri ? '#171717' : '#D9D9D9',
+            },
+          ]}>
+          {selectedImageUri && (
+            <Image source={{uri: selectedImageUri}} style={{width: '100%', height: '100%'}} resizeMode="contain" />
+          )}
+        </View>
+      ) : (
+        <View
+          style={[
+            styles.imageBackground,
+            {
+              backgroundColor: additionalImageUri[index as number] ? '#171717' : '#D9D9D9',
+            },
+          ]}>
+          {additionalImageUri[index as number] && (
+            <Image
+              source={{uri: additionalImageUri[index as number]}}
+              style={{width: '100%', height: '100%'}}
+              resizeMode="contain"
+            />
+          )}
+        </View>
+      )}
 
       {/* 최근 항목 텍스트 */}
       <View style={{flexDirection: 'row', alignItems: 'center', paddingLeft: 20, gap: 12, height: 70}}>
@@ -226,10 +246,9 @@ const styles = StyleSheet.create({
   },
   backspaceIcon: {width: 20, height: 30, transform: [{scaleX: -1}]},
   cancelIcon: {width: 30, height: 30},
-  text: {
-    color: '#E9E9E9',
-    textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '500',
+  imageBackground: {
+    width: SCREEN_WIDTH - 40,
+    height: SCREEN_WIDTH - 40,
+    marginHorizontal: 20,
   },
 });
