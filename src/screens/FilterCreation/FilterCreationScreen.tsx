@@ -21,10 +21,12 @@ import {
 } from 'react-native-image-filter-kit';
 import {brightness, filters} from '@utils/filter';
 import {useNavigation} from '@react-navigation/native';
+import {useFilterCreationStore} from '@store/filterCreationStore';
 
 function FilterCreationScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const [filterType, setFilterType] = useState('sharpen');
+  const {selectedImageUri, setFilteredImageUri} = useFilterCreationStore();
   const [sliderValue, setSliderValue] = useState<{[key: string]: number}>({
     sharpen: 0,
     exposure: 1,
@@ -50,7 +52,7 @@ function FilterCreationScreen(): React.JSX.Element {
         grayscale(sliderValue.grayscale),
       ])}
       style={styles.image}
-      image={<Image source={exampleImage} style={styles.image} resizeMode="contain" />}
+      image={<Image source={{uri: selectedImageUri}} style={styles.image} resizeMode="contain" />}
     />
   );
 
@@ -61,15 +63,33 @@ function FilterCreationScreen(): React.JSX.Element {
   return (
     <SafeAreaView edges={['bottom']} style={{flex: 1}}>
       <View style={[styles.topInset, {paddingTop: top}]} />
+
       <View style={styles.container}>
         <TopTab text={'다음 단계'} to={'FilterCreationDesc'} />
-        <Sharpen
-          image={applyFilter}
-          style={styles.image}
-          amount={sliderValue.sharpen}
-          // onExtractImage={({nativeEvent}) => console.log(nativeEvent)}
-          extractImageEnabled={true}
-        />
+
+        <View
+          style={{
+            flex: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+            alignSelf: 'stretch',
+            backgroundColor: selectedImageUri ? '#171717' : '#D9D9D9',
+          }}>
+          {/* 이미지 및 필터 적용 */}
+          {selectedImageUri ? (
+            <Sharpen
+              image={applyFilter}
+              style={styles.image}
+              amount={sliderValue.sharpen}
+              onExtractImage={({nativeEvent}) => setFilteredImageUri(nativeEvent.uri)}
+              extractImageEnabled={true}
+            />
+          ) : (
+            <Text style={{fontSize: 16, fontWeight: '700'}}>선택한 사진이 보여집니다.</Text>
+          )}
+        </View>
+
+        {/* 슬라이더 */}
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
@@ -92,6 +112,8 @@ function FilterCreationScreen(): React.JSX.Element {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* 필터 선택 */}
       <ScrollView contentContainerStyle={styles.filterContainer} horizontal showsHorizontalScrollIndicator={false}>
         {filters.map(filter => (
           <TouchableOpacity
@@ -121,10 +143,8 @@ const styles = StyleSheet.create({
   },
   backspaceIcon: {width: 20, height: 30},
   image: {
-    flex: 10,
-    alignSelf: 'stretch',
     width: '100%',
-    // height: '100%',
+    height: '100%',
   },
   sliderContainer: {
     flexDirection: 'row',

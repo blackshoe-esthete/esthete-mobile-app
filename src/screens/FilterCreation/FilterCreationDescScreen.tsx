@@ -12,10 +12,9 @@ import {
   View,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import exampleImage from '@assets/imgs/ex2.jpeg';
-// import exampleImage from '@assets/imgs/ex3.png';
 import TopTab from '@components/FilterCreation/TopTab';
 import plusIcon from '@assets/icons/cancel.png';
+import {useFilterCreationStore} from '@store/filterCreationStore';
 
 const mood = ['따뜻한', '부드러운', '평화로운', '차가운', '빈티지한', '몽환적인', '싱그러운'];
 
@@ -26,14 +25,18 @@ interface FilterCreationDescScreenProps {
 function FilterCreationDescScreen(): React.JSX.Element {
   const {top} = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
-  const [height, setHeight] = useState(0);
+  const [height, setImageHeight] = useState(0);
+  const {filteredImageUri} = useFilterCreationStore();
 
   useEffect(() => {
-    // 로컬 이미지인 경우 Image.resolveAssetSource를 사용
-    const resolvedSource = Image.resolveAssetSource(exampleImage);
-    const ratio = resolvedSource.height / resolvedSource.width;
-    setHeight(width * ratio);
-  }, [exampleImage, width]);
+    if (filteredImageUri) {
+      Image.getSize(filteredImageUri, (originalWidth, originalHeight) => {
+        // 원본 이미지의 비율에 맞춰 높이를 계산합니다.
+        const calculatedHeight = originalHeight * (width / originalWidth);
+        setImageHeight(calculatedHeight);
+      });
+    }
+  }, [filteredImageUri, width]);
 
   return (
     <SafeAreaView edges={['bottom']} style={StyleSheet.absoluteFill}>
@@ -44,7 +47,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{alignItems: 'center'}}>
           <Image
-            source={exampleImage}
+            source={{uri: filteredImageUri}}
             style={[
               styles.image,
               {

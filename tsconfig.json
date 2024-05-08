@@ -12,7 +12,8 @@
       "@hooks/*": ["src/hooks/*"],
       "@navigations/*": ["src/navigations/*"],
       "@types/*": ["src/types/*"],
-      "@apis/*": ["src/api/*"]
+      "@apis/*": ["src/api/*"],
+      "@store/*": ["src/store/*"]
     }
   },
   "include": ["src", "src/types/*"]
