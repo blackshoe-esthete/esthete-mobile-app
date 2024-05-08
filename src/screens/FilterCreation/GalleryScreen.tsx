@@ -4,6 +4,7 @@ import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, Touchable
 import hasAndroidPermission from '@hooks/CaeraRollPermission';
 import {useNavigation} from '@react-navigation/native';
 import RNFS from 'react-native-fs';
+import {useFilterCreationStore} from '@store/filterCreationStore';
 
 import backspaceIcon from '@assets/icons/backspace_white.png';
 import cancelIcon from '@assets/icons/cancel_black.png';
@@ -21,15 +22,18 @@ function GalleryScreen(): React.JSX.Element {
   //스크롤 될 때마다 사진을 불러올 경우 현재의 갤러리를 어디까지 불러왔는지에 대한 저장 값
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
-  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+  //   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+  const {selectedImageUri, setSelectedImageUri, setFilteredImageUri} = useFilterCreationStore();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const selectImage = async (item: GalleryItem, index: number) => {
     if (Platform.OS === 'ios') {
       const originalUri = await phPathToFilePath(item.node.image.uri, item.node.image.width, item.node.image.height);
       setSelectedImageUri(originalUri);
+      setFilteredImageUri(originalUri);
     } else {
       setSelectedImageUri(item.node.image.uri);
+      setFilteredImageUri(item.node.image.uri);
     }
     setSelectedImageIndex(index);
   };
@@ -74,7 +78,7 @@ function GalleryScreen(): React.JSX.Element {
 
       if (Platform.OS === 'ios') {
         for await (const item of edges) {
-          const thumbnailUri = await phPathToFilePath(item.node.image.uri, 100, 100);
+          const thumbnailUri = await phPathToFilePath(item.node.image.uri, 300, 300);
           newGalleryList.push({...item, thumbnailUri});
         }
       }
