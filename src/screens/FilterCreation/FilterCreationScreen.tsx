@@ -22,9 +22,11 @@ import {
 import {brightness, filters} from '@utils/filter';
 import {useNavigation} from '@react-navigation/native';
 import {useFilterCreationStore} from '@store/filterCreationStore';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {type RootStackParamList} from '../../types/navigations';
 
 function FilterCreationScreen(): React.JSX.Element {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [filterType, setFilterType] = useState('sharpen');
   const {selectedImageUri, setFilteredImageUri} = useFilterCreationStore();
   const [sliderValue, setSliderValue] = useState<{[key: string]: number}>({
@@ -107,7 +109,7 @@ function FilterCreationScreen(): React.JSX.Element {
               thumbImage={circleIcon}
             />
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery')}>
+          <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery', {type: 'main'})}>
             <Image source={photoIcon} style={styles.photoIcon} />
           </TouchableOpacity>
         </View>

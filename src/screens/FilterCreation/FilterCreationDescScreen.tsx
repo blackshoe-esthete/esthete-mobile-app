@@ -15,6 +15,9 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import TopTab from '@components/FilterCreation/TopTab';
 import plusIcon from '@assets/icons/cancel.png';
 import {useFilterCreationStore} from '@store/filterCreationStore';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '@types/navigations';
 
 const mood = ['따뜻한', '부드러운', '평화로운', '차가운', '빈티지한', '몽환적인', '싱그러운'];
 
@@ -23,10 +26,12 @@ interface FilterCreationDescScreenProps {
 }
 
 function FilterCreationDescScreen(): React.JSX.Element {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const {top} = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
   const [height, setImageHeight] = useState(0);
-  const {filteredImageUri} = useFilterCreationStore();
+  const {filteredImageUri, additionalImageUri} = useFilterCreationStore();
 
   useEffect(() => {
     if (filteredImageUri) {
@@ -92,15 +97,18 @@ function FilterCreationDescScreen(): React.JSX.Element {
         <View style={{gap: 10, marginVertical: 30, paddingHorizontal: 20}}>
           <Text style={{color: '#FFF', fontSize: 14}}>필터를 사용할 사진을 선택해주세요!</Text>
           <View style={{flexDirection: 'row', gap: 10}}>
-            <Pressable style={styles.imgBox}>
-              <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
-            </Pressable>
-            <Pressable style={styles.imgBox}>
-              <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
-            </Pressable>
-            <Pressable style={styles.imgBox}>
-              <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
-            </Pressable>
+            {[0, 1, 2].map(index => (
+              <Pressable
+                key={index}
+                style={styles.imgBox}
+                onPress={() => navigation.navigate('FilterCreationGallery', {type: 'sub', index})}>
+                {additionalImageUri[index] ? (
+                  <Image source={{uri: additionalImageUri[index]}} style={{width: 100, height: 100}} />
+                ) : (
+                  <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
+                )}
+              </Pressable>
+            ))}
           </View>
         </View>
         <View style={styles.save}>

@@ -13,8 +13,9 @@ import ExhibitionReportScreen from '@screens/Exhibition/ExhibitionReportScreen';
 import FilterCreationScreen from './src/screens/FilterCreation/FilterCreationScreen';
 import FilterCreationDescScreen from './src/screens/FilterCreation/FilterCreationDescScreen';
 import GalleryScreen from './src/screens/FilterCreation/GalleryScreen';
+import {type RootStackParamList} from './src/types/navigations';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const MyTheme = {
   ...DefaultTheme,
