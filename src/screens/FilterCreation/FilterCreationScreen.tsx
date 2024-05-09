@@ -1,12 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Dimensions, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import Slider from '@react-native-community/slider';
+import {Slider} from '@miblanchard/react-native-slider';
 import photoIcon from '@assets/icons/photo.png';
-import circleIcon from '@assets/icons/circle.png';
-import exampleImage from '@assets/imgs/ex2.jpeg';
-// import exampleImage from '@assets/imgs/ex3.png';
-// import exampleImage from '@assets/imgs/thumbnail-gallery-image.png';
 import TopTab from '@components/FilterCreation/TopTab';
 import {
   Sharpen,
@@ -29,40 +25,36 @@ function FilterCreationScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [filterType, setFilterType] = useState('sharpen');
   const {selectedImageUri, setFilteredImageUri} = useFilterCreationStore();
-  const [sliderValue, setSliderValue] = useState<{[key: string]: number}>({
-    sharpen: 0,
-    exposure: 1,
-    brightness: 0,
-    contrast: 1,
-    saturate: 1,
-    hueRotate: 0,
-    temperature: 0,
-    grayscale: 0,
-  });
+  const [sliderValue, setSliderValue] = useState<{[key: string]: number}>(
+    filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}),
+  );
 
   const {top} = useSafeAreaInsets();
 
   const handleSliderChange = (value: number, type: string) => {
     setSliderValue(prevState => ({...prevState, [type]: value}));
+    // console.log(value);
   };
 
-  useEffect(() => {
-    const handleImageChange = () => {
-      const gap = 0.000001;
-      // 슬라이더 값을 임시로 변경
-      const tempValue = sliderValue[filterType] + gap;
-      setSliderValue(prevState => ({...prevState, [filterType]: tempValue}));
+  // useEffect(() => {
+  //   const handleImageChange = () => {
+  //     const gap = 100;
+  //     // 슬라이더 값을 임시로 변경
+  //     const tempValue = sliderValue.sharpen + gap;
+  //     setSliderValue(prevState => ({...prevState, sharpen: tempValue}));
+  //     console.log('임시로 변경');
 
-      // 원래 값으로 복구
-      setTimeout(() => {
-        setSliderValue(prevState => ({...prevState, [filterType]: tempValue - gap}));
-      }, 100);
-    };
+  //     // 원래 값으로 복구
+  //     setTimeout(() => {
+  //       setSliderValue(prevState => ({...prevState, sharpen: tempValue - gap}));
+  //       console.log('원래대로 돌려놓음');
+  //     }, 100);
+  //   };
 
-    if (selectedImageUri) {
-      handleImageChange();
-    }
-  }, [selectedImageUri]);
+  //   if (selectedImageUri) {
+  //     handleImageChange();
+  //   }
+  // }, [selectedImageUri]);
 
   return (
     <SafeAreaView edges={['bottom']} style={{flex: 1}}>
@@ -112,18 +104,18 @@ function FilterCreationScreen(): React.JSX.Element {
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
-              <Text style={styles.sliderValueText}>{Math.floor(sliderValue[filterType] * 100) / 10}</Text>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValue[filterType] * 100)}</Text>
             </View>
             <Slider
-              step={0.1}
+              step={filters.find(f => f.type === filterType)?.step}
               minimumValue={filters.find(f => f.type === filterType)?.min}
               maximumValue={filters.find(f => f.type === filterType)?.max}
               value={sliderValue[filterType]}
-              onValueChange={value => handleSliderChange(value, filterType)}
+              onValueChange={value => handleSliderChange(value[0], filterType)}
               minimumTrackTintColor="#FFFFFF"
               maximumTrackTintColor="#FFFFFF"
-              style={styles.slider}
-              thumbImage={circleIcon}
+              containerStyle={styles.slider}
+              thumbTintColor="#FFFFFF"
             />
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery', {type: 'main'})}>
