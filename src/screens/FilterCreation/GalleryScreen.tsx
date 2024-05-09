@@ -60,7 +60,8 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
         // setFilteredImageUri(uri);
         break;
       case 'sub':
-        setAdditionalImageUri(uri, index as number);
+        const thumbnailUri = await phPathToFilePath(uri, 300, 300);
+        setAdditionalImageUri(thumbnailUri, index as number);
         break;
     }
   };
@@ -185,9 +186,9 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={{
           width: SCREEN_WIDTH,
-          gap: 10,
+          gap: 5,
         }}
-        columnWrapperStyle={{gap: 10}}
+        columnWrapperStyle={{gap: 5}}
         getItemLayout={(data, index) => ({
           length: SCREEN_WIDTH / 4,
           offset: (SCREEN_WIDTH / 4) * (index + 3),
@@ -207,8 +208,8 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
               <Image
                 source={{uri: item.thumbnailUri || item.node.image.uri}}
                 style={{
-                  width: (SCREEN_WIDTH - 30) / 4,
-                  height: (SCREEN_WIDTH - 30) / 4,
+                  width: (SCREEN_WIDTH - 15) / 4,
+                  height: (SCREEN_WIDTH - 15) / 4,
                 }}
               />
               {isSelected && (
