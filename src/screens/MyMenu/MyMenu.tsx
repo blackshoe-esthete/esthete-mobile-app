@@ -27,15 +27,15 @@ function MyMenu({navigation, route}: Props) {
   const nextScreen = (props: menuProp) => {
     const newScreen = props?.name;
     return (
-      <View style={styles.stackButton}>
-        <Text style={styles.titleStyle}>{props.title}</Text>
-        <TouchableOpacity onPress={() => {
-          newScreen &&
-          navigation.navigate(newScreen)
+      <TouchableOpacity
+        onPress={() => {
+          newScreen && navigation.navigate(newScreen);
         }}>
+        <View style={styles.stackButton}>
+          <Text style={styles.titleStyle}>{props.title}</Text>
           <Image source={nextIcon} style={styles.icon} />
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
     );
   };
   return (

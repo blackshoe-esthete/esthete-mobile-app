@@ -2,7 +2,7 @@ import MyHeader from '@components/MyGalleryScreen/MyHeader';
 import MyCollections from '@screens/MyGallery/MyCollections';
 import MyFilter from '@screens/MyGallery/MyFilter';
 import React, {useEffect, useState, useCallback} from 'react';
-import {View, useWindowDimensions, StyleSheet, StatusBar, Text} from 'react-native';
+import {useWindowDimensions, StyleSheet, StatusBar, Text} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';

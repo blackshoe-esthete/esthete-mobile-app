@@ -3,13 +3,10 @@ import {
   View,
   StyleSheet,
   Image,
-  // TouchableOpacity,
   Dimensions,
   Text,
   Keyboard,
 } from 'react-native';
-// import {TouchableOpacity} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
 import Keyword from '@components/FilterSearchScreen/KeywordList';
