@@ -16,6 +16,8 @@ type Filter = {
   label: string;
   min: number;
   max: number;
+  default: number;
+  step: number;
   marginHorizontal?: {marginLeft?: number; marginRight?: number};
 };
 
@@ -25,6 +27,8 @@ export const filters: Filter[] = [
     label: '선명도',
     min: -1,
     max: 1,
+    default: 0,
+    step: 0.05,
     marginHorizontal: {marginLeft: 20},
   },
   {
@@ -32,42 +36,56 @@ export const filters: Filter[] = [
     label: '노출',
     min: 0.3,
     max: 2,
+    default: 1,
+    step: 0.1,
   },
   {
     type: 'brightness',
     label: '밝기',
     min: 0,
     max: 0.5,
+    default: 0,
+    step: 0.025,
   },
   {
     type: 'contrast',
     label: '대비',
     min: 0.3,
     max: 2,
+    default: 1,
+    step: 0.1,
   },
   {
     type: 'saturate',
     label: '채도',
     min: 0,
     max: 3,
+    default: 1,
+    step: 0.05,
   },
   {
     type: 'hueRotate',
     label: '색조',
     min: 0,
     max: 6,
+    default: 0,
+    step: 0.1,
   },
   {
     type: 'temperature',
     label: '온도',
     min: -0.3,
     max: 0.3,
+    default: 0,
+    step: 0.025,
   },
   {
     type: 'grayscale',
     label: '흑백',
     min: 0,
     max: 1,
+    default: 0,
+    step: 0.05,
     marginHorizontal: {marginRight: 20},
   },
 ];
