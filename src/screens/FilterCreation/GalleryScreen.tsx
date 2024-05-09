@@ -1,12 +1,12 @@
 import {CameraRoll, PhotoIdentifier} from '@react-native-camera-roll/camera-roll';
 import React, {useEffect, useState} from 'react';
-import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import hasAndroidPermission from '@hooks/CaeraRollPermission';
 import {useNavigation} from '@react-navigation/native';
 import RNFS from 'react-native-fs';
 import {useFilterCreationStore} from '@store/filterCreationStore';
 
-import backspaceIcon from '@assets/icons/backspace_white.png';
+import nextIcon from '@assets/icons/backspace_white.png';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
@@ -29,23 +29,25 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
   //스크롤 될 때마다 사진을 불러올 경우 현재의 갤러리를 어디까지 불러왔는지에 대한 저장 값
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
-
-  const {
-    selectedImageUri,
-    setSelectedImageUri,
-    filteredImageUri,
-    setFilteredImageUri,
-    additionalImageUri,
-    setAdditionalImageUri,
-  } = useFilterCreationStore();
+  const [currentImageUri, setCurrentImageUri] = useState<string | null>(null);
+  const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri} = useFilterCreationStore();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
+  const onPressNext = () => {
+    if (currentImageUri === null) {
+      Alert.alert('이미지를 선택해주세요');
+      return;
+    }
+    setImageUri(currentImageUri);
+    navigation.goBack();
+  };
 
   const selectImage = async (item: GalleryItem, index: number) => {
     if (Platform.OS === 'ios') {
       const originalUri = await phPathToFilePath(item.node.image.uri, item.node.image.width, item.node.image.height);
-      setImageUri(originalUri);
+      setCurrentImageUri(originalUri); // 그냥 선택했을 때는 setCurrentImageUri 실행
     } else {
-      setImageUri(item.node.image.uri);
+      setCurrentImageUri(item.node.image.uri); // 그냥 선택했을 때는 setCurrentImageUri 실행
     }
     setSelectedImageIndex(index);
   };
@@ -130,8 +132,8 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={cancelIcon} style={styles.cancelIcon} resizeMode="contain" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={backspaceIcon} style={styles.backspaceIcon} resizeMode="contain" />
+        <TouchableOpacity onPress={onPressNext}>
+          <Image source={nextIcon} style={styles.nextIcon} resizeMode="contain" />
         </TouchableOpacity>
       </View>
 
@@ -141,11 +143,15 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
           style={[
             styles.imageBackground,
             {
-              backgroundColor: selectedImageUri ? '#171717' : '#D9D9D9',
+              backgroundColor: currentImageUri || selectedImageUri ? '#171717' : '#D9D9D9',
             },
           ]}>
-          {selectedImageUri && (
-            <Image source={{uri: selectedImageUri}} style={{width: '100%', height: '100%'}} resizeMode="contain" />
+          {(currentImageUri || selectedImageUri) && (
+            <Image
+              source={{uri: currentImageUri || selectedImageUri}}
+              style={{width: '100%', height: '100%'}}
+              resizeMode="contain"
+            />
           )}
         </View>
       ) : (
@@ -153,12 +159,12 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
           style={[
             styles.imageBackground,
             {
-              backgroundColor: additionalImageUri[index as number] ? '#171717' : '#D9D9D9',
+              backgroundColor: currentImageUri || additionalImageUri[index as number] ? '#171717' : '#D9D9D9',
             },
           ]}>
-          {additionalImageUri[index as number] && (
+          {(currentImageUri || additionalImageUri[index as number]) && (
             <Image
-              source={{uri: additionalImageUri[index as number]}}
+              source={{uri: currentImageUri || additionalImageUri[index as number]}}
               style={{width: '100%', height: '100%'}}
               resizeMode="contain"
             />
@@ -251,7 +257,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  backspaceIcon: {width: 20, height: 30, transform: [{scaleX: -1}]},
+  nextIcon: {width: 20, height: 30, transform: [{scaleX: -1}]},
   cancelIcon: {width: 30, height: 30},
   imageBackground: {
     width: SCREEN_WIDTH - 40,
