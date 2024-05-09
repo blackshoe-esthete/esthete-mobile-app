@@ -103,7 +103,11 @@ function FilterCreationDescScreen(): React.JSX.Element {
                 style={styles.imgBox}
                 onPress={() => navigation.navigate('FilterCreationGallery', {type: 'sub', index})}>
                 {additionalImageUri[index] ? (
-                  <Image source={{uri: additionalImageUri[index]}} style={{width: 100, height: 100}} />
+                  <Image
+                    source={{uri: additionalImageUri[index]}}
+                    style={{width: '100%', height: '100%'}}
+                    resizeMode="cover"
+                  />
                 ) : (
                   <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
                 )}
@@ -136,6 +140,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    color: '#FFF',
   },
   keyword: {
     height: 42,
