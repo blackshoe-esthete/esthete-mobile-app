@@ -9,6 +9,7 @@ interface FilterCreationStore {
   setFilteredImageUri: (uri: string) => void;
   additionalImageUri: string[];
   setAdditionalImageUri: (uri: string, index: number) => void;
+  setAdditionalImageUriEmpty: () => void;
   //   selectedImageThumbUri: string | undefined;
   //   setSelectedImageThumbUri: (uri: string | undefined) => void;
   //   selectedFilterIndex: number | null;
@@ -39,6 +40,7 @@ export const useFilterCreationStore = create<FilterCreationStore>(set => ({
       // 수정된 배열을 상태로 설정합니다.
       return {additionalImageUri: updatedUris};
     }),
+  setAdditionalImageUriEmpty: () => set({additionalImageUri: []}),
   //   selectedImageThumbUri: undefined,
   //   setSelectedImageThumbUri: (uri: string | undefined) => set({selectedImageThumbUri: uri}),
   //   selectedFilterIndex: 0,

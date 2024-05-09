@@ -47,7 +47,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
     <SafeAreaView edges={['bottom']} style={StyleSheet.absoluteFill}>
       <View style={[styles.topInset, {paddingTop: top}]} />
       <View style={{paddingHorizontal: 20}}>
-        <TopTab text={'임시 저장'} to={'FilterCreation'} />
+        <TopTab text={'임시 저장'} to={'CameraPage'} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{alignItems: 'center'}}>

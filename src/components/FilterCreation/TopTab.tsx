@@ -11,11 +11,14 @@ interface TopTabProps {
 
 function TopTab({text, to}: TopTabProps): React.JSX.Element {
   const navigation = useNavigation();
-  const {selectedImageUri, setSelectedImageUri} = useFilterCreationStore();
+  const {selectedImageUri, setSelectedImageUri, setAdditionalImageUriEmpty} = useFilterCreationStore();
 
   const onPressBack = () => {
     if (to === 'FilterCreationDesc') {
       setSelectedImageUri('');
+    }
+    if (to === 'CameraPage' && text === '임시 저장') {
+      setAdditionalImageUriEmpty();
     }
     navigation.goBack();
   };
