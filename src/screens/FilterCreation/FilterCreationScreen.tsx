@@ -1,5 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {Dimensions, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Slider} from '@miblanchard/react-native-slider';
 import photoIcon from '@assets/icons/photo.png';
@@ -23,11 +33,12 @@ import {type RootStackParamList} from '../../types/navigations';
 
 function FilterCreationScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [filterType, setFilterType] = useState('sharpen');
+  const [filterType, setFilterType] = useState<string>('sharpen');
   const {selectedImageUri, setFilteredImageUri} = useFilterCreationStore();
   const [sliderValue, setSliderValue] = useState<{[key: string]: number}>(
     filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}),
   );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {top} = useSafeAreaInsets();
 
@@ -36,29 +47,46 @@ function FilterCreationScreen(): React.JSX.Element {
     // console.log(value);
   };
 
-  // useEffect(() => {
-  //   const handleImageChange = () => {
-  //     const gap = 100;
-  //     // 슬라이더 값을 임시로 변경
-  //     const tempValue = sliderValue.sharpen + gap;
-  //     setSliderValue(prevState => ({...prevState, sharpen: tempValue}));
-  //     console.log('임시로 변경');
+  // 이미지 변경 시 onExtractImage를 트리거하기 위한 로직
+  useEffect(() => {
+    const handleImageChange = () => {
+      const gap = 0.01;
+      // 슬라이더 값을 임시로 변경
+      const tempValue = sliderValue.sharpen + gap;
+      setSliderValue(prevState => ({...prevState, sharpen: tempValue}));
+      // console.log('임시로 변경');
+      setIsLoading(true);
 
-  //     // 원래 값으로 복구
-  //     setTimeout(() => {
-  //       setSliderValue(prevState => ({...prevState, sharpen: tempValue - gap}));
-  //       console.log('원래대로 돌려놓음');
-  //     }, 100);
-  //   };
+      // 원래 값으로 복구
+      setTimeout(() => {
+        setSliderValue(prevState => ({...prevState, sharpen: tempValue - gap}));
+        // console.log('원래대로 돌려놓음');
+        setIsLoading(false);
+      }, 500);
+    };
 
-  //   if (selectedImageUri) {
-  //     handleImageChange();
-  //   }
-  // }, [selectedImageUri]);
+    if (selectedImageUri) {
+      handleImageChange();
+    }
+  }, [selectedImageUri]);
 
   return (
     <SafeAreaView edges={['bottom']} style={{flex: 1}}>
       <View style={[styles.topInset, {paddingTop: top}]} />
+
+      {/* 로딩 중일 때 보여줄 0.5 투명도의 배경 */}
+      {isLoading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1,
+          }}>
+          <ActivityIndicator size="large" color="#FFFFFF" />
+        </View>
+      )}
 
       <View style={styles.container}>
         {/* TODO: 선택된 이미지가 없는 경우 넘어갈 수 없도록 설정 */}
