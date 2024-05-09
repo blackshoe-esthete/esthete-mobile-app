@@ -42,31 +42,34 @@ function FilterCreationScreen(): React.JSX.Element {
 
   const {top} = useSafeAreaInsets();
 
-  const applyFilter = (
-    <ColorMatrix
-      matrix={concatColorMatrices([
-        exposure(sliderValue.exposure),
-        brightness(sliderValue.brightness),
-        contrast(sliderValue.contrast),
-        saturate(sliderValue.saturate),
-        hueRotate(sliderValue.hueRotate),
-        temperature(sliderValue.temperature),
-        grayscale(sliderValue.grayscale),
-      ])}
-      style={styles.image}
-      image={<Image source={{uri: selectedImageUri}} style={styles.image} resizeMode="contain" />}
-    />
-  );
-
   const handleSliderChange = (value: number, type: string) => {
     setSliderValue(prevState => ({...prevState, [type]: value}));
   };
+
+  useEffect(() => {
+    const handleImageChange = () => {
+      const gap = 0.000001;
+      // 슬라이더 값을 임시로 변경
+      const tempValue = sliderValue[filterType] + gap;
+      setSliderValue(prevState => ({...prevState, [filterType]: tempValue}));
+
+      // 원래 값으로 복구
+      setTimeout(() => {
+        setSliderValue(prevState => ({...prevState, [filterType]: tempValue - gap}));
+      }, 100);
+    };
+
+    if (selectedImageUri) {
+      handleImageChange();
+    }
+  }, [selectedImageUri]);
 
   return (
     <SafeAreaView edges={['bottom']} style={{flex: 1}}>
       <View style={[styles.topInset, {paddingTop: top}]} />
 
       <View style={styles.container}>
+        {/* TODO: 선택된 이미지가 없는 경우 넘어갈 수 없도록 설정 */}
         <TopTab text={'다음 단계'} to={'FilterCreationDesc'} />
 
         <View
@@ -80,7 +83,21 @@ function FilterCreationScreen(): React.JSX.Element {
           {/* 이미지 및 필터 적용 */}
           {selectedImageUri ? (
             <Sharpen
-              image={applyFilter}
+              image={
+                <ColorMatrix
+                  matrix={concatColorMatrices([
+                    exposure(sliderValue.exposure),
+                    brightness(sliderValue.brightness),
+                    contrast(sliderValue.contrast),
+                    saturate(sliderValue.saturate),
+                    hueRotate(sliderValue.hueRotate),
+                    temperature(sliderValue.temperature),
+                    grayscale(sliderValue.grayscale),
+                  ])}
+                  style={styles.image}
+                  image={<Image source={{uri: selectedImageUri}} style={styles.image} resizeMode="contain" />}
+                />
+              }
               style={styles.image}
               amount={sliderValue.sharpen}
               onExtractImage={({nativeEvent}) => setFilteredImageUri(nativeEvent.uri)}

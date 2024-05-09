@@ -1,5 +1,6 @@
 import {Platform} from 'react-native';
 
+// 필터 정보
 type FilterType =
   | 'sharpen'
   | 'exposure'
@@ -71,6 +72,8 @@ export const filters: Filter[] = [
   },
 ];
 
+// =============================================================================
+// brightness 효과를 적용하는 함수
 const bias = Platform.OS === 'ios' ? 1 : 255;
 
 type Matrix = [
