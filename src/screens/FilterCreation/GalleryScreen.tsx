@@ -30,8 +30,14 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
 
-  const {selectedImageUri, setSelectedImageUri, setFilteredImageUri, additionalImageUri, setAdditionalImageUri} =
-    useFilterCreationStore();
+  const {
+    selectedImageUri,
+    setSelectedImageUri,
+    filteredImageUri,
+    setFilteredImageUri,
+    additionalImageUri,
+    setAdditionalImageUri,
+  } = useFilterCreationStore();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const selectImage = async (item: GalleryItem, index: number) => {
@@ -48,7 +54,8 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
     switch (type) {
       case 'main':
         setSelectedImageUri(uri);
-        setFilteredImageUri(uri);
+        // if (!filteredImageUri)
+        // setFilteredImageUri(uri);
         break;
       case 'sub':
         setAdditionalImageUri(uri, index as number);
