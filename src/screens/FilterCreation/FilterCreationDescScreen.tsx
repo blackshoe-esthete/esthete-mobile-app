@@ -18,6 +18,7 @@ import {useFilterCreationStore} from '@store/filterCreationStore';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
+import CommonModal from '@components/common/CommonModal';
 
 const mood = ['따뜻한', '부드러운', '평화로운', '차가운', '빈티지한', '몽환적인', '싱그러운'];
 
@@ -30,8 +31,20 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
   const {top} = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
-  const [height, setImageHeight] = useState(0);
-  const {filteredImageUri, additionalImageUri} = useFilterCreationStore();
+  const [height, setImageHeight] = useState<number>(0);
+  const {filteredImageUri, additionalImageUri, setAdditionalImageUriEmpty} = useFilterCreationStore();
+
+  const [tempModalVisible, setTempModalVisible] = useState<boolean>(false);
+  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+
+  const onPressBack = () => {
+    setAdditionalImageUriEmpty();
+    navigation.goBack();
+  };
+
+  const onPressNext = () => {
+    setTempModalVisible(!tempModalVisible);
+  };
 
   useEffect(() => {
     if (filteredImageUri) {
@@ -47,7 +60,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
     <SafeAreaView edges={['bottom']} style={StyleSheet.absoluteFill}>
       <View style={[styles.topInset, {paddingTop: top}]} />
       <View style={{paddingHorizontal: 20}}>
-        <TopTab text={'임시 저장'} to={'CameraPage'} />
+        <TopTab text={'임시 저장'} to={'CameraPage'} onPressBack={onPressBack} onPressNext={onPressNext} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{alignItems: 'center', maxHeight: Dimensions.get('window').height * 0.7}}>
@@ -115,10 +128,37 @@ function FilterCreationDescScreen(): React.JSX.Element {
             ))}
           </View>
         </View>
-        <View style={styles.save}>
+        <Pressable style={styles.save} onPress={() => setCreateModalVisible(!createModalVisible)}>
           <Text style={styles.saveText}>제작하기</Text>
-        </View>
+        </Pressable>
       </ScrollView>
+
+      <CommonModal
+        title="필터 제작을 임시저장하시겠습니까?"
+        subTitle={`임시저장된 필터는 마이갤러리에서 확인 가능합니다.
+        나중에 다시 수정해주세요!`}
+        button={['확인', '닫기']}
+        visible={tempModalVisible}
+        onConfirm={() => {
+          setTempModalVisible(!tempModalVisible);
+          navigation.navigate('CameraPage');
+        }}
+        onClose={() => setTempModalVisible(!tempModalVisible)}
+      />
+      <CommonModal
+        title="필터 제작을 완료하시겠습니까?"
+        subTitle={`필터 제작을 완료하면 필터 대표사진과 필터명은
+        더 이상 변경이 불가능합니다.
+
+        제작 완료는 신중하게 해주세요!`}
+        button={['확인', '닫기']}
+        visible={createModalVisible}
+        onConfirm={() => {
+          setCreateModalVisible(!createModalVisible);
+          navigation.navigate('Main');
+        }}
+        onClose={() => setCreateModalVisible(!createModalVisible)}
+      />
     </SafeAreaView>
   );
 }

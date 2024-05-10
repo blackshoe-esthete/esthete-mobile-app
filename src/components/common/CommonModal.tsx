@@ -5,11 +5,12 @@ type FilterModalProps = {
   title: string;
   subTitle: String;
   visible: boolean;
+  onConfirm?: () => void;
   onClose: () => void;
   button: string[];
 };
 
-function CommonModal({title, subTitle, visible, onClose, button}: FilterModalProps): React.JSX.Element {
+function CommonModal({title, subTitle, visible, onConfirm, onClose, button}: FilterModalProps): React.JSX.Element {
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.outerContainer}>
@@ -17,7 +18,7 @@ function CommonModal({title, subTitle, visible, onClose, button}: FilterModalPro
           <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.subTitleText}>{subTitle}</Text>
           <View style={styles.buttonStyle}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={onConfirm}>
               <View style={[styles.buttonBox, {backgroundColor: '#FFD600'}]}>
                 <Text style={styles.buttonText}>{button[0]}</Text>
               </View>
@@ -47,6 +48,7 @@ const styles = StyleSheet.create({
   modalView: {
     minHeight: 200,
     backgroundColor: '#fff',
+    justifyContent: 'space-between',
     alignItems: 'center',
     // gap: 4,
     padding: 20,
