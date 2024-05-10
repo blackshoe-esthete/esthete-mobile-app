@@ -24,7 +24,7 @@ import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import TabButton from '@components/common/TabButton';
-import FilterModal from '@components/FilterSearchScreen/FilterModal';
+import CommonModal from '@components/common/CommonModal';
 
 type Props = NativeStackScreenProps<Routes, 'FilterIndexScreen'>;
 const windowWidth = Dimensions.get('window').width;
@@ -115,7 +115,7 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
       <View style={styles.bottomTab}>
         <TabButton title="미리보기" width={windowWidth} />
         <TabButton title="구매하기" width={windowWidth} func={modalShown} />
-        <FilterModal {...customProps} />
+        <CommonModal {...customProps} />
       </View>
     </GestureHandlerRootView>
   );
