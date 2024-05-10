@@ -13,8 +13,8 @@ import updatingIcon from '@assets/icons/updating.png';
 import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
-import {useNavigation} from '@react-navigation/native';
 import FilterNav from './FilterNav';
+import {useNavigation} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
@@ -45,17 +45,9 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={exhibitionActiveIcon}
-                style={styles.exhibitionActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={exhibitionActiveIcon} style={styles.exhibitionActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={exhibitionIcon}
-                style={styles.exhibitionIcon}
-                resizeMode="contain"
-              />
+              <Image source={exhibitionIcon} style={styles.exhibitionIcon} resizeMode="contain" />
             ),
         }}
       />
@@ -65,17 +57,9 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={filterActiveIcon}
-                style={styles.filterActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={filterActiveIcon} style={styles.filterActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={filterIcon}
-                style={styles.filterIcon}
-                resizeMode="contain"
-              />
+              <Image source={filterIcon} style={styles.filterIcon} resizeMode="contain" />
             ),
           tabBarStyle: {display: 'none'},
         }}>
@@ -87,17 +71,9 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={additionActiveIcon}
-                style={styles.additionActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={additionActiveIcon} style={styles.additionActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={additionIcon}
-                style={styles.additionIcon}
-                resizeMode="contain"
-              />
+              <Image source={additionIcon} style={styles.additionIcon} resizeMode="contain" />
             ),
         }}
       />
@@ -107,17 +83,9 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={updatingActiveIcon}
-                style={styles.additionActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={updatingActiveIcon} style={styles.additionActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={updatingIcon}
-                style={styles.additionIcon}
-                resizeMode="contain"
-              />
+              <Image source={updatingIcon} style={styles.additionIcon} resizeMode="contain" />
             ),
         }}
       />
@@ -127,17 +95,9 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={galleryActiveIcon}
-                style={styles.exhibitionActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={galleryActiveIcon} style={styles.exhibitionActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={galleryIcon}
-                style={styles.exhibitionIcon}
-                resizeMode="contain"
-              />
+              <Image source={galleryIcon} style={styles.exhibitionIcon} resizeMode="contain" />
             ),
         }}
       />

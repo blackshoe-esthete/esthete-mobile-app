@@ -1,12 +1,5 @@
 import React, {PropsWithChildren} from 'react';
-import {
-  Image,
-  StyleSheet,
-  TextInput,
-  TextStyle,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Image, StyleSheet, TextInput, TextStyle, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import backIcon from '@assets/icons/backspace_white.png';
 
@@ -17,12 +10,7 @@ type SearchBarProps = {
   placeHolder?: string;
 };
 
-function SearchBar({
-  iconSource,
-  to,
-  back,
-  placeHolder,
-}: SearchBarProps): React.JSX.Element {
+function SearchBar({iconSource, to, back, placeHolder}: SearchBarProps): React.JSX.Element {
   const navigation = useNavigation();
   if (back) {
     return (

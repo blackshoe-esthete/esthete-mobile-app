@@ -18,11 +18,9 @@ import ex1 from '@assets/imgs/filter_ex3.png';
 import ex2 from '@assets/imgs/filter_ex2.png';
 import FilterTitle from '@components/FilterSearchScreen/FilterTitle';
 import UsedPicture from '@components/FilterSearchScreen/FilterUsedPicture';
-import {
-  ScrollView,
-  TouchableOpacity,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity, GestureHandlerRootView} from 'react-native-gesture-handler';
+import TabButton from '@components/common/TabButton';
+import FilterModal from '@components/FilterSearchScreen/FilterModal';
 
 type Props = NativeStackScreenProps<Routes, 'FilterIndexScreen'>;
 const windowWidth = Dimensions.get('window').width;
@@ -32,6 +30,7 @@ const maxHeight = windowHeight * 0.5;
 
 function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
   const [height, setHeight] = useState<number | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     // 로컬 이미지인 경우 Image.resolveAssetSource를 사용
@@ -39,6 +38,25 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
     const ratio = resolvedSource.height / resolvedSource.width;
     setHeight(imageWidth * ratio);
   }, [ex1, imageWidth]);
+
+  const modalShown = () => {
+    setModalVisible(!modalVisible);
+  };
+  // HTML 태그를 포함하는 문자열
+  const subTitleText = `
+  어려운 이미지 보정, 필터 구매를 통해 클릭 한 번으로 완료!
+
+  다양한 사용자의 개성이 담긴 필터를 이용하여 
+  나만의 전시회를 꾸며보세요.
+`;
+
+  const customProps = {
+    title: '필터를 구매하시겠습니까?',
+    subTitle: subTitleText,
+    visible: modalVisible,
+    onClose: modalShown,
+    button: ['구매하기', '닫기'],
+  };
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
@@ -49,13 +67,7 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
       </View>
       <ScrollView>
         <View style={{paddingHorizontal: 20, alignItems: 'center'}}>
-          <Image
-            source={ex1}
-            style={[
-              styles.imageSize,
-              {width: imageWidth, height: height, maxHeight: maxHeight},
-            ]}
-          />
+          <Image source={ex1} style={[styles.imageSize, {width: imageWidth, height: height, maxHeight: maxHeight}]} />
 
           {/* 필터타이틀 */}
           <View style={{width: '100%'}}>
@@ -63,16 +75,12 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
           </View>
 
           {/* 키워드리스트 */}
-          <Keyword
-            marginProp={20}
-            marginVertical={20}
-            dummy={['풍경', '여행']}
-          />
+          <Keyword marginProp={20} marginVertical={20} dummy={['풍경', '여행']} />
 
           <View style={styles.detailBox}>
             <Text style={styles.detailText}>
-              여기에는 필터에 대한 설명(필터를 만들게 된 스토리, 필터 사용 팁
-              등) 및 필터를 사용하여 촬영한 사진에 대한 설명이 들어갑니다.
+              여기에는 필터에 대한 설명(필터를 만들게 된 스토리, 필터 사용 팁 등) 및 필터를 사용하여 촬영한 사진에 대한
+              설명이 들어갑니다.
             </Text>
           </View>
 
@@ -88,6 +96,13 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
           </View>
         </View>
       </ScrollView>
+
+      {/* 탭바 커스텀 */}
+      <View style={styles.bottomTab}>
+        <TabButton title="미리보기" width={windowWidth} />
+        <TabButton title="구매하기" width={windowWidth} func={modalShown} />
+        <FilterModal {...customProps} />
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -121,6 +136,14 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
     marginTop: 20,
+  },
+  bottomTab: {
+    height: 80,
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    flexDirection: 'row',
+    backgroundColor: '#030303',
   },
 });
 

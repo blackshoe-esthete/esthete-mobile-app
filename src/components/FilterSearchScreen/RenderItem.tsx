@@ -6,7 +6,7 @@ import profile from '@assets/imgs/anonymous.png';
 import {Routes} from '../../screens/Routes';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 type RootStackNavigationProp = NativeStackNavigationProp<Routes>;
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 type ImageItem = {
   id: string;
@@ -18,19 +18,15 @@ type ImageItem = {
 };
 
 function RenderItem({item}: {item: ImageItem; index: number}) {
-  const navigation = useNavigation< RootStackNavigationProp>();
+  const navigation = useNavigation<RootStackNavigationProp>();
 
   return (
     <View style={{flex: 1}}>
       <View style={styles.likeBox}>
-        {item.like ? (
-          <Image source={like} style={styles.icon} />
-        ) : (
-          <Image source={unlike} style={styles.icon} />
-        )}
+        {item.like ? <Image source={like} style={styles.icon} /> : <Image source={unlike} style={styles.icon} />}
         <Text style={styles.num}>{item.likeNum}</Text>
       </View>
-      <TouchableOpacity onPress={()=>navigation.navigate('FilterIndexScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate('FilterIndexScreen')}>
         <Image source={item.source} style={styles.image} />
       </TouchableOpacity>
       <View style={styles.textBox}>
