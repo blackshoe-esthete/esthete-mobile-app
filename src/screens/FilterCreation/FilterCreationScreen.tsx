@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   Platform,
@@ -34,7 +35,7 @@ import {type RootStackParamList} from '../../types/navigations';
 function FilterCreationScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [filterType, setFilterType] = useState<string>('sharpen');
-  const {selectedImageUri, setFilteredImageUri} = useFilterCreationStore();
+  const {selectedImageUri, setFilteredImageUri, setSelectedImageUri} = useFilterCreationStore();
   const [sliderValue, setSliderValue] = useState<{[key: string]: number}>(
     filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}),
   );
@@ -45,6 +46,20 @@ function FilterCreationScreen(): React.JSX.Element {
   const handleSliderChange = (value: number, type: string) => {
     setSliderValue(prevState => ({...prevState, [type]: value}));
     // console.log(value);
+  };
+
+  const onPressBack = () => {
+    setSelectedImageUri('');
+    navigation.goBack();
+  };
+
+  const onPressNext = () => {
+    if (selectedImageUri) {
+      navigation.navigate('FilterCreationDesc');
+    } else {
+      // 선택된 이미지가 없는 경우 처리할 로직 추가
+      Alert.alert('이미지를 선택해주세요.');
+    }
   };
 
   // 이미지 변경 시 onExtractImage를 트리거하기 위한 로직
@@ -90,7 +105,7 @@ function FilterCreationScreen(): React.JSX.Element {
 
       <View style={styles.container}>
         {/* TODO: 선택된 이미지가 없는 경우 넘어갈 수 없도록 설정 */}
-        <TopTab text={'다음 단계'} to={'FilterCreationDesc'} />
+        <TopTab text={'다음 단계'} to={'FilterCreationDesc'} onPressBack={onPressBack} onPressNext={onPressNext} />
 
         <View
           style={{
