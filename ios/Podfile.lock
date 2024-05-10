@@ -989,11 +989,10 @@ PODS:
     - Google-Maps-iOS-Utils (= 4.2.2)
     - GoogleMaps (= 7.4.0)
     - React-Core
-  - react-native-image-resizer (3.0.9):
   - react-native-image-filter-kit (0.8.0):
     - Bolts/Tasks (= 1.9.0)
     - React
-  - react-native-maps (1.14.0):
+  - react-native-image-resizer (3.0.9):
     - React-Core
   - react-native-maps (1.14.0):
     - React-Core
@@ -1260,8 +1259,8 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - react-native-google-maps (from `../node_modules/react-native-maps`)
-  - "react-native-image-resizer (from `../node_modules/@bam.tech/react-native-image-resizer`)"
   - react-native-image-filter-kit (from `../node_modules/react-native-image-filter-kit`)
+  - "react-native-image-resizer (from `../node_modules/@bam.tech/react-native-image-resizer`)"
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -1376,10 +1375,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-google-maps:
     :path: "../node_modules/react-native-maps"
-  react-native-image-resizer:
-    :path: "../node_modules/@bam.tech/react-native-image-resizer"
   react-native-image-filter-kit:
     :path: "../node_modules/react-native-image-filter-kit"
+  react-native-image-resizer:
+    :path: "../node_modules/@bam.tech/react-native-image-resizer"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-pager-view:
@@ -1489,8 +1488,8 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 84ea43c6c6232049135b1550b8c60b2faac19fab
   react-native-cameraroll: cb0d0a2b76a9d56461ea0ab5782f69e694544840
   react-native-google-maps: 94df984b1647973baffe17c0b7b52828d6b69d94
-  react-native-image-resizer: 669454edae94399b11e49c840e4da14482302293
   react-native-image-filter-kit: d79137549eb44f8215b7f2be5e77213f605e2c92
+  react-native-image-resizer: 669454edae94399b11e49c840e4da14482302293
   react-native-maps: cbf2f03bfeebfd7ec45966b066db13a075fd2af3
   react-native-pager-view: f1e72cb827406f1b49f007ab07400197d421b6e7
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d

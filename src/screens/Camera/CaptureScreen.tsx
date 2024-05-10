@@ -2,14 +2,7 @@ import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {
-  StyleSheet,
-  View,
-  Linking,
-  PermissionsAndroid,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, View, Linking, PermissionsAndroid, Image, TouchableOpacity} from 'react-native';
 import Reanimated, {useSharedValue} from 'react-native-reanimated';
 import {
   Camera,
@@ -24,11 +17,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useIsFocused} from '@react-navigation/core';
 import {CaptureButton} from '@components/CaptureScreen/CaptureButton';
 import {useIsForeground} from '@hooks/useIsForeground';
-import {
-  SAFE_AREA_PADDING,
-  MAX_ZOOM_FACTOR,
-  CAPTURE_BUTTON_SIZE,
-} from '../../../Constants';
+import {SAFE_AREA_PADDING, MAX_ZOOM_FACTOR, CAPTURE_BUTTON_SIZE} from '../../../Constants';
 import backIcon from '@assets/icons/backspace_white.png';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import ratio1 from '@assets/icons/ratio_1_1.png';
@@ -46,18 +35,13 @@ const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 //안드로이드 버전 사진촬영 함수
 const requestCameraPermission = async () => {
   try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-      {
-        title: 'Sample Photo App Camera Permission',
-        message:
-          'Sample Photo App needs access to your camera ' +
-          'so you can take awesome pictures.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
+    const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA, {
+      title: 'Sample Photo App Camera Permission',
+      message: 'Sample Photo App needs access to your camera ' + 'so you can take awesome pictures.',
+      buttonNeutral: 'Ask Me Later',
+      buttonNegative: 'Cancel',
+      buttonPositive: 'OK',
+    });
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       console.log('You can use the camera');
     } else {
@@ -81,10 +65,8 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const [aspect, setAspect] = useState(1 / 1);
   const [icon, setIcon] = useState(ratio1);
   const [photo, setPhoto] = useState<PhotoFile>();
-  const [cameraPermission, setCameraPermission] =
-    useState<CameraPermissionStatus>();
-  const [microphonePermission, setMicrophonePermission] =
-    useState<CameraPermissionStatus>();
+  const [cameraPermission, setCameraPermission] = useState<CameraPermissionStatus>();
+  const [microphonePermission, setMicrophonePermission] = useState<CameraPermissionStatus>();
   const device = useCameraDevice(currentPosition);
   const zoom = useSharedValue(device?.neutralZoom ?? 0);
   const camera = useRef<Camera>(null);
@@ -212,7 +194,7 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
 
         <View style={styles.bottom}>
           <View style={styles.bottomIconBox}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('FilterCreation')}>
               <Image source={edit} style={{marginLeft: 50}} />
             </TouchableOpacity>
             <CaptureButton

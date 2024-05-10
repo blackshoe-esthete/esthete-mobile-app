@@ -1,7 +1,7 @@
 import {CameraRoll, PhotoIdentifier} from '@react-native-camera-roll/camera-roll';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
-import hasAndroidPermission from '@hooks/CaeraRollPermission';
+import hasAndroidPermission from '@hooks/CameraRollPermission';
 import {useNavigation} from '@react-navigation/native';
 import RNFS from 'react-native-fs';
 import {useFilterCreationStore} from '@store/filterCreationStore';
