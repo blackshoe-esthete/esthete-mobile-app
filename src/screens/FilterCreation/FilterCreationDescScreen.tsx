@@ -50,7 +50,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
         <TopTab text={'임시 저장'} to={'CameraPage'} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{alignItems: 'center'}}>
+        <View style={{alignItems: 'center', maxHeight: Dimensions.get('window').height * 0.7}}>
           <Image
             source={{uri: filteredImageUri}}
             style={[
@@ -130,10 +130,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#030303',
   },
   image: {
-    // maxHeight: Dimensions.get('window').width,
+    maxHeight: Dimensions.get('window').height * 0.7,
   },
   textInput: {
-    paddingVertical: 22,
+    paddingVertical: 17,
     paddingHorizontal: 20,
     backgroundColor: '#292929',
     borderRadius: 10,
