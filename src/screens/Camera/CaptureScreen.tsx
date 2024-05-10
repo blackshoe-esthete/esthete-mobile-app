@@ -194,7 +194,7 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
 
         <View style={styles.bottom}>
           <View style={styles.bottomIconBox}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('FilterCreation')}>
               <Image source={edit} style={{marginLeft: 50}} />
             </TouchableOpacity>
             <CaptureButton
