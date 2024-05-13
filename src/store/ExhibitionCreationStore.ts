@@ -1,11 +1,22 @@
 import {create} from 'zustand';
 
+interface ImageItem {
+  uri: string;
+  identifier: string;
+}
+
 interface ExhibitionCreationStore {
-  selectedImageUris: string[];
+  selectedImageUri: string | undefined;
+  setSelectedImageUri: (uri: string) => void;
+  additionalImageUri: ImageItem[];
+  setAdditionalImageUri: (images: ImageItem[]) => void;
 }
 
 const useExhibitionCreationStore = create<ExhibitionCreationStore>(set => ({
-  selectedImageUris: [],
+  selectedImageUri: undefined,
+  setSelectedImageUri: (uri: string) => set({selectedImageUri: uri}),
+  additionalImageUri: [],
+  setAdditionalImageUri: (images: ImageItem[]) => set({additionalImageUri: images}),
 }));
 
 export default useExhibitionCreationStore;

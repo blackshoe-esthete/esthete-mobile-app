@@ -10,6 +10,7 @@ import cancelIcon from '@assets/icons/cancel_black.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
 import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
+import Carousel from 'react-native-reanimated-carousel';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -19,15 +20,16 @@ interface GalleryItem extends PhotoIdentifier {
 
 function ExhibitionCreationScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const {selectedImageUris} = useExhibitionCreationStore();
+  const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri} =
+    useExhibitionCreationStore();
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
-  const [currentImageUri, setCurrentImageUri] = useState<string | null>(null);
   const [multiSelectEnabled, setMultiSelectEnabled] = useState<boolean>(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const onPressNext = () => {
-    if (selectedImageUris.length === 0) {
+    if (!selectedImageUri && additionalImageUri.length === 0) {
       Alert.alert('이미지를 선택해주세요');
       return;
     }
@@ -35,11 +37,22 @@ function ExhibitionCreationScreen(): React.JSX.Element {
   };
 
   const selectImage = async (item: GalleryItem, index: number) => {
-    if (Platform.OS === 'ios') {
-      const originalUri = await phPathToFilePath(item.node.image.uri, item.node.image.width, item.node.image.height);
-      setCurrentImageUri(originalUri);
+    const originalUri =
+      Platform.OS === 'ios'
+        ? await phPathToFilePath(item.node.image.uri, item.node.image.width, item.node.image.height)
+        : item.node.image.uri;
+
+    const identifier = item.node.image.filename || originalUri;
+
+    if (multiSelectEnabled) {
+      if (additionalImageUri.some(image => image.identifier === identifier)) {
+        setAdditionalImageUri(additionalImageUri.filter(image => image.identifier !== identifier));
+      } else {
+        setAdditionalImageUri([...additionalImageUri, {uri: originalUri, identifier}]);
+      }
     } else {
-      setCurrentImageUri(item.node.image.uri);
+      setSelectedImageUri(originalUri);
+      setAdditionalImageUri([{uri: originalUri, identifier}]);
     }
     setSelectedImageIndex(index);
   };
@@ -100,6 +113,13 @@ function ExhibitionCreationScreen(): React.JSX.Element {
     requestPermission();
   }, []);
 
+  // 추가된 useEffect: 선택된 이미지가 없을 때 첫 번째 이미지 자동 선택
+  useEffect(() => {
+    if (galleryList.length > 0 && additionalImageUri.length === 0) {
+      selectImage(galleryList[0], 0);
+    }
+  }, [galleryList]);
+
   return (
     <View style={{flex: 1}}>
       {/* 상단 탭 */}
@@ -112,14 +132,24 @@ function ExhibitionCreationScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* 선택된 이미지 표시 영역 */}
-      <View style={[styles.imageBackground, {backgroundColor: currentImageUri ? '#171717' : '#D9D9D9'}]}>
-        {currentImageUri && (
-          <Image source={{uri: currentImageUri}} style={{width: '100%', height: '100%'}} resizeMode="contain" />
-        )}
+      {/* 이미지 Carousel */}
+      <View style={styles.carouselContainer}>
+        <Carousel
+          loop={false}
+          width={SCREEN_WIDTH - 40}
+          height={(SCREEN_WIDTH - 40) * 0.75}
+          data={
+            additionalImageUri.length > 0
+              ? additionalImageUri.map(image => image.uri)
+              : [selectedImageUri].filter(Boolean)
+          }
+          scrollAnimationDuration={1000}
+          onSnapToItem={index => setCurrentImageIndex(index)}
+          renderItem={({item}) => <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+        />
       </View>
 
-      {/* 최근 항목 텍스트 */}
+      {/* 최근 항목 & 선택 텍스트 */}
       <View style={styles.recentItems}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text style={styles.recentItemsText}>최근 항목</Text>
@@ -148,14 +178,22 @@ function ExhibitionCreationScreen(): React.JSX.Element {
           if (galleryCursor) getGalleryPhotos();
         }}
         renderItem={({item, index}) => {
-          const isSelected = index === selectedImageIndex;
+          const originalUri = Platform.OS === 'ios' ? item.thumbnailUri || item.node.image.uri : item.node.image.uri;
+          const identifier = item.node.image.filename || originalUri;
+          const selectedIndex = additionalImageUri.findIndex(image => image.identifier === identifier);
+          const isSelected = selectedIndex !== -1;
+
           return (
             <TouchableOpacity onPress={() => selectImage(item, index)}>
               <Image source={{uri: item.thumbnailUri || item.node.image.uri}} style={styles.galleryImage} />
               {isSelected && (
                 <View style={styles.overlay}>
                   <View style={styles.checkIconContainer}>
-                    <Image source={checkIcon} style={styles.checkIcon} resizeMode="contain" />
+                    {multiSelectEnabled ? (
+                      <Text style={styles.checkIndex}>{selectedIndex + 1}</Text>
+                    ) : (
+                      <Image source={checkIcon} style={{width: 12, height: 12}} resizeMode="contain" />
+                    )}
                   </View>
                 </View>
               )}
@@ -182,10 +220,14 @@ const styles = StyleSheet.create({
   },
   nextIcon: {width: 20, height: 30, transform: [{scaleX: -1}]},
   cancelIcon: {width: 30, height: 30},
-  imageBackground: {
+  carouselContainer: {
     width: SCREEN_WIDTH - 40,
-    height: SCREEN_WIDTH - 40,
+    height: (SCREEN_WIDTH - 40) * 0.75,
     marginHorizontal: 20,
+  },
+  carouselImage: {
+    width: '100%',
+    height: '100%',
   },
   recentItems: {
     flexDirection: 'row',
@@ -222,5 +264,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFD600',
     borderRadius: 10,
   },
-  checkIcon: {width: 12, height: 12},
+  checkIndex: {
+    fontSize: 12,
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
 });
