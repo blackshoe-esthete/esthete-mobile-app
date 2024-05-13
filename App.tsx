@@ -15,6 +15,7 @@ import FilterCreationScreen from './src/screens/FilterCreation/FilterCreationScr
 import FilterCreationDescScreen from './src/screens/FilterCreation/FilterCreationDescScreen';
 import GalleryScreen from './src/screens/FilterCreation/GalleryScreen';
 import {type RootStackParamList} from './src/types/navigations';
+import ExhibitionFilterApplyScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -44,6 +45,11 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="ExhibitionCreation"
               component={ExhibitionCreationScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ExhibitionFilterApply"
+              component={ExhibitionFilterApplyScreen}
               options={{headerShown: false}}
             />
           </Stack.Group>

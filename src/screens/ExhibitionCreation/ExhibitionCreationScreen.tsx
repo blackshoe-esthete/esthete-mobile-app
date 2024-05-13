@@ -33,7 +33,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
       Alert.alert('이미지를 선택해주세요');
       return;
     }
-    navigation.goBack();
+    navigation.navigate('ExhibitionFilterApply');
   };
 
   const selectImage = async (item: GalleryItem, index: number) => {
@@ -266,7 +266,6 @@ const styles = StyleSheet.create({
   },
   checkIndex: {
     fontSize: 12,
-    color: '#FFF',
     fontWeight: 'bold',
   },
 });
