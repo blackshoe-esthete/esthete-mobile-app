@@ -13,6 +13,9 @@ import SubScribe from '@screens/MyMenu/SubscribeScreen';
 import Settings from '@screens/MyMenu/SettingScreen';
 import Information from '@screens/MyMenu/InformationScreen';
 import Logout from '@screens/MyMenu/LogoutScreen';
+import PreferEdit from '@screens/MyMenu/PreferEdit';
+import ProfileEdit from '@screens/MyMenu/ProfileEdit';
+import GoOut from '@screens/MyMenu/GoOut';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +45,15 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
         </Stack.Screen>
         <Stack.Screen name="Settings">
           {(props: any) => <Settings {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Prefer">
+          {(props: any) => <PreferEdit {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Profile">
+          {(props: any) => <ProfileEdit {...props}/>}
+        </Stack.Screen>
+        <Stack.Screen name="GoOut">
+          {(props: any) => <GoOut {...props}/>}
         </Stack.Screen>
         <Stack.Screen name="Information">
           {(props: any) => <Information {...props} />}

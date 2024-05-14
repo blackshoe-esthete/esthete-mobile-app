@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.30)',
     zIndex: 1,
     width: '100%',
-    height: 50
+    height: 50,
+    // blurRadius: 4,
   },
   textStyle: {
     marginTop: 21,
