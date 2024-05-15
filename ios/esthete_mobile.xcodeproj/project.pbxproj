@@ -413,7 +413,7 @@
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = CU737VY38G;
+				DEVELOPMENT_TEAM = RGVVGHH3TK;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -442,7 +442,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = CU737VY38G;
+				DEVELOPMENT_TEAM = RGVVGHH3TK;
 				INFOPLIST_FILE = esthete_mobileTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -468,7 +468,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = CU737VY38G;
+				DEVELOPMENT_TEAM = RGVVGHH3TK;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = esthete_mobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

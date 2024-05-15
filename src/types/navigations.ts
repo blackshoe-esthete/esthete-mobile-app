@@ -5,6 +5,8 @@ export type RootStackParamList = {
   Exhibition: undefined;
   ExhibitionEntered: undefined;
   ExhibitionReport: undefined;
+  ExhibitionCreation: undefined;
+  ExhibitionFilterApply: undefined;
   FilterCreation: undefined;
   FilterCreationDesc: undefined;
   FilterCreationGallery: {type: 'main' | 'sub'; index?: number};
