@@ -1,4 +1,3 @@
-// components/ExhibitionCreationScreen.tsx
 import {CameraRoll, PhotoIdentifier} from '@react-native-camera-roll/camera-roll';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
@@ -33,7 +32,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
       Alert.alert('이미지를 선택해주세요');
       return;
     }
-    navigation.navigate('ExhibitionFilterApply');
+    navigation.navigate('ExhibitionFilterApplyAll');
   };
 
   const selectImage = async (item: GalleryItem, index: number) => {

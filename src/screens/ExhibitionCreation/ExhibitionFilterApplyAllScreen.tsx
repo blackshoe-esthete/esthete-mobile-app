@@ -25,6 +25,7 @@ const ExhibitionFilterApplyAllScreen = () => {
       Alert.alert('이미지를 선택해주세요');
       return;
     }
+    navigation.navigate('ExhibitionFilterApplyComplete');
   };
 
   return (
@@ -52,8 +53,8 @@ const ExhibitionFilterApplyAllScreen = () => {
           }
           scrollAnimationDuration={1000}
           onSnapToItem={index => setCurrentImageIndex(index)}
-          renderItem={({item}) => (
-            <TouchableOpacity>
+          renderItem={({item, index}) => (
+            <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index: index})}>
               <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
             </TouchableOpacity>
           )}

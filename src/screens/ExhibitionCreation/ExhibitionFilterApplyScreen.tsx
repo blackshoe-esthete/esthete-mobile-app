@@ -1,28 +1,40 @@
 import React, {useState} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert} from 'react-native';
-import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
 import {Slider} from '@miblanchard/react-native-slider';
-import {useNavigation} from '@react-navigation/native';
+import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
+import cancelIcon from '@assets/icons/cancel_black.png';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
+import FilterTab from '@components/ExhibitionCreation/FilterTab';
+
+interface RouteParams {
+  index: number;
+}
+
+interface CarouselImage {
+  uri: string;
+}
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-const ExhibitionFilterApplyScreen = () => {
-  const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri} =
-    useExhibitionCreationStore();
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [sliderValue, setSliderValue] = useState<number>(0);
+const ExhibitionFilterApplyScreen: React.FC = () => {
+  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
   const navigation = useNavigation();
+  const route = useRoute();
+  const {index} = route.params as RouteParams;
+  const [sliderValue, setSliderValue] = useState<number>(0);
 
+  // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
     setSliderValue(prevState => value);
-    // console.log(value);
   };
+
   const onPressNext = () => {
     if (!selectedImageUri && additionalImageUri.length === 0) {
       Alert.alert('이미지를 선택해주세요');
       return;
     }
+    navigation.goBack();
   };
 
   return (
@@ -30,10 +42,7 @@ const ExhibitionFilterApplyScreen = () => {
       {/* 상단 탭 */}
       <View style={styles.topTab}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{color: '#FFF'}}>이전</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPressNext}>
-          <Text style={{color: '#FFD600'}}>다음</Text>
+          <Image source={cancelIcon} style={styles.cancelIcon} resizeMode="contain" />
         </TouchableOpacity>
       </View>
 
@@ -42,15 +51,12 @@ const ExhibitionFilterApplyScreen = () => {
         <Carousel
           loop={false}
           width={SCREEN_WIDTH - 40}
-          height={(SCREEN_WIDTH - 40) * 0.75}
-          data={
-            additionalImageUri.length > 0
-              ? additionalImageUri.map(image => image.uri)
-              : [selectedImageUri].filter(Boolean)
-          }
+          height={(SCREEN_WIDTH - 40) * 0.9}
+          data={additionalImageUri.length > 0 ? [additionalImageUri[index].uri] : [selectedImageUri].filter(Boolean)}
           scrollAnimationDuration={1000}
-          onSnapToItem={index => setCurrentImageIndex(index)}
-          renderItem={({item}) => <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+          renderItem={({item}: {item: string}) => (
+            <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+          )}
         />
       </View>
 
@@ -69,6 +75,18 @@ const ExhibitionFilterApplyScreen = () => {
             containerStyle={styles.slider}
           />
         </View>
+      </View>
+
+      {/* 필터 선택 */}
+      <FilterTab />
+
+      {/* 완료 */}
+
+      <View
+        style={{flex: 1, position: 'absolute', bottom: '5%', right: '5%', width: SCREEN_WIDTH, alignItems: 'flex-end'}}>
+        <TouchableOpacity onPress={onPressNext} style={styles.completeButton}>
+          <Text style={{textAlign: 'center'}}>완료</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -110,13 +128,6 @@ const styles = StyleSheet.create({
     height: 30,
     justifyContent: 'center',
   },
-  filterWrapper: {justifyContent: 'center', alignItems: 'center', gap: 15},
-  circle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#424242',
-  },
   text: {
     color: '#E9E9E9',
     textAlign: 'center',
@@ -131,6 +142,16 @@ const styles = StyleSheet.create({
   carouselImage: {
     width: '100%',
     height: '100%',
+  },
+  // 완료 버튼
+  completeButton: {
+    width: 80,
+    height: 40,
+    fontSize: 16,
+    textAlign: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFD600',
+    borderRadius: 10,
   },
 });
 
