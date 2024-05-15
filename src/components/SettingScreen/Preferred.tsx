@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
 import  cancel from '@assets/icons/cancel_gray.png';
+import CommonButton from './CommonButton';
 
 function Preferred() {
   type tagForm = {
@@ -97,11 +98,7 @@ function Preferred() {
           <SelectedTag key={index} id={item.id} title={item.title} />
         ))}
       </View>
-      <TouchableOpacity style={{marginTop: 160}}>
-        <View style={styles.button}>
-          <Text style={styles.buttonTitle}>저장하기</Text>
-        </View>
-      </TouchableOpacity>
+      <CommonButton margin={80} title='저장하기'/>
     </View>
   );
 }
@@ -172,19 +169,4 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
   },
-  button: {
-    backgroundColor: '#FFD600',
-    borderRadius: 10,
-    width: '100%',
-    height: 60,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  buttonTitle: {
-    color: '#030303',
-    fontSize: 18,
-    letterSpacing: -0.36,
-    fontWeight: '700'
-  }
 });
