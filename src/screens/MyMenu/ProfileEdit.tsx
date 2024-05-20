@@ -26,7 +26,7 @@ function ProfileEdit() {
           ref={scrollViewRef}>
           <Profile />
         </ScrollView>
-        <CommonButton title="저장하기" margin={50} marginHorizontal={20} />
+        <CommonButton title="저장하기" />
       </View>
     </SafeAreaView>
   );
