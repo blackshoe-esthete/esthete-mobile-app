@@ -18,7 +18,7 @@ type FilterModalProps = {
 
 const {width, height} = Dimensions.get('window');
 
-function GoOutModal({
+function OutModal({
   title,
   subTitle,
   visible,
@@ -54,7 +54,7 @@ function GoOutModal({
   );
 }
 
-export default GoOutModal;
+export default OutModal;
 
 const styles = StyleSheet.create({
   outerContainer: {

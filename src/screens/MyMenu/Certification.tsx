@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useState, useRef } from 'react';
-import GoOutModal from '@components/SettingScreen/GoOutScreen/GoOutModal';
+import OutModal from '@components/SettingScreen/GoOutModal';
 type Props = NativeStackScreenProps<Routes, 'Certification'>;
 
 const windowHeight = Dimensions.get('window').height;
@@ -56,7 +56,7 @@ function Certification({navigation, route}: Props) {
         <CommonButton func={modalShown} title="탈퇴하기" />
         
         {/* 모달관리 */}
-        <GoOutModal {...customProps}/>
+        <OutModal {...customProps}/>
       </View>
     </SafeAreaView>
   );

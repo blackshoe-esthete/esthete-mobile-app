@@ -5,7 +5,7 @@ import backIcon from '@assets/icons/backspace_white.png';
 import nextIcon from '@assets/icons/arrow.png';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
-import GoOutModal from '@components/SettingScreen/GoOutScreen/GoOutModal';
+import OutModal from '@components/SettingScreen/GoOutModal';
 type Props = NativeStackScreenProps<Routes, 'MyMenu'>;
 
 function MyMenu({navigation, route}: Props) {
@@ -69,7 +69,7 @@ function MyMenu({navigation, route}: Props) {
       </View>
 
         {/* 모달관리 */}
-        <GoOutModal {...customProps}/>
+        <OutModal {...customProps}/>
     </SafeAreaView>
   );
 }
