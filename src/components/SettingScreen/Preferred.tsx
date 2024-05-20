@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
 import  cancel from '@assets/icons/cancel_gray.png';
-import CommonButton from './CommonButton';
 
 function Preferred() {
   type tagForm = {
@@ -98,7 +97,6 @@ function Preferred() {
           <SelectedTag key={index} id={item.id} title={item.title} />
         ))}
       </View>
-      <CommonButton margin={80} title='저장하기'/>
     </View>
   );
 }

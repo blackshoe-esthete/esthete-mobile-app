@@ -1,45 +1,55 @@
 import MenuHeader from '@components/MyMenuScreen/MenuHeader';
-import Profile from '@components/SettingScreen/Profile';
-import React, {useRef, useState} from 'react';
-import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {Routes} from '@screens/Routes';
+import Certificate from '@components/SettingScreen/GoOutScreen/Certificate';
 import CommonButton from '@components/SettingScreen/CommonButton';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { useState, useRef } from 'react';
+type Props = NativeStackScreenProps<Routes, 'Certification'>;
 
 const windowHeight = Dimensions.get('window').height;
-function ProfileEdit() {
+function Certification({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
   return (
     <SafeAreaView edges={['top']} style={{flex: 1}}>
       <View style={{position: 'relative', flex: 1}}>
-        <MenuHeader title="프로필 편집" />
+        <MenuHeader title="회원 탈퇴" />
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={styles.scrollContainer}
           onContentSizeChange={()=>{
             if(contentLoaded){
-              scrollViewRef.current?.scrollToEnd()
+              scrollViewRef.current?.scrollToEnd();
             }else{
               setContentLoaded(true);
             }
           }}
           ref={scrollViewRef}>
-          <Profile />
+          <Certificate />
         </ScrollView>
-        <CommonButton title="저장하기" margin={50} marginHorizontal={20} />
+        <CommonButton marginHorizontal={20} margin={0} title="탈퇴하기" />
       </View>
     </SafeAreaView>
   );
 }
 
-export default ProfileEdit;
+export default Certification;
 
 const styles = StyleSheet.create({
   scrollContainer: {
     width: '100%',
+    height: windowHeight,
     backgroundColor: '#030303',
     marginBottom: 100,
-    height: windowHeight,
-    paddingBottom: 60
+    flexGrow: 1,
+    paddingBottom: 60,
   },
 });

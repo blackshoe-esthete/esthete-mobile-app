@@ -76,7 +76,7 @@ function Profile() {
       ) : (
         <View style={styles.alertBox}>
           <View style={styles.cancelIcon}>
-            <Image source={cancel} style={{width: 10, height: 10}} />
+            <Image source={cancel} style={{width: 10, height: 10, tintColor: '#f00'}} />
           </View>
           <Text style={styles.alertText}>사용 불가능한 닉네임입니다.</Text>
         </View>
@@ -168,6 +168,6 @@ const styles = StyleSheet.create({
     height: 15,
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   }
 });

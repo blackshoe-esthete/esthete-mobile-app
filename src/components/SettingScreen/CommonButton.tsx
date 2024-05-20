@@ -4,15 +4,16 @@ type styleProp = {
   margin?: number;
   title: string;
   marginHorizontal?: number;
+  navigation?: any;
+  modal?: boolean;
 };
 function CommonButton(prop: styleProp) {
   return (
     <TouchableOpacity
-      style={
-        prop.margin
-          ? {marginTop: prop.margin, marginHorizontal: prop.marginHorizontal}
-          : {}
-      }>
+      style={styles.buttonContainer}
+      onPress={() => {
+        prop.navigation?.navigate('Certification');
+      }}>
       <View style={styles.button}>
         <Text style={styles.buttonTitle}>{prop.title}</Text>
       </View>
@@ -23,6 +24,14 @@ function CommonButton(prop: styleProp) {
 export default CommonButton;
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 50,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    paddingHorizontal: 20
+  },
   button: {
     backgroundColor: '#FFD600',
     borderRadius: 10,
