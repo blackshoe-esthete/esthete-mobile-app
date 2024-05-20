@@ -17,6 +17,9 @@ import PreferEdit from '@screens/MyMenu/PreferEdit';
 import ProfileEdit from '@screens/MyMenu/ProfileEdit';
 import GoOut from '@screens/MyMenu/GoOut';
 import Certification from '@screens/MyMenu/Certification';
+import MyInfo from '@screens/MyMenu/MyInfo';
+import CompanyInfo from '@screens/MyMenu/CompanyInfo';
+import OpenSource from '@screens/MyMenu/OpenSource';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,24 +47,39 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
         <Stack.Screen name="SubScribe">
           {(props: any) => <SubScribe {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="Settings">
-          {(props: any) => <Settings {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name="Prefer">
-          {(props: any) => <PreferEdit {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name="Profile">
-          {(props: any) => <ProfileEdit {...props}/>}
-        </Stack.Screen>
-        <Stack.Screen name="GoOut">
-          {(props: any) => <GoOut {...props}/>}
-        </Stack.Screen>
-        <Stack.Screen name="Certification">
-          {(props: any) => <Certification {...props}/>}
-        </Stack.Screen>
-        <Stack.Screen name="Information">
-          {(props: any) => <Information {...props} />}
-        </Stack.Screen>
+        <Stack.Group>
+          <Stack.Screen name="Settings">
+            {(props: any) => <Settings {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="Prefer">
+            {(props: any) => <PreferEdit {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="Profile">
+            {(props: any) => <ProfileEdit {...props} />}
+          </Stack.Screen>
+        </Stack.Group>
+        <Stack.Group>
+          <Stack.Screen name="GoOut">
+            {(props: any) => <GoOut {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="Certification">
+            {(props: any) => <Certification {...props} />}
+          </Stack.Screen>
+        </Stack.Group>
+        <Stack.Group>
+          <Stack.Screen name="Information">
+            {(props: any) => <Information {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="MyInfo" >
+            {(props: any) => <MyInfo {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="CompanyInfo">
+            {(props: any) => <CompanyInfo {...props}/>}
+          </Stack.Screen>
+          <Stack.Screen name="OpenSource">
+            {(props: any) => <OpenSource {...props}/>}
+          </Stack.Screen>
+        </Stack.Group>
         <Stack.Screen name="Logout">
           {(props: any) => <Logout {...props} />}
         </Stack.Screen>

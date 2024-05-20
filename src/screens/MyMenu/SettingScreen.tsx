@@ -19,7 +19,7 @@ function Settings({ navigation, route}: Props){
     name?: string;
   };
   const nextScreen = (props: menuProp) => {
-    const newScreen = props?.name;
+    const newScreen: any = props?.name;
     return (
       <TouchableOpacity
         onPress={() => {

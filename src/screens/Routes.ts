@@ -21,4 +21,7 @@ export type Routes = {
   GoOut: undefined;
   Certification: undefined;
   Settings: undefined;
+  MyInfo: undefined;
+  CompanyInfo: undefined;
+  OpenSource: undefined;
 };
