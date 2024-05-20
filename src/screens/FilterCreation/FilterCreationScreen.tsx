@@ -159,6 +159,7 @@ function FilterCreationScreen(): React.JSX.Element {
               maximumTrackTintColor="#FFFFFF"
               containerStyle={styles.slider}
               thumbTintColor="#FFFFFF"
+              disabled={!selectedImageUri}
             />
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery', {type: 'main'})}>
