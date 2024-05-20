@@ -1,11 +1,8 @@
 import {StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 
 type styleProp = {
-  margin?: number;
   title: string;
-  marginHorizontal?: number;
-  navigation?: any;
-  modal?: boolean;
+  navigation?: any
   func?: ()=>void;
 };
 function CommonButton(prop: styleProp) {
