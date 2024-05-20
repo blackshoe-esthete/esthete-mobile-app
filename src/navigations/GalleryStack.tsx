@@ -16,6 +16,7 @@ import Logout from '@screens/MyMenu/LogoutScreen';
 import PreferEdit from '@screens/MyMenu/PreferEdit';
 import ProfileEdit from '@screens/MyMenu/ProfileEdit';
 import GoOut from '@screens/MyMenu/GoOut';
+import Certification from '@screens/MyMenu/Certification';
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +55,9 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
         </Stack.Screen>
         <Stack.Screen name="GoOut">
           {(props: any) => <GoOut {...props}/>}
+        </Stack.Screen>
+        <Stack.Screen name="Certification">
+          {(props: any) => <Certification {...props}/>}
         </Stack.Screen>
         <Stack.Screen name="Information">
           {(props: any) => <Information {...props} />}

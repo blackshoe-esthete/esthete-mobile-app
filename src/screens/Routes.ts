@@ -18,5 +18,7 @@ export type Routes = {
   Information: undefined;
   Temporary: undefined;
   SubScribe: undefined;
+  GoOut: undefined;
+  Certification: undefined;
   Settings: undefined;
 };

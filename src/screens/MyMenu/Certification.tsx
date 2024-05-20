@@ -12,12 +12,30 @@ import {
   View,
 } from 'react-native';
 import { useState, useRef } from 'react';
+import GoOutModal from '@components/SettingScreen/GoOutScreen/GoOutModal';
 type Props = NativeStackScreenProps<Routes, 'Certification'>;
 
 const windowHeight = Dimensions.get('window').height;
 function Certification({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const modalShown = () => {
+    setModalVisible(!modalVisible);
+  };
+
+  const subTitleText = `
+  탈퇴시 계정과 관련된 모든 정보가 사라집니다.
+  그래도 탈퇴하시겠습니까?`
+  const customProps = {
+    title: '정말 탈퇴하시겠습니까?',
+    subTitle: subTitleText,
+    visible: modalVisible,
+    onClose: modalShown,
+    button: ['탈퇴하기', '취소']
+  }
+  
   return (
     <SafeAreaView edges={['top']} style={{flex: 1}}>
       <View style={{position: 'relative', flex: 1}}>
@@ -35,7 +53,10 @@ function Certification({navigation, route}: Props) {
           ref={scrollViewRef}>
           <Certificate />
         </ScrollView>
-        <CommonButton marginHorizontal={20} margin={0} title="탈퇴하기" />
+        <CommonButton func={modalShown} title="탈퇴하기" />
+        
+        {/* 모달관리 */}
+        <GoOutModal {...customProps}/>
       </View>
     </SafeAreaView>
   );

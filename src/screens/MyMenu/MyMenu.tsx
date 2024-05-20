@@ -4,10 +4,6 @@ import backIcon from '@assets/icons/backspace_white.png';
 import nextIcon from '@assets/icons/arrow.png';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import MyLikes from '@screens/MyMenu/MyLikeScreen';
-
-const Stack = createNativeStackNavigator();
 type Props = NativeStackScreenProps<Routes, 'MyMenu'>;
 
 function MyMenu({navigation, route}: Props) {

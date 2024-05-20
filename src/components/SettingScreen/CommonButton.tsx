@@ -6,6 +6,7 @@ type styleProp = {
   marginHorizontal?: number;
   navigation?: any;
   modal?: boolean;
+  func?: ()=>void;
 };
 function CommonButton(prop: styleProp) {
   return (
@@ -13,6 +14,7 @@ function CommonButton(prop: styleProp) {
       style={styles.buttonContainer}
       onPress={() => {
         prop.navigation?.navigate('Certification');
+        prop?.func && prop.func();
       }}>
       <View style={styles.button}>
         <Text style={styles.buttonTitle}>{prop.title}</Text>
