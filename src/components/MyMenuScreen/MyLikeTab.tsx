@@ -5,10 +5,26 @@ import {
   useWindowDimensions,
   StyleSheet,
   Text,
+  ImageProps
 } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import ex1 from '@assets/imgs/gallery1.png';
+import ex2 from '@assets/imgs/gallery2.png';
 
+type galleryProp = {
+  id: string;
+  title: string;
+  src: ImageProps;
+  author?: string;
+  date?: string;
+};
+const DATA: galleryProp[] = [
+  {id:'1', title: "전시회명", src: ex1, author: "작가명"},
+  {id:'2', title: "전시회명", src: ex2, author: "작가명"},
+  {id:'3', title: "전시회명", src: ex1, author: "작가명"},
+  {id:'4', title: "전시회명", src: ex2, author: "작가명"},
+];
 function MyLikeTab(): React.JSX.Element {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -18,7 +34,7 @@ function MyLikeTab(): React.JSX.Element {
   ]);
 
   const renderScene = SceneMap({
-    first: MyCollections,
+    first: () => <MyCollections props={DATA} temporary={false}/>,
     second: MyFilter,
   });
 
@@ -56,6 +72,6 @@ export default MyLikeTab;
 const styles = StyleSheet.create({
   container: {
     marginTop: 0,
-    marginHorizontal: 20,
+    marginHorizontal: 20
   },
 });

@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  View, 
-  StyleSheet, 
-  Image, 
-  Text, 
+  View,
+  StyleSheet,
+  Image,
+  Text,
   Dimensions,
-  ImageProps
+  ImageProps,
+  ImageBackground,
 } from 'react-native';
 
 type galleryProp = {
@@ -17,10 +18,13 @@ const {width} = Dimensions.get('window');
 function FilterItem(props: galleryProp): React.JSX.Element {
   return (
     <View style={styles.photoBox}>
-      <Image source={props.src} style={styles.photoIcon}/>
-      <View style={styles.titleBox}>
+      <Image source={props.src} style={styles.photoIcon} />
+      {/* <View style={styles.titleBox}>
         <Text style={styles.textStyle}>{props.title}</Text>
-      </View>
+      </View> */}
+      <ImageBackground style={styles.titleBox} borderRadius={4}>
+        <Text style={styles.textStyle}>{props.title}</Text>
+      </ImageBackground>
     </View>
   );
 }
@@ -36,12 +40,12 @@ const styles = StyleSheet.create({
   photoIcon: {
     width: '100%',
     resizeMode: 'stretch',
-    height: '100%'
+    height: '100%',
   },
   titleBox: {
     position: 'absolute',
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.30)',
+    backgroundColor: '#0000004D',
     zIndex: 1,
     width: '100%',
     height: 50,
@@ -52,7 +56,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: 'white',
     fontSize: 16,
-    fontWeight: '600'
-  }
-
+    fontWeight: '600',
+  },
 });

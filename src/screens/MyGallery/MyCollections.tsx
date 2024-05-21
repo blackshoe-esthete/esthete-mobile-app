@@ -1,29 +1,30 @@
-import { FlatList, Image, ImageProps } from "react-native";
+import { FlatList, ImageProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ex1 from '@assets/imgs/gallery1.png';
-import ex2 from '@assets/imgs/gallery2.png';
 import GalleryItem from "@components/MyGalleryScreen/GalleryItem";
+import TempoItem from "@components/MyMenuScreen/TempoItem";
 
 type galleryProp = {
   id: string;
   title: string;
-  src: ImageProps
+  src: ImageProps;
+  author?: string;
+  date?: string;
 };
-const DATA: galleryProp[] = [
-  {id:'1', title: "전시회명", src: ex1},
-  {id:'2', title: "전시회명", src: ex2},
-  {id:'3', title: "전시회명", src: ex1},
-  {id:'4', title: "전시회명", src: ex2},
-];
 
-function MyCollections(): React.JSX.Element{
-  
+function MyCollections(data: any): React.JSX.Element{
   return(
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <FlatList 
-        data={DATA}
+        data={data.props}
         keyExtractor={item => item.id}
-        renderItem={({item}: {item: galleryProp})=><GalleryItem  {...item} />}
+        renderItem={({item}: {item:galleryProp}) => {
+          if(data.temporary){
+            return <TempoItem {...item} />;
+          }else{
+            return <GalleryItem {...item} />;
+          }
+        }}
+        contentContainerStyle={{}}
       />
     </SafeAreaView>
   );

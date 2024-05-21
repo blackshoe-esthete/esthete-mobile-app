@@ -2,14 +2,30 @@ import MyHeader from '@components/MyGalleryScreen/MyHeader';
 import MyCollections from '@screens/MyGallery/MyCollections';
 import MyFilter from '@screens/MyGallery/MyFilter';
 import React, {useEffect, useState, useCallback} from 'react';
-import {useWindowDimensions, StyleSheet, StatusBar, Text} from 'react-native';
+import {useWindowDimensions, StyleSheet, ImageProps, Text} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
 import useNavigateStore from '../store/navigate-store';
+import ex1 from '@assets/imgs/gallery1.png';
+import ex2 from '@assets/imgs/gallery2.png';
 
 type Props = NativeStackScreenProps<Routes, 'MyTab'>;
+type galleryProp = {
+  id: string;
+  title: string;
+  src: ImageProps;
+  author?: string;
+  date?: string;
+};
+const DATA: galleryProp[] = [
+  {id:'1', title: "전시회명", src: ex1},
+  {id:'2', title: "전시회명", src: ex2},
+  {id:'3', title: "전시회명", src: ex1},
+  {id:'4', title: "전시회명", src: ex2},
+];
+
 function MyTab({navigation, route}: Props): React.JSX.Element {
   const layout = useWindowDimensions();
   // const {status, changeStatus, getStatue} = useNavigateStore();
@@ -22,7 +38,7 @@ function MyTab({navigation, route}: Props): React.JSX.Element {
   ]);
 
   const renderScene = SceneMap({
-    first: MyCollections,
+    first: () => <MyCollections props={DATA} temporary={false}/>,
     second: MyFilter,
   });
 

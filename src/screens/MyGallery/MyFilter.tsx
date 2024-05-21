@@ -16,10 +16,10 @@ const DATA: galleryProp[] = [
   {id:'4', title: "Filter Name4", src: ex2},
 ];
 
-function MyFilter(): React.JSX.Element{
+function MyFilter(props: any): React.JSX.Element{
   
   return(
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <FlatList 
         data={DATA}
         keyExtractor={item => item.id}
