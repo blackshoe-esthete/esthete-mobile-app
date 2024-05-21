@@ -63,7 +63,7 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
     <GestureHandlerRootView style={{flex: 1}}>
       <View style={styles.topArea}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={cancel} />
+          <Image source={cancel} style={styles.iconSize}/>
         </TouchableOpacity>
       </View>
       <ScrollView>
@@ -124,6 +124,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingTop: 20,
     paddingRight: 16,
+  },
+  iconSize: {
+    width: 25,
+    height: 25
   },
   imageSize: {
     marginTop: 20,
