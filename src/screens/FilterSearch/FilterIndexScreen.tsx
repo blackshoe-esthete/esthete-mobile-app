@@ -3,13 +3,10 @@ import {
   View,
   StyleSheet,
   Image,
-  // TouchableOpacity,
   Dimensions,
   Text,
   Keyboard,
 } from 'react-native';
-// import {TouchableOpacity} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
 import Keyword from '@components/FilterSearchScreen/KeywordList';
@@ -66,7 +63,7 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
     <GestureHandlerRootView style={{flex: 1}}>
       <View style={styles.topArea}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={cancel} />
+          <Image source={cancel} style={styles.iconSize}/>
         </TouchableOpacity>
       </View>
       <ScrollView>
@@ -127,6 +124,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingTop: 20,
     paddingRight: 16,
+  },
+  iconSize: {
+    width: 25,
+    height: 25
   },
   imageSize: {
     marginTop: 20,
