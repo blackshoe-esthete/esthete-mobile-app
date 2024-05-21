@@ -1,101 +1,184 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import Slider from '@react-native-community/slider';
+import {Slider} from '@miblanchard/react-native-slider';
 import photoIcon from '@assets/icons/photo.png';
-import circleIcon from '@assets/icons/circle.png';
-import exampleImage from '@assets/imgs/ex2.jpeg';
 import TopTab from '@components/FilterCreation/TopTab';
+import {
+  Sharpen,
+  ColorMatrix,
+  concatColorMatrices,
+  brightness as exposure,
+  contrast,
+  saturate,
+  hueRotate,
+  temperature,
+  grayscale,
+} from 'react-native-image-filter-kit';
+import {brightness, filters} from '@utils/filter';
+import {useNavigation} from '@react-navigation/native';
+import {useFilterCreationStore} from '@store/filterCreationStore';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {type RootStackParamList} from '../../types/navigations';
 
 function FilterCreationScreen(): React.JSX.Element {
-  const [sliderValue, setSliderValue] = useState(1);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [filterType, setFilterType] = useState<string>('sharpen');
+  const {selectedImageUri, setFilteredImageUri, setSelectedImageUri} = useFilterCreationStore();
+  const [sliderValue, setSliderValue] = useState<{[key: string]: number}>(
+    filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}),
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const {top} = useSafeAreaInsets();
+
+  const handleSliderChange = (value: number, type: string) => {
+    setSliderValue(prevState => ({...prevState, [type]: value}));
+    // console.log(value);
+  };
+
+  const onPressBack = () => {
+    setSelectedImageUri('');
+    navigation.goBack();
+  };
+
+  const onPressNext = () => {
+    if (selectedImageUri) {
+      navigation.navigate('FilterCreationDesc');
+    } else {
+      // 선택된 이미지가 없는 경우 처리할 로직 추가
+      Alert.alert('이미지를 선택해주세요.');
+    }
+  };
+
+  // 이미지 변경 시 onExtractImage를 트리거하기 위한 로직
+  useEffect(() => {
+    const handleImageChange = () => {
+      const gap = 0.01;
+      // 슬라이더 값을 임시로 변경
+      const tempValue = sliderValue.sharpen + gap;
+      setSliderValue(prevState => ({...prevState, sharpen: tempValue}));
+      // console.log('임시로 변경');
+      setIsLoading(true);
+
+      // 원래 값으로 복구
+      setTimeout(() => {
+        setSliderValue(prevState => ({...prevState, sharpen: tempValue - gap}));
+        // console.log('원래대로 돌려놓음');
+        setIsLoading(false);
+      }, 500);
+    };
+
+    if (selectedImageUri) {
+      handleImageChange();
+    }
+  }, [selectedImageUri]);
 
   return (
     <SafeAreaView edges={['bottom']} style={{flex: 1}}>
       <View style={[styles.topInset, {paddingTop: top}]} />
-      <View style={styles.container}>
-        <TopTab text={'다음 단계'} to={'FilterCreationDesc'} />
-        <Image
-          source={exampleImage}
-          style={styles.image}
-          resizeMode="contain"
-        />
-        <View style={{flex: 1}}>
-          <View style={styles.sliderContainer}>
-            <View>
-              <View
-                style={[
-                  styles.sliderValueWrapper,
-                  {
-                    left:
-                      sliderValue *
-                      ((Dimensions.get('window').width - 100) / 2),
-                  },
-                ]}>
-                <Text style={styles.sliderValueText}>
-                  {Math.floor(sliderValue * 100)}
-                </Text>
-              </View>
-              <Slider
-                minimumValue={0}
-                maximumValue={2}
-                value={sliderValue}
-                onValueChange={value => setSliderValue(value)}
-                minimumTrackTintColor="#FFFFFF"
-                maximumTrackTintColor="#FFFFFF"
-                style={styles.slider}
-                thumbImage={circleIcon}
-              />
-            </View>
-            <Image source={photoIcon} style={styles.photoIcon} />
-          </View>
+
+      {/* 로딩 중일 때 보여줄 0.5 투명도의 배경 */}
+      {isLoading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1,
+          }}>
+          <ActivityIndicator size="large" color="#FFFFFF" />
         </View>
-        <ScrollView
-          contentContainerStyle={styles.filterContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>선명도</Text>
+      )}
+
+      <View style={styles.container}>
+        {/* TODO: 선택된 이미지가 없는 경우 넘어갈 수 없도록 설정 */}
+        <TopTab text={'다음 단계'} to={'FilterCreationDesc'} onPressBack={onPressBack} onPressNext={onPressNext} />
+
+        <View
+          style={{
+            flex: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+            alignSelf: 'stretch',
+            backgroundColor: selectedImageUri ? '#171717' : '#D9D9D9',
+          }}>
+          {/* 이미지 및 필터 적용 */}
+          {selectedImageUri ? (
+            <Sharpen
+              image={
+                <ColorMatrix
+                  matrix={concatColorMatrices([
+                    exposure(sliderValue.exposure),
+                    brightness(sliderValue.brightness),
+                    contrast(sliderValue.contrast),
+                    saturate(sliderValue.saturate),
+                    hueRotate(sliderValue.hueRotate),
+                    temperature(sliderValue.temperature),
+                    grayscale(sliderValue.grayscale),
+                  ])}
+                  style={styles.image}
+                  image={<Image source={{uri: selectedImageUri}} style={styles.image} resizeMode="contain" />}
+                />
+              }
+              style={styles.image}
+              amount={sliderValue.sharpen}
+              onExtractImage={({nativeEvent}) => setFilteredImageUri(nativeEvent.uri)}
+              extractImageEnabled={true}
+            />
+          ) : (
+            <Text style={{fontSize: 16, fontWeight: '700'}}>선택한 사진이 보여집니다.</Text>
+          )}
+        </View>
+
+        {/* 슬라이더 */}
+        <View style={styles.sliderContainer}>
+          <View>
+            <View style={styles.sliderValueWrapper}>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValue[filterType] * 100)}</Text>
+            </View>
+            <Slider
+              step={filters.find(f => f.type === filterType)?.step}
+              minimumValue={filters.find(f => f.type === filterType)?.min}
+              maximumValue={filters.find(f => f.type === filterType)?.max}
+              value={sliderValue[filterType]}
+              onValueChange={value => handleSliderChange(value[0], filterType)}
+              minimumTrackTintColor="#FFFFFF"
+              maximumTrackTintColor="#FFFFFF"
+              containerStyle={styles.slider}
+              thumbTintColor="#FFFFFF"
+            />
           </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>노출</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>밝기</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>대비</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>채도</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>ISO</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={[styles.text, {fontSize: 13}]}>하이라이트</Text>
-          </View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.circle} />
-            <Text style={styles.text}>그림자</Text>
-          </View>
-        </ScrollView>
+          <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery', {type: 'main'})}>
+            <Image source={photoIcon} style={styles.photoIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
+
+      {/* 필터 선택 */}
+      <ScrollView contentContainerStyle={styles.filterContainer} horizontal showsHorizontalScrollIndicator={false}>
+        {filters.map(filter => (
+          <TouchableOpacity
+            key={filter.type}
+            style={[styles.filterWrapper, filter?.marginHorizontal]}
+            onPress={() => setFilterType(filter.type)}>
+            <View style={styles.circle} />
+            <Text style={styles.text}>{filter.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -106,7 +189,7 @@ const styles = StyleSheet.create({
   topInset: {
     backgroundColor: '#030303',
   },
-  container: {flex: 1, paddingHorizontal: 20},
+  container: {flex: 11, paddingHorizontal: 20},
   topTab: {
     flexDirection: 'row',
     paddingVertical: 20,
@@ -114,23 +197,24 @@ const styles = StyleSheet.create({
   },
   backspaceIcon: {width: 20, height: 30},
   image: {
-    flex: 10,
-    alignSelf: 'stretch',
     width: '100%',
+    height: '100%',
   },
   sliderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 17,
-    paddingTop: 30,
-    paddingBottom: 20,
+    paddingTop: 35,
+    // paddingBottom: 20,
+    // backgroundColor: 'yellow',
   },
   sliderValueWrapper: {
-    width: 24,
-    alignItems: 'center',
+    width: 35,
+    // alignItems: 'center',
     position: 'absolute',
     top: -15,
+    left: -10,
   },
   sliderValueText: {
     textAlign: 'center',
@@ -145,7 +229,8 @@ const styles = StyleSheet.create({
   filterContainer: {
     flexDirection: 'row',
     gap: 30,
-    marginTop: 15,
+    // flex: 0.8,
+    // marginTop: 15,
     // backgroundColor: 'red',
   },
   filterWrapper: {justifyContent: 'center', alignItems: 'center', gap: 15},

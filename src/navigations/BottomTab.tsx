@@ -1,6 +1,5 @@
 import HomeScreen from '../screens/Home/HomeScreen';
 import React from 'react';
-
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Image, StyleSheet, Text} from 'react-native';
 import exhibitionIcon from '@assets/icons/exhibitions.png';
@@ -16,9 +15,7 @@ import galleryActiveIcon from '@assets/icons/gallery_active.png';
 import FilterNav from './FilterNav';
 import {useNavigation, getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import GalleryStack from './GalleryStack';
-
-import MyGalleryScreen from '@components/MyGalleryScreen/MyHeader';
-
+import ExhibitionNav from './ExhibitionNav';
 const Tab = createBottomTabNavigator();
 
 function BottomTab(): React.JSX.Element {
@@ -48,17 +45,9 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={exhibitionActiveIcon}
-                style={styles.exhibitionActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={exhibitionActiveIcon} style={styles.exhibitionActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={exhibitionIcon}
-                style={styles.exhibitionIcon}
-                resizeMode="contain"
-              />
+              <Image source={exhibitionIcon} style={styles.exhibitionIcon} resizeMode="contain" />
             ),
         }}
       />
@@ -68,39 +57,22 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={filterActiveIcon}
-                style={styles.filterActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={filterActiveIcon} style={styles.filterActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={filterIcon}
-                style={styles.filterIcon}
-                resizeMode="contain"
-              />
+              <Image source={filterIcon} style={styles.filterIcon} resizeMode="contain" />
             ),
           tabBarStyle: {display: 'none'},
-        }}>
-        {/* {(props: any) => <CaptureScreen {...props} />} */}
-      </Tab.Screen>
+        }}
+      />
       <Tab.Screen
         name="Addition"
-        component={HomeScreen}
+        component={ExhibitionNav}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={additionActiveIcon}
-                style={styles.additionActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={additionActiveIcon} style={styles.additionActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={additionIcon}
-                style={styles.additionIcon}
-                resizeMode="contain"
-              />
+              <Image source={additionIcon} style={styles.additionIcon} resizeMode="contain" />
             ),
         }}
       />
@@ -110,38 +82,14 @@ function BottomTab(): React.JSX.Element {
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
-              <Image
-                source={updatingActiveIcon}
-                style={styles.additionActiveIcon}
-                resizeMode="contain"
-              />
+              <Image source={updatingActiveIcon} style={styles.additionActiveIcon} resizeMode="contain" />
             ) : (
-              <Image
-                source={updatingIcon}
-                style={styles.additionIcon}
-                resizeMode="contain"
-              />
+              <Image source={updatingIcon} style={styles.additionIcon} resizeMode="contain" />
             ),
         }}
       />
       <Tab.Screen
         name="MyGallery"        
-        // options={{
-        //   tabBarIcon: ({focused}) =>
-        //     focused ? (
-        //       <Image
-        //         source={galleryActiveIcon}
-        //         style={styles.exhibitionActiveIcon}
-        //         resizeMode="contain"
-        //       />
-        //     ) : (
-        //       <Image
-        //         source={galleryIcon}
-        //         style={styles.exhibitionIcon}
-        //         resizeMode="contain"
-        //       />
-        //     ),
-        // }}
         options={({ route }: any) => {
           const focusedRouteName = getFocusedRouteNameFromRoute(route) || 'MyTab';
         

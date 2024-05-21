@@ -1,42 +1,24 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  StyleSheet,
-  Dimensions,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import {Modal, View, StyleSheet, Dimensions, Text, TouchableOpacity} from 'react-native';
 
 type FilterModalProps = {
   title: string;
   subTitle: String;
   visible: boolean;
+  onConfirm?: () => void;
   onClose: () => void;
   button: string[];
 };
 
-const {width, height} = Dimensions.get('window');
-
-function FilterModal({
-  title,
-  subTitle,
-  visible,
-  onClose,
-  button,
-}: FilterModalProps): React.JSX.Element {
+function CommonModal({title, subTitle, visible, onConfirm, onClose, button}: FilterModalProps): React.JSX.Element {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}>
+    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.outerContainer}>
         <View style={styles.modalView}>
           <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.subTitleText}>{subTitle}</Text>
           <View style={styles.buttonStyle}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={onConfirm}>
               <View style={[styles.buttonBox, {backgroundColor: '#FFD600'}]}>
                 <Text style={styles.buttonText}>{button[0]}</Text>
               </View>
@@ -54,7 +36,7 @@ function FilterModal({
   );
 }
 
-export default FilterModal;
+export default CommonModal;
 
 const styles = StyleSheet.create({
   outerContainer: {
@@ -64,12 +46,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.7)', // Dark background
   },
   modalView: {
-    width: width * 0.95,
-    height: height * 0.3,
+    minHeight: 200,
     backgroundColor: '#fff',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    // gap: 4,
     padding: 20,
+    paddingTop: 30,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -78,33 +61,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    borderRadius: 20,
+    borderRadius: 12,
   },
   titleText: {
-    paddingTop: 10,
     fontSize: 16,
     fontWeight: '700',
   },
   subTitleText: {
-    marginTop: 17,
     textAlign: 'center',
     fontSize: 12,
     fontWeight: '400',
     color: '#424242',
   },
   buttonStyle: {
-    
     flexDirection: 'row',
-    height: 40,
     width: '100%',
-    justifyContent: 'space-around',
+    gap: 10,
+    marginTop: 5,
   },
   buttonBox: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%',
     borderRadius: 6,
     width: 150,
+    padding: 14,
   },
   buttonText: {
     fontSize: 14,

@@ -12,47 +12,60 @@ import {
   View,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import exampleImage from '@assets/imgs/ex2.jpeg';
-// import exampleImage from '@assets/imgs/ex3.png';
 import TopTab from '@components/FilterCreation/TopTab';
 import plusIcon from '@assets/icons/cancel.png';
+import {useFilterCreationStore} from '@store/filterCreationStore';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '@types/navigations';
+import CommonModal from '@components/common/CommonModal';
 
-const mood = [
-  '따뜻한',
-  '부드러운',
-  '평화로운',
-  '차가운',
-  '빈티지한',
-  '몽환적인',
-  '싱그러운',
-];
+const mood = ['따뜻한', '부드러운', '평화로운', '차가운', '빈티지한', '몽환적인', '싱그러운'];
 
 interface FilterCreationDescScreenProps {
   // Define the props for the component here
 }
 
 function FilterCreationDescScreen(): React.JSX.Element {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const {top} = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
-  const [height, setHeight] = useState(0);
+  const [height, setImageHeight] = useState<number>(0);
+  const {filteredImageUri, additionalImageUri, setAdditionalImageUriEmpty} = useFilterCreationStore();
+
+  const [tempModalVisible, setTempModalVisible] = useState<boolean>(false);
+  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+
+  const onPressBack = () => {
+    setAdditionalImageUriEmpty();
+    navigation.goBack();
+  };
+
+  const onPressNext = () => {
+    setTempModalVisible(!tempModalVisible);
+  };
 
   useEffect(() => {
-    // 로컬 이미지인 경우 Image.resolveAssetSource를 사용
-    const resolvedSource = Image.resolveAssetSource(exampleImage);
-    const ratio = resolvedSource.height / resolvedSource.width;
-    setHeight(width * ratio);
-  }, [exampleImage, width]);
+    if (filteredImageUri) {
+      Image.getSize(filteredImageUri, (originalWidth, originalHeight) => {
+        // 원본 이미지의 비율에 맞춰 높이를 계산합니다.
+        const calculatedHeight = originalHeight * (width / originalWidth);
+        setImageHeight(calculatedHeight);
+      });
+    }
+  }, [filteredImageUri, width]);
 
   return (
     <SafeAreaView edges={['bottom']} style={StyleSheet.absoluteFill}>
       <View style={[styles.topInset, {paddingTop: top}]} />
       <View style={{paddingHorizontal: 20}}>
-        <TopTab text={'임시 저장'} to={'FilterCreation'} />
+        <TopTab text={'임시 저장'} to={'CameraPage'} onPressBack={onPressBack} onPressNext={onPressNext} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{alignItems: 'center'}}>
+        <View style={{alignItems: 'center', maxHeight: Dimensions.get('window').height * 0.7}}>
           <Image
-            source={exampleImage}
+            source={{uri: filteredImageUri}}
             style={[
               styles.image,
               {
@@ -65,25 +78,15 @@ function FilterCreationDescScreen(): React.JSX.Element {
         </View>
         <View style={{gap: 20, marginVertical: 30, paddingHorizontal: 20}}>
           <View style={styles.textInput}>
-            <TextInput
-              style={styles.text}
-              placeholder="필터명을 작성해주세요"
-              placeholderTextColor="#D6D6D6"
-            />
+            <TextInput style={styles.text} placeholder="필터명을 작성해주세요" placeholderTextColor="#D6D6D6" />
           </View>
           <View style={styles.textInput}>
-            <TextInput
-              style={styles.text}
-              placeholder="필터 설명을 작성해주세요"
-              placeholderTextColor="#D6D6D6"
-            />
+            <TextInput style={styles.text} placeholder="필터 설명을 작성해주세요" placeholderTextColor="#D6D6D6" />
           </View>
         </View>
         <View style={{gap: 10}}>
           <View style={{paddingHorizontal: 20}}>
-            <Text style={{color: '#FFF', fontSize: 14}}>
-              어떤 느낌의 필터인가요?
-            </Text>
+            <Text style={{color: '#FFF', fontSize: 14}}>어떤 느낌의 필터인가요?</Text>
           </View>
           <FlatList
             horizontal={true}
@@ -105,37 +108,57 @@ function FilterCreationDescScreen(): React.JSX.Element {
           />
         </View>
         <View style={{gap: 10, marginVertical: 30, paddingHorizontal: 20}}>
-          <Text style={{color: '#FFF', fontSize: 14}}>
-            필터를 사용할 사진을 선택해주세요!
-          </Text>
+          <Text style={{color: '#FFF', fontSize: 14}}>필터를 사용할 사진을 선택해주세요!</Text>
           <View style={{flexDirection: 'row', gap: 10}}>
-            <Pressable style={styles.imgBox}>
-              <Image
-                source={plusIcon}
-                style={styles.plusIcon}
-                resizeMode="contain"
-              />
-            </Pressable>
-            <Pressable style={styles.imgBox}>
-              <Image
-                source={plusIcon}
-                style={styles.plusIcon}
-                resizeMode="contain"
-              />
-            </Pressable>
-            <Pressable style={styles.imgBox}>
-              <Image
-                source={plusIcon}
-                style={styles.plusIcon}
-                resizeMode="contain"
-              />
-            </Pressable>
+            {[0, 1, 2].map(index => (
+              <Pressable
+                key={index}
+                style={styles.imgBox}
+                onPress={() => navigation.navigate('FilterCreationGallery', {type: 'sub', index})}>
+                {additionalImageUri[index] ? (
+                  <Image
+                    source={{uri: additionalImageUri[index]}}
+                    style={{width: '100%', height: '100%'}}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Image source={plusIcon} style={styles.plusIcon} resizeMode="contain" />
+                )}
+              </Pressable>
+            ))}
           </View>
         </View>
-        <View style={styles.save}>
+        <Pressable style={styles.save} onPress={() => setCreateModalVisible(!createModalVisible)}>
           <Text style={styles.saveText}>제작하기</Text>
-        </View>
+        </Pressable>
       </ScrollView>
+
+      <CommonModal
+        title="필터 제작을 임시저장하시겠습니까?"
+        subTitle={`임시저장된 필터는 마이갤러리에서 확인 가능합니다.
+        나중에 다시 수정해주세요!`}
+        button={['확인', '닫기']}
+        visible={tempModalVisible}
+        onConfirm={() => {
+          setTempModalVisible(!tempModalVisible);
+          navigation.navigate('CameraPage');
+        }}
+        onClose={() => setTempModalVisible(!tempModalVisible)}
+      />
+      <CommonModal
+        title="필터 제작을 완료하시겠습니까?"
+        subTitle={`필터 제작을 완료하면 필터 대표사진과 필터명은
+        더 이상 변경이 불가능합니다.
+
+        제작 완료는 신중하게 해주세요!`}
+        button={['확인', '닫기']}
+        visible={createModalVisible}
+        onConfirm={() => {
+          setCreateModalVisible(!createModalVisible);
+          navigation.navigate('Main');
+        }}
+        onClose={() => setCreateModalVisible(!createModalVisible)}
+      />
     </SafeAreaView>
   );
 }
@@ -147,16 +170,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#030303',
   },
   image: {
-    // maxHeight: Dimensions.get('window').width,
+    maxHeight: Dimensions.get('window').height * 0.7,
   },
   textInput: {
-    paddingVertical: 22,
+    paddingVertical: 17,
     paddingHorizontal: 20,
     backgroundColor: '#292929',
     borderRadius: 10,
   },
   text: {
     fontSize: 16,
+    color: '#FFF',
   },
   keyword: {
     height: 42,

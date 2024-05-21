@@ -19,6 +19,7 @@ const config = {
       '@navigations': path.resolve(__dirname, 'src/navigations/'),
       '@types': path.resolve(__dirname, 'src/types/'),
       '@apis': path.resolve(__dirname, 'src/apis/'),
+      '@store': path.resolve(__dirname, 'src/store/'),
     },
   },
 };

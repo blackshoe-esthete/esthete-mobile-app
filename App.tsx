@@ -7,13 +7,17 @@ import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import BottomTab from './src/navigations/BottomTab';
 import HomeSearchScreen from './src/screens/Home/HomeSearchScreen';
 import MapScreen from './src/screens/Home/MapScreen';
-import ExhibitionScreen from '@screens/Exhibition/ExhibitionScreen';
-import ExhibitionEnteredScreen from '@screens/Exhibition/ExhibitionEnteredScreen';
-import ExhibitionReportScreen from '@screens/Exhibition/ExhibitionReportScreen';
+import ExhibitionScreen from './src/screens/Exhibition/ExhibitionScreen';
+import ExhibitionEnteredScreen from './src/screens/Exhibition/ExhibitionEnteredScreen';
+import ExhibitionReportScreen from './src/screens/Exhibition/ExhibitionReportScreen';
+import ExhibitionCreationScreen from './src/screens/ExhibitionCreation/ExhibitionCreationScreen';
 import FilterCreationScreen from './src/screens/FilterCreation/FilterCreationScreen';
 import FilterCreationDescScreen from './src/screens/FilterCreation/FilterCreationDescScreen';
+import GalleryScreen from './src/screens/FilterCreation/GalleryScreen';
+import {type RootStackParamList} from './src/types/navigations';
+import ExhibitionFilterApplyScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyScreen';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const MyTheme = {
   ...DefaultTheme,
@@ -30,49 +34,36 @@ function App(): React.JSX.Element {
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator>
           <Stack.Group>
-            <Stack.Screen
-              name="Main"
-              component={BottomTab}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="Map"
-              component={MapScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="HomeSearch"
-              component={HomeSearchScreen}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="Main" component={BottomTab} options={{headerShown: false}} />
+            <Stack.Screen name="Map" component={MapScreen} options={{headerShown: false}} />
+            <Stack.Screen name="HomeSearch" component={HomeSearchScreen} options={{headerShown: false}} />
           </Stack.Group>
-          <Stack.Group> 
+          <Stack.Group>
+            <Stack.Screen name="Exhibition" component={ExhibitionScreen} options={{headerShown: false}} />
+            <Stack.Screen name="ExhibitionEntered" component={ExhibitionEnteredScreen} options={{headerShown: false}} />
+            <Stack.Screen name="ExhibitionReport" component={ExhibitionReportScreen} options={{headerShown: false}} />
             <Stack.Screen
-              name="Exhibition"
-              component={ExhibitionScreen}
+              name="ExhibitionCreation"
+              component={ExhibitionCreationScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="ExhibitionEntered"
-              component={ExhibitionEnteredScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="ExhibitionReport"
-              component={ExhibitionReportScreen}
+              name="ExhibitionFilterApply"
+              component={ExhibitionFilterApplyScreen}
               options={{headerShown: false}}
             />
           </Stack.Group>
           <Stack.Group>
-            <Stack.Screen
-              name="FilterCreation"
-              component={FilterCreationScreen}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="FilterCreation" component={FilterCreationScreen} options={{headerShown: false}} />
             <Stack.Screen
               name="FilterCreationDesc"
               component={FilterCreationDescScreen}
               options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="FilterCreationGallery"
+              component={GalleryScreen}
+              options={{headerShown: false, presentation: 'modal'}}
             />
           </Stack.Group>
         </Stack.Navigator>
