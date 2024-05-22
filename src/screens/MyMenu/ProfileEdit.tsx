@@ -1,0 +1,45 @@
+import MenuHeader from '@components/MyMenuScreen/MenuHeader';
+import Profile from '@components/SettingScreen/Profile';
+import React, {useRef, useState} from 'react';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import CommonButton from '@components/SettingScreen/CommonButton';
+
+const windowHeight = Dimensions.get('window').height;
+function ProfileEdit() {
+  const scrollViewRef = useRef<any>(null);
+  const [contentLoaded, setContentLoaded] = useState(false);
+  return (
+    <SafeAreaView edges={['top']} style={{flex: 1}}>
+      <View style={{position: 'relative', flex: 1}}>
+        <MenuHeader title="프로필 편집" />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollContainer}
+          onContentSizeChange={()=>{
+            if(contentLoaded){
+              scrollViewRef.current?.scrollToEnd()
+            }else{
+              setContentLoaded(true);
+            }
+          }}
+          ref={scrollViewRef}>
+          <Profile />
+        </ScrollView>
+        <CommonButton title="저장하기" />
+      </View>
+    </SafeAreaView>
+  );
+}
+
+export default ProfileEdit;
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    width: '100%',
+    backgroundColor: '#030303',
+    marginBottom: 100,
+    height: windowHeight,
+    paddingBottom: 60
+  },
+});

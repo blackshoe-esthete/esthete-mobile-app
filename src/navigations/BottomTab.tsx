@@ -13,7 +13,8 @@ import updatingActiveIcon from '@assets/icons/updating_active.png';
 import galleryIcon from '@assets/icons/gallery.png';
 import galleryActiveIcon from '@assets/icons/gallery_active.png';
 import FilterNav from './FilterNav';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import GalleryStack from './GalleryStack';
 import ExhibitionNav from './ExhibitionNav';
 const Tab = createBottomTabNavigator();
 
@@ -88,17 +89,33 @@ function BottomTab(): React.JSX.Element {
         }}
       />
       <Tab.Screen
-        name="My Gallery"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({focused}) =>
-            focused ? (
-              <Image source={galleryActiveIcon} style={styles.exhibitionActiveIcon} resizeMode="contain" />
-            ) : (
-              <Image source={galleryIcon} style={styles.exhibitionIcon} resizeMode="contain" />
+        name="MyGallery"        
+        options={({ route }: any) => {
+          const focusedRouteName = getFocusedRouteNameFromRoute(route) || 'MyTab';
+        
+          return {
+            tabBarIcon: ({ focused }) => (
+              focused ? (
+                <Image
+                  source={galleryActiveIcon}
+                  style={styles.exhibitionActiveIcon}
+                  resizeMode="contain"
+                />
+              ) : (
+                <Image
+                  source={galleryIcon}
+                  style={styles.exhibitionIcon}
+                  resizeMode="contain"
+                />
+              )
             ),
+            tabBarStyle: focusedRouteName === 'MyTab' ? styles.tabBar : { display: 'none' },
+          };
         }}
-      />
+        
+      >
+        {(props: any) => <GalleryStack {...props} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

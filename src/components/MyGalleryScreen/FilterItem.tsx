@@ -1,0 +1,61 @@
+import React from 'react';
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  Dimensions,
+  ImageProps,
+  ImageBackground,
+} from 'react-native';
+
+type galleryProp = {
+  id: string;
+  title: string;
+  src: ImageProps;
+};
+const {width} = Dimensions.get('window');
+function FilterItem(props: galleryProp): React.JSX.Element {
+  return (
+    <View style={styles.photoBox}>
+      <Image source={props.src} style={styles.photoIcon} />
+      {/* <View style={styles.titleBox}>
+        <Text style={styles.textStyle}>{props.title}</Text>
+      </View> */}
+      <ImageBackground style={styles.titleBox} borderRadius={4}>
+        <Text style={styles.textStyle}>{props.title}</Text>
+      </ImageBackground>
+    </View>
+  );
+}
+
+export default FilterItem;
+
+const styles = StyleSheet.create({
+  photoBox: {
+    width: width,
+    height: 180,
+    marginBottom: 20,
+  },
+  photoIcon: {
+    width: '100%',
+    resizeMode: 'stretch',
+    height: '100%',
+  },
+  titleBox: {
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: '#0000004D',
+    zIndex: 1,
+    width: '100%',
+    height: 50,
+    // blurRadius: 4,
+  },
+  textStyle: {
+    marginTop: 21,
+    marginLeft: 10,
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
