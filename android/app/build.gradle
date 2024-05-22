@@ -2,6 +2,16 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+project.ext.envConfigFiles = [
+    developdebug: "env/.env.development",
+    developrelease: "env/.env.development", 
+    //productdebug: "env/.env.production",    
+    //productrelease: "env/.env.production",
+    //anothercustombuild: ".env",
+]
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -90,6 +100,15 @@ android {
             keyPassword 'android'
         }
     }
+    flavorDimensions "version"
+    productFlavors {
+        develop {
+        }
+        stage {
+        }
+        product {
+        }
+    }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -102,6 +121,7 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    buildFeatures { renderScript true }
 }
 
 dependencies {
