@@ -3,12 +3,12 @@ import {filterInstance} from './instance';
 import {CreateFilterParams} from '@types/filterService.type';
 
 // 썸네일 불러오기 (GET 테스트 해보려고)
-export const getThumbnail = async (filterId: string) => {
+export const getThumbnail = async (filterId: string, token: string) => {
   try {
     const response = await filterInstance.get(`/${filterId}/thumbnail`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1YTBkYjJlYi1mNGJjLTRmYTMtYWU0Ny04MzgxZWQwZGExYWIiLCJleHAiOjE3NDQ3OTAzMjR9.BE1cdu0zQxZi8hYuAsMACzJ9ZSXXgaC9789v4mqqHQU`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response;
