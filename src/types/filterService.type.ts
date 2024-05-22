@@ -12,6 +12,7 @@ export type FilterValue = Partial<Record<FilterType, number>> & {
   grayscale?: number;
 };
 
+// 필터 생성 시 필요한 데이터
 export interface FileData {
   uri: string;
   name: string;
@@ -43,6 +44,7 @@ export interface CreateFilterParams {
   requestDto: RequestDto;
 }
 
+// 필터 기본 정보
 export type Filter = {
   type: FilterType;
   label: string;
@@ -76,3 +78,6 @@ export type Matrix = [
   number,
   number,
 ];
+
+// 필터 태그
+export type FilterTagType = '따뜻한' | '부드러운' | '평화로운' | '차가운' | '빈티지한' | '몽환적인' | '싱그러운';

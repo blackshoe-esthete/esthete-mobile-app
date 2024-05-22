@@ -93,6 +93,8 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
           const thumbnailUri = await phPathToFilePath(item.node.image.uri, 300, 300);
           newGalleryList.push({...item, thumbnailUri});
         }
+      } else {
+        newGalleryList.push(...edges);
       }
 
       setGalleryList(newGalleryList);

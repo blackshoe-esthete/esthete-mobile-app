@@ -36,10 +36,9 @@ import {FilterType, FilterValue} from '@types/filterService.type';
 function FilterCreationScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [filterType, setFilterType] = useState<FilterType>('sharpeness');
-  const {selectedImageUri, setFilteredImageUri, setSelectedImageUri} = useFilterCreationStore();
-  const [sliderValue, setSliderValue] = useState<FilterValue>(
-    filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}),
-  );
+  const {selectedImageUri, setFilteredImageUri, setSelectedImageUri, filterValue, setFilterValue} =
+    useFilterCreationStore();
+  const [sliderValue, setSliderValue] = useState<FilterValue>(filterValue);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {top} = useSafeAreaInsets();
@@ -56,6 +55,7 @@ function FilterCreationScreen(): React.JSX.Element {
 
   const onPressNext = () => {
     if (selectedImageUri) {
+      setFilterValue(sliderValue);
       navigation.navigate('FilterCreationDesc');
     } else {
       // 선택된 이미지가 없는 경우 처리할 로직 추가
@@ -69,13 +69,13 @@ function FilterCreationScreen(): React.JSX.Element {
       const gap = 0.01;
       // 슬라이더 값을 임시로 변경
       const tempValue = (sliderValue.sharpeness as number) + gap;
-      setSliderValue(prevState => ({...prevState, sharpen: tempValue}));
+      setSliderValue(prevState => ({...prevState, sharpeness: tempValue}));
       // console.log('임시로 변경');
       setIsLoading(true);
 
       // 원래 값으로 복구
       setTimeout(() => {
-        setSliderValue(prevState => ({...prevState, sharpen: tempValue - gap}));
+        setSliderValue(prevState => ({...prevState, sharpeness: tempValue - gap}));
         // console.log('원래대로 돌려놓음');
         setIsLoading(false);
       }, 500);

@@ -1,6 +1,8 @@
-import {Filter, Matrix} from '@types/filterService.type';
+import {Filter, FilterTagType, Matrix} from '@types/filterService.type';
 import {Platform} from 'react-native';
 
+// =============================================================================
+// 필터 리스트
 export const filters: Filter[] = [
   {
     type: 'sharpeness',
@@ -81,4 +83,22 @@ export const brightness = (v = 1): Matrix => {
   const n = v;
 
   return [1, 0, 0, 0, bias * n, 0, 1, 0, 0, bias * n, 0, 0, 1, 0, bias * n, 0, 0, 0, 1, 0];
+};
+
+// =============================================================================
+// 필터 태그 리스트
+export const filterTagsData: {name: FilterTagType; id: string}[] = [
+  {name: '따뜻한', id: 'd20e2654-3c4a-4ebe-b1c9-5695ac2a6207'},
+  {name: '부드러운', id: 'fe96c294-b5f3-425e-a6de-8cc1b13beb5a'},
+  {name: '평화로운', id: '118ccbfb-8caf-498b-913a-16a315b3a859'},
+  {name: '차가운', id: '4a0db2eb-f4bc-4fa3-ae47-8381ed0da1ab'},
+  {name: '빈티지한', id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267'},
+  {name: '몽환적인', id: '3e3f2d48-7e19-4d53-bf91-776d5b0915e3'},
+  {name: '싱그러운', id: '7d2b1c46-3f2d-45c1-a6a8-392d2b9b48b6'},
+];
+
+// filter name을 id로 변환하는 함수
+export const filterNameToId = (name: FilterTagType): string => {
+  const filter = filterTagsData.find(tag => tag.name === name);
+  return filter ? filter.id : '';
 };

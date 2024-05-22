@@ -43,7 +43,7 @@ export const createFilter = async ({url, token, thumbnail, representationImg, re
   // console.log('formData', formData);
 
   try {
-    console.log('진입');
+    // console.log('진입');
     const response = await filterInstance.post(url, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -53,11 +53,12 @@ export const createFilter = async ({url, token, thumbnail, representationImg, re
     });
 
     console.log('성공', response.data);
+    console.log('성공 데이터', response.config.data._parts);
     // console.log('formData', formData);
     return response;
   } catch (error) {
-    console.log('실패입니다');
-    console.log('실패', (error as AxiosError)?.config?.data._parts);
+    console.log('실패', (error as AxiosError)?.response?.data);
+    console.log('실패 데이터', (error as AxiosError)?.config?.data._parts);
     throw error;
   }
 };
