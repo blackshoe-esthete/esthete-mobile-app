@@ -1,29 +1,9 @@
+import {Filter, Matrix} from '@types/filterService.type';
 import {Platform} from 'react-native';
-
-// 필터 정보
-type FilterType =
-  | 'sharpen'
-  | 'exposure'
-  | 'brightness'
-  | 'contrast'
-  | 'saturate'
-  | 'hueRotate'
-  | 'temperature'
-  | 'grayscale';
-
-type Filter = {
-  type: FilterType;
-  label: string;
-  min: number;
-  max: number;
-  default: number;
-  step: number;
-  marginHorizontal?: {marginLeft?: number; marginRight?: number};
-};
 
 export const filters: Filter[] = [
   {
-    type: 'sharpen',
+    type: 'sharpeness',
     label: '선명도',
     min: -1,
     max: 1,
@@ -56,7 +36,7 @@ export const filters: Filter[] = [
     step: 0.1,
   },
   {
-    type: 'saturate',
+    type: 'saturation',
     label: '채도',
     min: 0,
     max: 3,
@@ -64,7 +44,7 @@ export const filters: Filter[] = [
     step: 0.05,
   },
   {
-    type: 'hueRotate',
+    type: 'hue',
     label: '색조',
     min: 0,
     max: 6,
@@ -93,29 +73,6 @@ export const filters: Filter[] = [
 // =============================================================================
 // brightness 효과를 적용하는 함수
 const bias = Platform.OS === 'ios' ? 1 : 255;
-
-type Matrix = [
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-];
 
 export const brightness = (v = 1): Matrix => {
   // v 값의 범위를 0에서 2 사이로 제한

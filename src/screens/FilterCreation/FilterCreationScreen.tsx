@@ -31,12 +31,13 @@ import {useNavigation} from '@react-navigation/native';
 import {useFilterCreationStore} from '@store/filterCreationStore';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {type RootStackParamList} from '../../types/navigations';
+import {FilterType, FilterValue} from '@types/filterService.type';
 
 function FilterCreationScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [filterType, setFilterType] = useState<string>('sharpen');
+  const [filterType, setFilterType] = useState<FilterType>('sharpeness');
   const {selectedImageUri, setFilteredImageUri, setSelectedImageUri} = useFilterCreationStore();
-  const [sliderValue, setSliderValue] = useState<{[key: string]: number}>(
+  const [sliderValue, setSliderValue] = useState<FilterValue>(
     filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}),
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -67,7 +68,7 @@ function FilterCreationScreen(): React.JSX.Element {
     const handleImageChange = () => {
       const gap = 0.01;
       // 슬라이더 값을 임시로 변경
-      const tempValue = sliderValue.sharpen + gap;
+      const tempValue = (sliderValue.sharpeness as number) + gap;
       setSliderValue(prevState => ({...prevState, sharpen: tempValue}));
       // console.log('임시로 변경');
       setIsLoading(true);
@@ -124,8 +125,8 @@ function FilterCreationScreen(): React.JSX.Element {
                     exposure(sliderValue.exposure),
                     brightness(sliderValue.brightness),
                     contrast(sliderValue.contrast),
-                    saturate(sliderValue.saturate),
-                    hueRotate(sliderValue.hueRotate),
+                    saturate(sliderValue.saturation),
+                    hueRotate(sliderValue.hue),
                     temperature(sliderValue.temperature),
                     grayscale(sliderValue.grayscale),
                   ])}
@@ -134,7 +135,7 @@ function FilterCreationScreen(): React.JSX.Element {
                 />
               }
               style={styles.image}
-              amount={sliderValue.sharpen}
+              amount={sliderValue.sharpeness}
               onExtractImage={({nativeEvent}) => setFilteredImageUri(nativeEvent.uri)}
               extractImageEnabled={true}
             />
@@ -147,7 +148,7 @@ function FilterCreationScreen(): React.JSX.Element {
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
-              <Text style={styles.sliderValueText}>{Math.round(sliderValue[filterType] * 100)}</Text>
+              <Text style={styles.sliderValueText}>{Math.round((sliderValue[filterType] as number) * 100)}</Text>
             </View>
             <Slider
               step={filters.find(f => f.type === filterType)?.step}
