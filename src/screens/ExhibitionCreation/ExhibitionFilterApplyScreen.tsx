@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
 import {Slider} from '@miblanchard/react-native-slider';
-import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
+import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 17,
-    paddingTop: 125,
+    paddingTop: (SCREEN_WIDTH - 40) * 0.2,
     paddingHorizontal: 20,
   },
   sliderValueWrapper: {

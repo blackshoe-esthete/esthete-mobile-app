@@ -12,7 +12,7 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
+import {useExhibitionCreationStore, useExhibitionDetailsStore} from '../../store/exhibitionCreationStore';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import CommonModal from '@components/common/CommonModal';
@@ -21,26 +21,30 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyCompleteScreen = () => {
   const navigation = useNavigation();
+  const {details, setDetails} = useExhibitionDetailsStore(); // 스토어 사용
+  //선택한 이미지
   const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  //모달
   const [tempModalVisible, setTempModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [mood, setMood] = useState([]);
-  const [location, setLocation] = useState('');
+  //전시 설명
+
   const allFieldsFilled =
-    selectedImageUri && additionalImageUri.length > 0 && title && description && mood.length > 0 && location;
+    selectedImageUri &&
+    additionalImageUri.length > 0 &&
+    details.title &&
+    details.description &&
+    details.mood.length > 0 &&
+    details.location;
 
   const moodOptions = ['초상화', '풍경', '거리', '음식', '여행', '패션'];
 
   const toggleMood = (selectedMood: string) => {
-    if (mood.includes(selectedMood)) {
-      setMood(mood.filter(m => m !== selectedMood)); // 이미 포함된 무드 제거
-    } else {
-      setMood([...mood, selectedMood]); // 포함되지 않은 무드 추가
-    }
+    let newMood = details.mood.includes(selectedMood)
+      ? details.mood.filter(m => m !== selectedMood)
+      : [...details.mood, selectedMood];
+    setDetails({mood: newMood});
   };
 
   return (
@@ -87,8 +91,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               style={styles.text}
               placeholder="전시 제목을 작성해주세요"
               placeholderTextColor="#D6D6D6"
-              onChangeText={setTitle}
-              value={title}
+              onChangeText={text => setDetails({title: text})}
+              value={details.title}
             />
           </View>
           <View style={styles.textInput}>
@@ -96,8 +100,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               style={styles.text}
               placeholder="필터 설명을 작성해주세요"
               placeholderTextColor="#D6D6D6"
-              onChangeText={setDescription}
-              value={description}
+              onChangeText={text => setDetails({description: text})}
+              value={details.description}
             />
           </View>
         </View>
@@ -118,7 +122,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
                   style={[
                     styles.keyword,
                     {
-                      borderColor: mood.includes(item) ? '#FFD600' : '#414141', // 조건에 따라 보더 컬러 설정
+                      borderColor: details.mood.includes(item) ? '#FFD600' : '#414141', // 조건에 따라 보더 컬러 설정
                       borderWidth: 1, // 보더가 보이도록 폭 설정
                     },
                   ]}>
@@ -134,9 +138,9 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           <TouchableOpacity
             style={styles.textInput}
             onPress={() => {
-              // getLocation();
+              navigation.navigate('PlacesSearch');
             }}>
-            <Text style={styles.text}>{location ? location : '위치 추가하기'}</Text>
+            <Text style={styles.text}>{details.location ? details.location : '위치 추가하기'}</Text>
           </TouchableOpacity>
         </View>
 
