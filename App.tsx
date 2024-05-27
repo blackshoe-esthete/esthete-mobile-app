@@ -18,6 +18,7 @@ import {type RootStackParamList} from './src/types/navigations';
 import ExhibitionFilterApplyAllScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyAllScreen';
 import ExhibitionFilterApplyScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyScreen';
 import ExhibitionFilterApplyCompleteScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyCompleteScreen';
+import PlacesSearchScreen from './src/screens/ExhibitionCreation/PlacesSearchScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -64,6 +65,7 @@ function App(): React.JSX.Element {
               component={ExhibitionFilterApplyCompleteScreen}
               options={{headerShown: false}}
             />
+            <Stack.Screen name="PlacesSearch" component={PlacesSearchScreen} options={{headerShown: false}} />
           </Stack.Group>
           <Stack.Group>
             <Stack.Screen name="FilterCreation" component={FilterCreationScreen} options={{headerShown: false}} />

@@ -12,11 +12,34 @@ interface ExhibitionCreationStore {
   setAdditionalImageUri: (images: ImageItem[]) => void;
 }
 
-const useExhibitionCreationStore = create<ExhibitionCreationStore>(set => ({
+export const useExhibitionCreationStore = create<ExhibitionCreationStore>(set => ({
   selectedImageUri: undefined,
   setSelectedImageUri: (uri: string) => set({selectedImageUri: uri}),
   additionalImageUri: [],
   setAdditionalImageUri: (images: ImageItem[]) => set({additionalImageUri: images}),
 }));
 
-export default useExhibitionCreationStore;
+interface ExhibitionDetails {
+  title: string;
+  description: string;
+  mood: string[];
+  location: string;
+}
+
+interface ExhibitionDetailsStore {
+  details: ExhibitionDetails;
+  setDetails: (details: Partial<ExhibitionDetails>) => void;
+}
+
+export const useExhibitionDetailsStore = create<ExhibitionDetailsStore>(set => ({
+  details: {
+    title: '',
+    description: '',
+    mood: [],
+    location: '',
+  },
+  setDetails: newDetails =>
+    set(state => ({
+      details: {...state.details, ...newDetails},
+    })),
+}));
