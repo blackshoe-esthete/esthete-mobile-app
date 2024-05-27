@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert} from 'react-native';
+import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
 import {Slider} from '@miblanchard/react-native-slider';
 import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
 import cancelIcon from '@assets/icons/cancel_black.png';
@@ -39,55 +39,62 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
 
   return (
     <View style={{flex: 1}}>
-      {/* 상단 탭 */}
-      <View style={styles.topTab}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={cancelIcon} style={styles.cancelIcon} resizeMode="contain" />
-        </TouchableOpacity>
-      </View>
+      <ScrollView>
+        {/* 상단 탭 */}
+        <View style={styles.topTab}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={cancelIcon} style={styles.cancelIcon} resizeMode="contain" />
+          </TouchableOpacity>
+        </View>
 
-      {/* 이미지 Carousel */}
-      <View style={styles.carouselContainer}>
-        <Carousel
-          loop={false}
-          width={SCREEN_WIDTH - 40}
-          height={(SCREEN_WIDTH - 40) * 0.9}
-          data={additionalImageUri.length > 0 ? [additionalImageUri[index].uri] : [selectedImageUri].filter(Boolean)}
-          scrollAnimationDuration={1000}
-          renderItem={({item}: {item: string}) => (
-            <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
-          )}
-        />
-      </View>
-
-      {/* 슬라이더 */}
-      <View style={styles.sliderContainer}>
-        <View>
-          <View style={styles.sliderValueWrapper}>
-            <Text style={styles.sliderValueText}>{Math.round(sliderValue * 100)}</Text>
-          </View>
-          <Slider
-            value={sliderValue}
-            onValueChange={value => handleSliderChange(value[0])}
-            thumbTintColor="#FFFFFF"
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#FFFFFF"
-            containerStyle={styles.slider}
+        {/* 이미지 Carousel */}
+        <View style={styles.carouselContainer}>
+          <Carousel
+            loop={false}
+            width={SCREEN_WIDTH - 40}
+            height={(SCREEN_WIDTH - 40) * 0.9}
+            data={additionalImageUri.length > 0 ? [additionalImageUri[index].uri] : [selectedImageUri].filter(Boolean)}
+            scrollAnimationDuration={1000}
+            renderItem={({item}: {item: string}) => (
+              <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+            )}
           />
         </View>
-      </View>
 
-      {/* 필터 선택 */}
-      <FilterTab />
+        {/* 슬라이더 */}
+        <View style={styles.sliderContainer}>
+          <View>
+            <View style={styles.sliderValueWrapper}>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValue * 100)}</Text>
+            </View>
+            <Slider
+              value={sliderValue}
+              onValueChange={value => handleSliderChange(value[0])}
+              thumbTintColor="#FFFFFF"
+              minimumTrackTintColor="#FFFFFF"
+              maximumTrackTintColor="#FFFFFF"
+              containerStyle={styles.slider}
+            />
+          </View>
+        </View>
 
-      {/* 완료 */}
+        {/* 필터 선택 */}
+        <FilterTab />
 
-      <View
-        style={{flex: 1, position: 'absolute', bottom: '5%', right: '5%', width: SCREEN_WIDTH, alignItems: 'flex-end'}}>
-        <TouchableOpacity onPress={onPressNext} style={styles.completeButton}>
-          <Text style={{textAlign: 'center'}}>완료</Text>
-        </TouchableOpacity>
-      </View>
+        {/* 완료 */}
+
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            marginTop: 30,
+          }}>
+          <TouchableOpacity onPress={onPressNext} style={styles.completeButton}>
+            <Text style={{textAlign: 'center'}}>완료</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };

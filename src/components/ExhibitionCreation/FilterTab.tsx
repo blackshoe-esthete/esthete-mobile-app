@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, FlatList} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions} from 'react-native';
 import FilterItem from './FilterItem';
 import filterImg1 from '@assets/imgs/filter-cover1.png';
 import filterImg2 from '@assets/imgs/filter-cover2.png';
 import filterImg3 from '@assets/imgs/filter-cover3.png';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const FilterTab = () => {
   const [activeTab, setActiveTab] = useState('내 필터');
@@ -61,7 +63,7 @@ const FilterTab = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: (SCREEN_WIDTH - 40) * 0.1,
   },
   tabBar: {
     flexDirection: 'row',
