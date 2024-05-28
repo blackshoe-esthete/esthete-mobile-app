@@ -34,7 +34,8 @@ const createAxiosInstance = (baseURL: string) => {
 const apiInstances = {
   default: createAxiosInstance(BASE_URL),
   filterInstance: createAxiosInstance(`${BASE_URL}/filters`),
+  exhibitionInstance: createAxiosInstance(`${BASE_URL}/exhibition`),
 };
 
 /** 인스턴스를 내보냅니다. */
-export const {default: instance, filterInstance} = apiInstances;
+export const {default: instance, filterInstance, exhibitionInstance} = apiInstances;
