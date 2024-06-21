@@ -11,14 +11,21 @@ import {
   PanResponder,
   Dimensions,
 } from 'react-native';
+import {RootStackParamList} from '../../types/navigations';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import {useNavigation} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
+import {is} from '../../../node_modules/@types/node/crypto.d';
+
+type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
 
 const ExhibitionEnteredScreen = () => {
+  const route = useRoute<ExhibitionScreenRouteProp>();
+  const {id} = route.params;
+
   const comments = [
     {
       userId: '1',
@@ -44,7 +51,7 @@ const ExhibitionEnteredScreen = () => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
   const likesIcon = require('../../assets/icons/likes.png');
-  const fillLikesIcon = require('../../assets/icons/push-likes.png');
+  const fillLikesIcon = require('../../assets/icons/push-likes-big.png');
   const commentsIcon = require('../../assets/icons/comments.png');
   const navigation = useNavigation();
 
@@ -94,11 +101,11 @@ const ExhibitionEnteredScreen = () => {
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
           <View style={styles.mainPicture}>
-            <ExhibitionMainPicture entered={true} />
+            <ExhibitionMainPicture entered={true} isPlaying={false} currentExhibitionIndex={id} />
           </View>
           <View style={styles.flexContainer}>
             <TouchableOpacity onPress={() => setOnLike(!onLike)}>
-              <Image source={onLike ? fillLikesIcon : likesIcon} />
+              <Image style={{width: 30, height: 25.6}} source={onLike ? fillLikesIcon : likesIcon} />
             </TouchableOpacity>
             <TouchableOpacity onPress={openModal}>
               <Image source={commentsIcon} />
@@ -108,9 +115,7 @@ const ExhibitionEnteredScreen = () => {
             <ExhibitionPictureList isVisited={true} />
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>
-              전시회 설명이 노출되는 곳입니다.
-            </Text>
+            <Text style={styles.infoText}>전시회 설명이 노출되는 곳입니다.</Text>
           </View>
           <Text style={styles.title}>위치 정보</Text>
           <TouchableOpacity
@@ -133,17 +138,10 @@ const ExhibitionEnteredScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={closeModal}>
+      <Modal animationType="none" transparent={true} visible={isModalVisible} onRequestClose={closeModal}>
         <View style={styles.modalOverlay} />
         <Animated.View
-          style={[
-            styles.modalContainer,
-            {height: modalHeight, transform: [{translateY: animatedHeight}]},
-          ]}
+          style={[styles.modalContainer, {height: modalHeight, transform: [{translateY: animatedHeight}]}]}
           {...panResponder.panHandlers}>
           <View style={styles.commentModalHeader}></View>
           <Text style={styles.commentTitle}>전시회 방명록</Text>

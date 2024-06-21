@@ -1,22 +1,22 @@
 import React, {useState} from 'react';
-import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert} from 'react-native';
-import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
+import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
+import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
 import {Slider} from '@miblanchard/react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import FilterTab from '@components/ExhibitionCreation/FilterTab';
-
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
-  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
+  const {selectedImageUri, additionalImageUri, setCurrentGrayScaleForAll} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [sliderValue, setSliderValue] = useState<number>(0);
 
   // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
     setSliderValue(prevState => value);
+    setCurrentGrayScaleForAll(value);
   };
 
   // 다음 버튼 클릭
@@ -30,68 +30,70 @@ const ExhibitionFilterApplyAllScreen = () => {
 
   return (
     <View style={{flex: 1}}>
-      {/* 상단 탭 */}
-      <View style={styles.topTab}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{color: '#FFF'}}>이전</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPressNext}>
-          <Text style={{color: '#FFD600'}}>다음</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView>
+        {/* 상단 탭 */}
+        <View style={styles.topTab}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={{color: '#FFF'}}>이전</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onPressNext}>
+            <Text style={{color: '#FFD600'}}>다음</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* 이미지 Carousel */}
-      <View style={styles.carouselContainer}>
-        <Carousel
-          loop={false}
-          width={SCREEN_WIDTH - 40}
-          height={(SCREEN_WIDTH - 40) * 0.9}
-          data={
-            additionalImageUri.length > 0
-              ? additionalImageUri.map(image => image.uri)
-              : [selectedImageUri].filter(Boolean)
-          }
-          scrollAnimationDuration={1000}
-          onSnapToItem={index => setCurrentImageIndex(index)}
-          renderItem={({item, index}) => (
-            <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index: index})}>
-              <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-
-      {/* 슬라이더 */}
-      <View style={styles.sliderContainer}>
-        <View>
-          <View style={styles.sliderValueWrapper}>
-            <Text style={styles.sliderValueText}>{Math.round(sliderValue * 100)}</Text>
-          </View>
-          <Slider
-            value={sliderValue}
-            onValueChange={value => handleSliderChange(value[0])}
-            thumbTintColor="#FFFFFF"
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#FFFFFF"
-            containerStyle={styles.slider}
+        {/* 이미지 Carousel */}
+        <View style={styles.carouselContainer}>
+          <Carousel
+            loop={false}
+            width={SCREEN_WIDTH - 40}
+            height={(SCREEN_WIDTH - 40) * 0.9}
+            data={
+              additionalImageUri.length > 0
+                ? additionalImageUri.map(image => image.uri)
+                : [selectedImageUri].filter(Boolean)
+            }
+            scrollAnimationDuration={1000}
+            onSnapToItem={index => setCurrentImageIndex(index)}
+            renderItem={({item, index}) => (
+              <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index: index})}>
+                <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+              </TouchableOpacity>
+            )}
           />
         </View>
-      </View>
 
-      {/* 필터 선택 */}
-      <FilterTab />
+        {/* 슬라이더 */}
+        <View style={styles.sliderContainer}>
+          <View>
+            <View style={styles.sliderValueWrapper}>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValue * 100)}</Text>
+            </View>
+            <Slider
+              value={sliderValue}
+              onValueChange={value => handleSliderChange(value[0])}
+              thumbTintColor="#FFFFFF"
+              minimumTrackTintColor="#FFFFFF"
+              maximumTrackTintColor="#FFFFFF"
+              containerStyle={styles.slider}
+            />
+          </View>
+        </View>
 
-      <View>
-        <Text
-          style={{
-            color: '#D6D6D6',
-            textAlign: 'center',
-            fontSize: 12,
-            marginTop: -100,
-          }}>
-          이곳에서 선택한 필터는 모든 사진에 적용됩니다
-        </Text>
-      </View>
+        {/* 필터 선택 */}
+        <FilterTab />
+
+        <View>
+          <Text
+            style={{
+              color: '#D6D6D6',
+              textAlign: 'center',
+              fontSize: 12,
+              marginTop: 10,
+            }}>
+            이곳에서 선택한 필터는 모든 사진에 적용됩니다
+          </Text>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -113,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 17,
-    paddingTop: 125,
+    paddingTop: (SCREEN_WIDTH - 40) * 0.2,
     paddingHorizontal: 20,
   },
   sliderValueWrapper: {

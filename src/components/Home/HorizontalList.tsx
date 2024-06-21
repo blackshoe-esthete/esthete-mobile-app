@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  FlatList,
-  Image,
-  ImageStyle,
-  StyleProp,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {FlatList, Image, ImageStyle, StyleProp, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 type HorizontalListProps = {
@@ -19,14 +10,12 @@ type HorizontalListProps = {
   children?: React.ReactNode;
 };
 
-function HorizontalList({
-  imgStyles,
-  title,
-  data,
-  imgSource,
-  children,
-}: HorizontalListProps): React.JSX.Element {
+function HorizontalList({imgStyles, title, data, imgSource, children}: HorizontalListProps): React.JSX.Element {
   const navigation = useNavigation();
+
+  const goToExhibition = (id: string) => {
+    navigation.navigate('Exhibition', {id});
+  };
 
   return (
     <>
@@ -39,18 +28,14 @@ function HorizontalList({
           data={data}
           renderItem={({index}) => (
             <TouchableOpacity
-              onPress={() => navigation.navigate('Exhibition')}
+              onPress={() => goToExhibition('123')}
               style={{
                 flexDirection: 'row',
                 gap: 10,
                 alignItems: 'center',
               }}>
               <Image
-                style={[
-                  imgStyles,
-                  index === 0 && {marginLeft: 20},
-                  index === data.length - 1 && {marginRight: 20},
-                ]}
+                style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
                 source={imgSource}
               />
             </TouchableOpacity>

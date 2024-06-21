@@ -16,5 +16,6 @@
       "@store/*": ["src/store/*"]
     }
   },
-  "include": ["src", "src/types/*"]
+  "typeRoots": ["./node_modules/@types", "./declarations.d.ts"],
+  "include": ["src", "src/types/*", "declarations.d.ts"]
 }
