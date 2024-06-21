@@ -4,7 +4,7 @@ import {Image, Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react
 
 interface ExhibitionMainPictureProps {
   entered: boolean;
-  handlePlayPause: () => void;
+  handlePlayPause?: () => void;
   isPlaying: boolean;
   currentExhibitionIndex: string;
 }
