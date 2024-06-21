@@ -11,7 +11,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const FilterTab = () => {
   const [activeTab, setActiveTab] = useState('내 필터');
   const [selectedFilter, setSelectedFilter] = useState<string>('');
-  const {setCurrentFilterId} = useExhibitionCreationStore();
+  const {setCurrentFilterId, setCurrentFilterIdForAll} = useExhibitionCreationStore();
 
   const myFilters = [
     {id: '0', name: 'Original', imageUri: filterImg1},
@@ -30,6 +30,7 @@ const FilterTab = () => {
   const onPressFilter = (id: string) => {
     setSelectedFilter(id);
     setCurrentFilterId(id);
+    setCurrentFilterIdForAll(id);
   };
 
   return (

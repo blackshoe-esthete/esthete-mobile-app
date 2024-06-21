@@ -9,13 +9,14 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
-  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
+  const {selectedImageUri, additionalImageUri, setCurrentGrayScaleForAll} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [sliderValue, setSliderValue] = useState<number>(0);
 
   // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
     setSliderValue(prevState => value);
+    setCurrentGrayScaleForAll(value);
   };
 
   // 다음 버튼 클릭

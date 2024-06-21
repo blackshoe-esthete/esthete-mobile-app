@@ -18,7 +18,7 @@ interface CarouselImage {
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyScreen: React.FC = () => {
-  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
+  const {selectedImageUri, additionalImageUri, setCurrentGrayScale} = useExhibitionCreationStore();
   const navigation = useNavigation();
   const route = useRoute();
   const {index} = route.params as RouteParams;
@@ -27,6 +27,7 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
   // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
     setSliderValue(prevState => value);
+    setCurrentGrayScale(value, index);
   };
 
   const onPressNext = () => {
