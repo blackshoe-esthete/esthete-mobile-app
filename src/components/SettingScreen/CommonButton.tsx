@@ -1,4 +1,6 @@
-import {StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import {StyleSheet, TouchableOpacity, View, Text, Dimensions} from 'react-native';
+
+const windowHeight = Dimensions.get('window').height;
 
 type styleProp = {
   title: string;
@@ -28,7 +30,7 @@ export default CommonButton;
 const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
-    bottom: 50,
+    top: windowHeight - 140,
     width: '100%',
     display: 'flex',
     alignItems: 'center',

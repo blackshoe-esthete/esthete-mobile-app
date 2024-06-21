@@ -66,6 +66,7 @@ function Profile() {
         ref={textState}
         marginTop={30}
         value={nickname}
+        paddingTop={20}
        //ref가 중복된 닉네임인지 확인
       />
       {enable ? (
@@ -87,6 +88,7 @@ function Profile() {
         marginTop={21}
         onChange={getIntro}
         value={intro}
+        paddingTop={20}
       />
       <InputBox 
         placeholder="주로 사용하는 카메라 기종, 컨셉 등을 추가로 입력하는 곳입니다"
