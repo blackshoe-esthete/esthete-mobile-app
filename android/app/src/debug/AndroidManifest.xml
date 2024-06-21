@@ -4,6 +4,8 @@
 
     <application
         android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="28"
-        tools:ignore="GoogleAppIndexingWarning"/>
+        tools:ignore="GoogleAppIndexingWarning"
+        android:theme="@style/AppTheme"/>
 </manifest>

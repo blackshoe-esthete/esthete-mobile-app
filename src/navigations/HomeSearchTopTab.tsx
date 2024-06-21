@@ -13,7 +13,7 @@ function HomeSearchTopTab(): React.JSX.Element {
         tabBarLabel: ({focused}) => (
           <Text
             style={{
-              color: focused ? '#FFF' : '#D6D6D6',
+              color: focused ? '#FFD600' : '#D6D6D6',
               fontSize: 16,
               fontWeight: focused ? '600' : '400',
             }}>
@@ -21,7 +21,7 @@ function HomeSearchTopTab(): React.JSX.Element {
           </Text>
         ),
         tabBarIndicatorStyle: {
-          backgroundColor: '#FFF',
+          backgroundColor: '#FFD600',
           height: 1,
         },
         tabBarStyle: {

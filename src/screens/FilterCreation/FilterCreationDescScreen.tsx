@@ -19,12 +19,13 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
 import CommonModal from '@components/common/CommonModal';
-
-const mood = ['따뜻한', '부드러운', '평화로운', '차가운', '빈티지한', '몽환적인', '싱그러운'];
-
-interface FilterCreationDescScreenProps {
-  // Define the props for the component here
-}
+import {UseMutationResult, useMutation} from '@tanstack/react-query';
+import {createFilter} from 'src/apis/filterService';
+import {filterServiceToken} from '@utils/dummy';
+import {CreateFilterParams, CreateFilterResponse, FilterTagType, RequestDto} from '@types/filterService.type';
+import {filterNameToId, filterTagsData} from '@utils/filter';
+import {AxiosError, AxiosResponse} from 'axios';
+import cancelIcon from '@assets/icons/cancel_gray.png';
 
 function FilterCreationDescScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -32,10 +33,90 @@ function FilterCreationDescScreen(): React.JSX.Element {
   const {top} = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
   const [height, setImageHeight] = useState<number>(0);
-  const {filteredImageUri, additionalImageUri, setAdditionalImageUriEmpty} = useFilterCreationStore();
+  const {
+    setSelectedImageUri,
+    filteredImageUri,
+    setFilteredImageUri,
+    additionalImageUri,
+    setAdditionalImageUriEmpty,
+    filterValue,
+    setFilterValueInitial,
+  } = useFilterCreationStore();
+
+  const [filterName, setFilterName] = useState<string>('');
+  const [filterDescription, setFilterDescription] = useState<string>('');
+  const [filterTags, setFilterTags] = useState<FilterTagType[]>([]);
 
   const [tempModalVisible, setTempModalVisible] = useState<boolean>(false);
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+
+  const saveMutation = useMutation<CreateFilterResponse, AxiosError, CreateFilterParams>({
+    mutationFn: createFilter,
+    onSuccess: () => onSaveSuccess(tempModalVisible),
+  });
+
+  function onSaveSuccess(temp = false) {
+    setAdditionalImageUriEmpty(); // 추가 이미지 초기화
+    setFilterValueInitial(); // 필터 값 초기화
+    setSelectedImageUri(''); // 선택 이미지 초기화
+    setFilteredImageUri(''); // 필터 이미지 초기화
+
+    if (temp) {
+      setTempModalVisible(!tempModalVisible);
+      navigation.navigate('CameraPage');
+      console.log('임시 저장 성공');
+    } else {
+      setCreateModalVisible(!createModalVisible);
+      navigation.navigate('Exhibitions');
+      console.log('필터 제작 성공');
+    }
+  }
+
+  // 필터 제작 - 임시저장일 경우 (url: '/temporary_filter')
+  const onPressSave = async (url: '' | '/temporary_filter') => {
+    const {grayscale, ...filter_attribute} = filterValue;
+
+    const thumbnail = {
+      uri: filteredImageUri as string,
+      name: `thumbnail${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
+      type: 'image/jpg',
+    };
+
+    const representationImg = additionalImageUri.map((uri, index) => ({
+      uri,
+      name: `representation${index}${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
+      type: 'image/jpg',
+    }));
+
+    const requestDto: RequestDto = {
+      filter_attribute,
+      gray_scale: grayscale as number,
+      filter_information: {
+        name: filterName,
+        description: filterDescription,
+        tag_list: {tags: filterTags.map(tag => filterNameToId(tag))},
+      },
+      tmp_filter_id: '', // 추후 수정
+    };
+
+    try {
+      await saveMutation.mutate({
+        url,
+        token: filterServiceToken,
+        thumbnail,
+        representationImg,
+        requestDto,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onPressAddTag = (tag: FilterTagType) => {
+    if (!filterTags.includes(tag)) {
+      setFilterTags([...filterTags, tag]);
+    }
+  };
 
   const onPressBack = () => {
     setAdditionalImageUriEmpty();
@@ -78,10 +159,22 @@ function FilterCreationDescScreen(): React.JSX.Element {
         </View>
         <View style={{gap: 20, marginVertical: 30, paddingHorizontal: 20}}>
           <View style={styles.textInput}>
-            <TextInput style={styles.text} placeholder="필터명을 작성해주세요" placeholderTextColor="#D6D6D6" />
+            <TextInput
+              style={styles.text}
+              placeholder="필터명을 작성해주세요"
+              placeholderTextColor="#D6D6D6"
+              value={filterName}
+              onChangeText={setFilterName}
+            />
           </View>
           <View style={styles.textInput}>
-            <TextInput style={styles.text} placeholder="필터 설명을 작성해주세요" placeholderTextColor="#D6D6D6" />
+            <TextInput
+              style={styles.text}
+              placeholder="필터 설명을 작성해주세요"
+              placeholderTextColor="#D6D6D6"
+              value={filterDescription}
+              onChangeText={setFilterDescription}
+            />
           </View>
         </View>
         <View style={{gap: 10}}>
@@ -92,21 +185,55 @@ function FilterCreationDescScreen(): React.JSX.Element {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{gap: 10}}
-            data={mood}
+            data={filterTagsData}
             renderItem={({item, index}) => (
-              <View
+              <Pressable
+                key={index}
+                onPress={() => onPressAddTag(item.name)}
                 style={[
                   styles.keyword,
                   {
                     marginLeft: index === 0 ? 20 : 0,
-                    marginRight: index === mood.length - 1 ? 20 : 0,
+                    marginRight: index === filterTagsData.length - 1 ? 20 : 0,
                   },
                 ]}>
-                <Text style={styles.keywordText}>{item}</Text>
-              </View>
+                <Text style={styles.keywordText}>{item.name}</Text>
+              </Pressable>
             )}
           />
         </View>
+        {/* 선택한 태그가 없을 경우, 빈 화면을 표시합니다. */}
+        {filterTags.length > 0 && (
+          <>
+            <View style={{paddingHorizontal: 20, paddingTop: 15}}>
+              <Text style={{color: '#FFF', fontSize: 13, fontWeight: '500'}}>내가 선택한 태그</Text>
+            </View>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10}}>
+              <FlatList
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{gap: 10}}
+                data={filterTags}
+                renderItem={({item, index}) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.selectedKeyword,
+                      {
+                        marginLeft: index === 0 ? 20 : 0,
+                        marginRight: index === filterTagsData.length - 1 ? 20 : 0,
+                      },
+                    ]}>
+                    <Text style={styles.selectedKeywordText}>{item}</Text>
+                    <Pressable onPress={() => setFilterTags(filterTags.filter(tag => tag !== item))}>
+                      <Image source={cancelIcon} style={{width: 17, height: 17}} resizeMode="contain" />
+                    </Pressable>
+                  </View>
+                )}
+              />
+            </View>
+          </>
+        )}
         <View style={{gap: 10, marginVertical: 30, paddingHorizontal: 20}}>
           <Text style={{color: '#FFF', fontSize: 14}}>필터를 사용할 사진을 선택해주세요!</Text>
           <View style={{flexDirection: 'row', gap: 10}}>
@@ -139,12 +266,10 @@ function FilterCreationDescScreen(): React.JSX.Element {
         나중에 다시 수정해주세요!`}
         button={['확인', '닫기']}
         visible={tempModalVisible}
-        onConfirm={() => {
-          setTempModalVisible(!tempModalVisible);
-          navigation.navigate('CameraPage');
-        }}
+        onConfirm={() => onPressSave('/temporary_filter')}
         onClose={() => setTempModalVisible(!tempModalVisible)}
       />
+
       <CommonModal
         title="필터 제작을 완료하시겠습니까?"
         subTitle={`필터 제작을 완료하면 필터 대표사진과 필터명은
@@ -153,10 +278,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
         제작 완료는 신중하게 해주세요!`}
         button={['확인', '닫기']}
         visible={createModalVisible}
-        onConfirm={() => {
-          setCreateModalVisible(!createModalVisible);
-          navigation.navigate('Main');
-        }}
+        onConfirm={() => onPressSave('')}
         onClose={() => setCreateModalVisible(!createModalVisible)}
       />
     </SafeAreaView>
@@ -181,9 +303,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: '#FFF',
+    margin: 0,
+    padding: 0,
   },
   keyword: {
-    height: 42,
+    // height: 42,
     borderRadius: 10,
     paddingHorizontal: 15,
     paddingVertical: 13,
@@ -192,6 +316,21 @@ const styles = StyleSheet.create({
   keywordText: {
     color: '#F4F4F4',
     fontSize: 16,
+  },
+  selectedKeyword: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 3,
+    borderRadius: 8.5,
+    paddingLeft: 13,
+    paddingRight: 10,
+    paddingVertical: 10,
+    backgroundColor: '#414141',
+  },
+  selectedKeywordText: {
+    color: '#F4F4F4',
+    fontSize: 14,
   },
   imgBox: {
     justifyContent: 'center',
@@ -212,6 +351,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFD600',
     borderRadius: 10,
     marginHorizontal: 20,
+    marginBottom: 20,
   },
   saveText: {
     fontSize: 18,
