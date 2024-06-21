@@ -1,13 +1,5 @@
 import React, {useState} from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -22,8 +14,8 @@ function MapScreen(): React.JSX.Element {
   const [region, setRegion] = useState({
     latitude: 37.5583,
     longitude: 127.0002,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.0121,
+    latitudeDelta: 0.015, // 지도의 위도 범위 (값이 작을수록 확대)
+    longitudeDelta: 0.0121, // 지도의 경도 범위 (값이 작을수록 확대)
   });
 
   // isClicked 상태가 변경될 때마다 지도의 확대/축소 상태를 업데이트하는 함수
@@ -48,14 +40,15 @@ function MapScreen(): React.JSX.Element {
 
   const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
+
   return (
     <View style={styles.container}>
       <View style={[styles.topInset, {height: top}]} />
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={[styles.wrapper, {top: top + 21}]}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.wrapper, {top: top + 21}]}>
         <Image source={backspaceLogo} style={styles.icon} />
       </TouchableOpacity>
+
+      {/* 지도 위에 이미지 리스트를 표시할 FlatList 컴포넌트 */}
       {isClicked && (
         <FlatList
           horizontal={true}
@@ -68,11 +61,7 @@ function MapScreen(): React.JSX.Element {
                 {marginRight: index === 2 ? 25 : 0},
                 {marginLeft: index === 0 ? 25 : 0},
               ]}>
-              <Image
-                source={exampleImg}
-                style={styles.detailImage}
-                resizeMode="cover"
-              />
+              <Image source={exampleImg} style={styles.detailImage} resizeMode="cover" />
             </View>
           )}
           showsHorizontalScrollIndicator={false}
@@ -85,6 +74,8 @@ function MapScreen(): React.JSX.Element {
           contentContainerStyle={{gap: 17}}
         />
       )}
+
+      {/* 지도 컴포넌트 */}
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -93,20 +84,12 @@ function MapScreen(): React.JSX.Element {
         {isClicked && (
           <Marker
             coordinate={{
-              latitude: 37.5589,
-              longitude: 127.001233,
+              latitude: 37.5599,
+              longitude: 127.001283,
             }}>
             <View style={styles.markerContainer}>
-              <Image
-                source={locationIcon}
-                style={styles.markerIcon}
-                resizeMode="contain"
-              />
-              <Image
-                source={exampleImg}
-                style={styles.markerImage}
-                resizeMode="cover"
-              />
+              <Image source={locationIcon} style={styles.markerIcon} resizeMode="contain" />
+              <Image source={exampleImg} style={styles.markerImage} resizeMode="cover" />
             </View>
           </Marker>
         )}
@@ -116,17 +99,9 @@ function MapScreen(): React.JSX.Element {
               latitude: 37.5575,
               longitude: 126.9983,
             }}>
-            <View style={styles.smallMarkerContainer}>
-              <Image
-                source={locationIconSmall}
-                style={styles.smallMarkerIcon}
-                resizeMode="contain"
-              />
-              <Image
-                source={exampleImg}
-                style={styles.smallMarkerImage}
-                resizeMode="cover"
-              />
+            <View style={styles.markerContainer}>
+              <Image source={locationIconSmall} style={styles.markerIcon} resizeMode="contain" />
+              <Image source={exampleImg} style={styles.markerImage} resizeMode="cover" />
             </View>
           </Marker>
         )}
@@ -136,17 +111,9 @@ function MapScreen(): React.JSX.Element {
             longitude: 127.0002,
           }}
           onPress={toggleZoom}>
-          <View style={styles.smallMarkerContainer}>
-            <Image
-              source={locationIconSmall}
-              style={styles.smallMarkerIcon}
-              resizeMode="contain"
-            />
-            <Image
-              source={exampleImg}
-              style={styles.smallMarkerImage}
-              resizeMode="cover"
-            />
+          <View style={styles.markerContainer}>
+            <Image source={locationIconSmall} style={styles.markerIcon} resizeMode="contain" />
+            <Image source={exampleImg} style={styles.markerImage} resizeMode="cover" />
             <View style={styles.numberContainer}>
               <Text style={styles.number}>{isClicked ? 7 : 3}</Text>
             </View>
@@ -186,7 +153,7 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
-  markerContainer: {
+  /* markerContainer: {
     position: 'relative',
     alignItems: 'center',
     width: 100,
@@ -202,21 +169,21 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 100,
-  },
-  smallMarkerContainer: {
+  }, */
+  markerContainer: {
     position: 'relative',
     alignItems: 'center',
     width: 63,
     height: 67,
   },
-  smallMarkerIcon: {
+  markerIcon: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     width: 50,
     height: 54,
   },
-  smallMarkerImage: {
+  markerImage: {
     position: 'absolute',
     bottom: 6,
     left: 2,
