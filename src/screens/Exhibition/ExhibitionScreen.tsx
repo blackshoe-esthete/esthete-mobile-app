@@ -73,19 +73,19 @@ const ExhibitionScreen: React.FC = () => {
                 <ExhibitionPictureList isVisited={false} />
               </View>
             </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Visit"
+                color="#000"
+                onPress={() => {
+                  setIsPlaying(prevState => !prevState);
+                  goToExhibitionEntered('123');
+                }}
+              />
+            </View>
           </View>
         ))}
       </CubeNavigationHorizontal>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Visit"
-          color="#000"
-          onPress={() => {
-            goToExhibitionEntered('123');
-          }}
-        />
-      </View>
     </View>
   );
 };
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#030303',
+    paddingTop: 55,
   },
   contentContainer: {
     flex: 1,
