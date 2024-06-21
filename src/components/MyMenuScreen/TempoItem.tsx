@@ -27,18 +27,20 @@ function TempoItem(props: galleryProp): React.JSX.Element {
           <Text style={styles.textStyle}>{props.date} 임시저장</Text>
         </View>
       </View>
-      <View style={styles.buttonLayer}>
-        <TouchableOpacity style={styles.buttonLeftBox}>
-          <View style={styles.buttonContent}>
-            <Text style={styles.buttonText}>삭제하기</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonRightBox}>
-          <View style={styles.buttonContent}>
-            <Text style={styles.buttonText}>편집하기</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+
+        <View style={styles.buttonLayer}>
+          <TouchableOpacity style={styles.buttonLeftBox}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>삭제하기</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonRightBox}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>편집하기</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      
     </View>
   );
 }
@@ -82,31 +84,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 45,
     marginBottom: 20,
-  }, 
+  },
   buttonLeftBox: {
     backgroundColor: '#171717',
     borderTopColor: '#292929',
     borderBottomColor: '#292929',
     borderLeftColor: '#292929',
     borderWidth: 1,
-    width: '50%'
+    width: '50%',
   },
   buttonRightBox: {
     backgroundColor: '#171717',
     borderColor: '#292929',
     borderWidth: 1,
-    width: '50%'
+    width: '50%',
   },
   buttonContent: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   buttonText: {
     color: '#E9E9E9',
     fontSize: 16,
     fontWeight: '400',
-  }
+  },
+  absolute: {
+    position: 'absolute',
+    top: 0, left: 0, bottom: 0, right: 0
+  },
 });
