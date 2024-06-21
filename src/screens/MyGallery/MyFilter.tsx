@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ex1 from '@assets/imgs/gallery1.png';
 import ex2 from '@assets/imgs/gallery2.png';
 import FilterItem from "@components/MyGalleryScreen/FilterItem";
+import TempoItem from "@components/MyMenuScreen/TempoItem";
 
 type galleryProp = {
   id: string;
@@ -16,14 +17,19 @@ const DATA: galleryProp[] = [
   {id:'4', title: "Filter Name4", src: ex2},
 ];
 
-function MyFilter(props: any): React.JSX.Element{
-  
+function MyFilter(data: any): React.JSX.Element{
   return(
     <SafeAreaView style={{flex: 1}}>
       <FlatList 
         data={DATA}
         keyExtractor={item => item.id}
-        renderItem={({item}: {item: galleryProp})=><FilterItem  {...item} />}
+        renderItem={({item}: {item: galleryProp}) => {
+          if(data.temporary){
+            return <TempoItem {...item} label="filter" />
+          }else{
+            return <FilterItem {...item} />;
+          }
+        }}
       />
     </SafeAreaView>
   );
