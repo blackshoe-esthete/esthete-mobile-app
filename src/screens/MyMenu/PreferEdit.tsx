@@ -4,9 +4,11 @@ import React, {useRef, useState} from 'react';
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
+import { useNavigation } from '@react-navigation/native';
 
 const height = Dimensions.get('window').height;
 function PreferEdit() {
+  const navigation = useNavigation();
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
   return (
@@ -26,7 +28,7 @@ function PreferEdit() {
           ref={scrollViewRef}>
           <Preferred />
         </ScrollView>
-        <CommonButton title="저장하기" />
+        <CommonButton title="저장하기" func={()=>navigation.goBack()}/>
       </View>
     </SafeAreaView>
   );
