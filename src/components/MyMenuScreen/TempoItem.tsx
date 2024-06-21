@@ -1,4 +1,5 @@
 import CommonModal from '@components/common/CommonModal';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
   View,
@@ -17,9 +18,11 @@ type galleryProp = {
   src: ImageProps;
   author?: string;
   date?: string;
+  label?: string;
 };
 const {width} = Dimensions.get('window');
 function TempoItem(props: galleryProp): React.JSX.Element {
+  const navigation = useNavigation();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const deleteModalShow = () => {
     setDeleteModalVisible(!deleteModalVisible);
@@ -37,6 +40,13 @@ function TempoItem(props: galleryProp): React.JSX.Element {
     onClose: deleteModalShow,
     button: ['삭제하기', '닫기']
   };
+  const navigateScreen = (title: string) => {
+    if(title == "collection"){
+      navigation.navigate('ExhibitionCreate');
+    }else{
+      navigation.navigate('FilterCreate');
+    }
+  }
   
   return (
     <View style={{flex: 1}}>
@@ -52,7 +62,7 @@ function TempoItem(props: galleryProp): React.JSX.Element {
             <Text style={styles.buttonText}>삭제하기</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonRightBox}>
+        <TouchableOpacity style={styles.buttonRightBox} onPress={()=>navigateScreen(props.label || "collection")}>
           <View style={styles.buttonContent}>
             <Text style={styles.buttonText}>편집하기</Text>
           </View>

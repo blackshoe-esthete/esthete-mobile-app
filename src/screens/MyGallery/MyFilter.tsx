@@ -18,7 +18,6 @@ const DATA: galleryProp[] = [
 ];
 
 function MyFilter(data: any): React.JSX.Element{
-  
   return(
     <SafeAreaView style={{flex: 1}}>
       <FlatList 
@@ -26,7 +25,7 @@ function MyFilter(data: any): React.JSX.Element{
         keyExtractor={item => item.id}
         renderItem={({item}: {item: galleryProp}) => {
           if(data.temporary){
-            return <TempoItem {...item} />
+            return <TempoItem {...item} label="filter" />
           }else{
             return <FilterItem {...item} />;
           }

@@ -20,6 +20,8 @@ import Certification from '@screens/MyMenu/Certification';
 import MyInfo from '@screens/MyMenu/MyInfo';
 import CompanyInfo from '@screens/MyMenu/CompanyInfo';
 import OpenSource from '@screens/MyMenu/OpenSource';
+import FilterCreationScreen from '@screens/FilterCreation/FilterCreationScreen';
+import ExhibitionCreationScreen from '@screens/ExhibitionCreation/ExhibitionCreationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,9 +43,17 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
         <Stack.Screen name="MyLikes">
           {(props: any) => <MyLikes {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="Temporary">
-          {(props: any) => <Temporary {...props} />}
-        </Stack.Screen>
+        <Stack.Group>
+          <Stack.Screen name="Temporary">
+            {(props: any) => <Temporary {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="FilterCreate">
+            {(props: any) => <FilterCreationScreen/>}
+          </Stack.Screen>
+          <Stack.Screen name="ExhibitionCreate">
+            {(props: any) => <ExhibitionCreationScreen {...props} />}
+          </Stack.Screen>
+        </Stack.Group>
         <Stack.Screen name="SubScribe">
           {(props: any) => <SubScribe {...props} />}
         </Stack.Screen>
