@@ -53,7 +53,7 @@ function Certification({navigation, route}: Props) {
           ref={scrollViewRef}>
           <Certificate />
         </ScrollView>
-        <CommonButton func={modalShown} title="탈퇴하기" />
+        <CommonButton func={modalShown} title="탈퇴하기" paddingNumber={20}/>
         
         {/* 모달관리 */}
         <OutModal {...customProps}/>

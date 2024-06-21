@@ -28,7 +28,7 @@ function ProfileEdit() {
           ref={scrollViewRef}>
           <Profile />
         </ScrollView>
-        <CommonButton title="저장하기" func={()=>navigation.goBack()}/>
+        <CommonButton title="저장하기" func={()=>navigation.goBack()} paddingNumber={20}/>
       </View>
     </SafeAreaView>
   );
