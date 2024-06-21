@@ -23,7 +23,7 @@ interface Place {
 }
 
 const PlacesSearchScreen: React.FC = () => {
-  const {setDetails} = useExhibitionDetailsStore();
+  const {details, setDetails} = useExhibitionDetailsStore();
   const [query, setQuery] = useState<string>('');
   const [places, setPlaces] = useState<Place[]>([]);
   const navigation = useNavigation();
@@ -42,9 +42,40 @@ const PlacesSearchScreen: React.FC = () => {
     }
   };
 
-  const selectPlace = (place: Place) => {
-    setDetails({location: place.name});
-    navigation.goBack();
+  const selectPlace = async (place: Place) => {
+    try {
+      const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
+        params: {
+          place_id: place.place_id,
+          key: Config.GOOGLE_MAPS_API_KEY,
+        },
+      });
+
+      const {lat, lng} = response.data.result.geometry.location;
+      const addressComponents = response.data.result.address_components;
+
+      const state =
+        addressComponents.find((component: any) => component.types.includes('administrative_area_level_1'))
+          ?.long_name || '';
+      const city = addressComponents.find((component: any) => component.types.includes('locality'))?.long_name || '';
+      const town =
+        addressComponents.find((component: any) => component.types.includes('sublocality_level_1'))?.long_name || '';
+
+      setDetails({
+        location: {
+          format_address: place.formatted_address,
+          longitude: lng,
+          latitude: lat,
+          state,
+          city,
+          town,
+        },
+      });
+
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error fetching place details: ', error);
+    }
   };
 
   return (
@@ -93,6 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#FFF',
     marginRight: 10,
+    fontFamily: 'System',
   },
   icon: {
     width: 20,
