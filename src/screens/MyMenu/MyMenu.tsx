@@ -29,13 +29,14 @@ function MyMenu({navigation, route}: Props) {
     {id: 3, title: '필터 구매 내역', name: 'SubScribe'},
     {id: 4, title: '설정', name: 'Settings'},
     {id: 5, title: '정보', name: 'Information'},
-    {id: 6, title: '로그아웃', function: modalShown},
+    {id: 6, title: '로그아웃', function: modalShown, color: '#FFD600'},
   ];
   type menuProp = {
     id: number;
     title: string;
     name?: string;
     function?: () => void;
+    color?: string;
   };
   const nextScreen = (props: menuProp) => {
     const newScreen: any = props?.name;
@@ -46,7 +47,7 @@ function MyMenu({navigation, route}: Props) {
           props.function && props.function();
         }}>
         <View style={styles.stackButton}>
-          <Text style={styles.titleStyle}>{props?.title}</Text>
+          <Text style={[styles.titleStyle, {color: props.color || 'white' }]}>{props?.title}</Text>
           <Image source={nextIcon} style={styles.icon} />
         </View>
       </TouchableOpacity>
@@ -113,7 +114,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.8,
   },
   titleStyle: {
-    color: 'white',
     fontSize: 18,
     fontWeight: '500',
     // lineHeight: -0.36,
