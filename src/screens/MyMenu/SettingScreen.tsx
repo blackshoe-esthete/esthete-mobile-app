@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '500',
-    lineHeight: -0.36,
+    // lineHeight: -0.36,
   },
   icon: {
     width: 8.5,

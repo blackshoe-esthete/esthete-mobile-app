@@ -46,7 +46,7 @@ function MyMenu({navigation, route}: Props) {
           props.function && props.function();
         }}>
         <View style={styles.stackButton}>
-          <Text style={styles.titleStyle}>{props.title}</Text>
+          <Text style={styles.titleStyle}>{props?.title}</Text>
           <Image source={nextIcon} style={styles.icon} />
         </View>
       </TouchableOpacity>
@@ -116,6 +116,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '500',
-    lineHeight: -0.36,
+    // lineHeight: -0.36,
   },
 });
