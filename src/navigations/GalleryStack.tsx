@@ -22,6 +22,7 @@ import CompanyInfo from '@screens/MyMenu/CompanyInfo';
 import OpenSource from '@screens/MyMenu/OpenSource';
 import FilterCreationScreen from '@screens/FilterCreation/FilterCreationScreen';
 import ExhibitionCreationScreen from '@screens/ExhibitionCreation/ExhibitionCreationScreen';
+import FollowScreen from '@screens/MyGallery/FollowScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,9 +35,15 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="MyTab">
-          {(props: any) => <MyTab {...props} />}
-        </Stack.Screen>
+        <Stack.Group>
+          <Stack.Screen name="MyTab">
+            {(props: any) => <MyTab {...props} />}
+          </Stack.Screen>  
+          <Stack.Screen name="Friends">
+            {(props: any) => <FollowScreen {...props} />}
+          </Stack.Screen>
+        </Stack.Group>
+        
         <Stack.Screen name="MyMenu">
           {(props: any) => <MyMenu {...props} />}
         </Stack.Screen>
