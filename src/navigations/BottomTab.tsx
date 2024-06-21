@@ -16,6 +16,7 @@ import FilterNav from './FilterNav';
 import {useNavigation, getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import GalleryStack from './GalleryStack';
 import ExhibitionNav from './ExhibitionNav';
+import LoginScreen from '@screens/Login/LoginScreen';
 const Tab = createBottomTabNavigator();
 
 function BottomTab(): React.JSX.Element {
@@ -78,7 +79,9 @@ function BottomTab(): React.JSX.Element {
       />
       <Tab.Screen
         name="Updating"
-        component={HomeScreen}
+        // component={HomeScreen}
+        // name="Login"
+        component={LoginScreen}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
@@ -86,6 +89,7 @@ function BottomTab(): React.JSX.Element {
             ) : (
               <Image source={updatingIcon} style={styles.additionIcon} resizeMode="contain" />
             ),
+            tabBarStyle: {display: 'none'},
         }}
       />
       <Tab.Screen
