@@ -10,6 +10,8 @@ import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
 import useExhibitionCreationStore from '../../store/ExhibitionCreationStore';
 import Carousel from 'react-native-reanimated-carousel';
+import {RootStackParamList} from '@types/navigations';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -18,7 +20,7 @@ interface GalleryItem extends PhotoIdentifier {
 }
 
 function ExhibitionCreationScreen(): React.JSX.Element {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri} =
     useExhibitionCreationStore();
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
