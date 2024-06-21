@@ -1,36 +1,88 @@
-import React from 'react';
-
-import {View, ScrollView, Button, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useRef, useState} from 'react';
+import {View, Button, StyleSheet} from 'react-native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
+import {RootStackParamList} from '../../types/navigations';
+import {CubeNavigationHorizontal} from 'react-native-3dcube-navigation-typescript';
 
-const ExhibitionScreen = () => {
+type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
+
+const ExhibitionScreen: React.FC = () => {
   const navigation = useNavigation();
+  const route = useRoute<ExhibitionScreenRouteProp>();
+  const {id} = route.params;
+
+  const goToExhibitionEntered = (id: string) => {
+    navigation.navigate('ExhibitionEntered', {id});
+  };
+
+  const goToExhibition = (id: string) => {
+    navigation.navigate('Exhibition', {id});
+  };
+
+  const cubeRef = useRef<any>(null);
+  const [currentExhibitionIndex, setCurrentExhibitionIndex] = useState(0);
+  const exhibitionIds = ['123', '456', '789'];
+
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayPause = () => {
+    setIsPlaying(prevState => !prevState);
+  };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setCurrentExhibitionIndex(prevIndex => {
+          let nextIndex = prevIndex + 1;
+          if (nextIndex >= exhibitionIds.length) {
+            goToExhibition(exhibitionIds[0]);
+          } else {
+            if (cubeRef.current) {
+              cubeRef.current.scrollTo(nextIndex, true);
+            }
+          }
+          return nextIndex;
+        });
+      }, 3000); // 3초 간격으로 페이지 전환
+    } else if (interval) {
+      clearInterval(interval);
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isPlaying, exhibitionIds.length]);
+
   return (
     <View>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        scrollEnabled={false}>
-        <View style={styles.container}>
-          <View style={styles.contentContainer}>
-            <View style={styles.mainPicture}>
-              <ExhibitionMainPicture entered={false} />
+      <CubeNavigationHorizontal ref={cubeRef} loop>
+        {exhibitionIds.map((id, index) => (
+          <View key={index} style={styles.container}>
+            <View style={styles.contentContainer}>
+              <View style={styles.mainPicture}>
+                <ExhibitionMainPicture
+                  entered={false}
+                  handlePlayPause={handlePlayPause}
+                  isPlaying={isPlaying}
+                  currentExhibitionIndex={id}
+                />
+                <ExhibitionPictureList isVisited={false} />
+              </View>
             </View>
           </View>
-        </View>
-
-        <View style={styles.pictures}>
-          <ExhibitionPictureList isVisited={false} />
-        </View>
-      </ScrollView>
+        ))}
+      </CubeNavigationHorizontal>
 
       <View style={styles.buttonContainer}>
         <Button
           title="Visit"
           color="#000"
           onPress={() => {
-            navigation.navigate('ExhibitionEntered');
+            goToExhibitionEntered('123');
           }}
         />
       </View>
@@ -39,6 +91,7 @@ const ExhibitionScreen = () => {
 };
 
 export default ExhibitionScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

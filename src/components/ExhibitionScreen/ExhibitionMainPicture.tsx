@@ -1,27 +1,30 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
-import {
-  Image,
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
+import React, {useState} from 'react';
+import {Image, Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 
-const ExhibitionMainPicture = ({entered}: {entered: boolean}) => {
+interface ExhibitionMainPictureProps {
+  entered: boolean;
+  handlePlayPause: () => void;
+  isPlaying: boolean;
+  currentExhibitionIndex: string;
+}
+
+const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
+  entered,
+  handlePlayPause,
+  isPlaying,
+  currentExhibitionIndex,
+}) => {
   const thumbanilGalleryImage = require('../../assets/imgs/thumbnail-gallery-image.png');
-  let playButton;
-  if (entered) {
-    playButton = require('../../assets/icons/pause-btn.png');
-  } else {
-    playButton = require('../../assets/icons/play-btn.png');
-  }
+
+  const playButtonImage = require('../../assets/icons/play-btn.png');
+  const pauseButtonImage = require('../../assets/icons/pause-btn.png');
   const backIcon = require('../../assets/icons/backspace-icon.png');
 
   const profileImage = require('../../assets/imgs/profile-img.png');
 
   const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <Image source={thumbanilGalleryImage} />
@@ -36,12 +39,14 @@ const ExhibitionMainPicture = ({entered}: {entered: boolean}) => {
             }}>
             <Image source={backIcon} />
           </TouchableOpacity>
-          <Image source={playButton} />
+          <TouchableOpacity onPress={handlePlayPause}>
+            <Image source={isPlaying ? pauseButtonImage : playButtonImage} />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.overlayFlex}>
           <View style={styles.overlayExhibitWrap}>
-            <Text style={styles.overlayTitle}>전시회명</Text>
+            <Text style={styles.overlayTitle}>{currentExhibitionIndex}</Text>
             <Text style={styles.overlayDateText}>2023.12.25</Text>
           </View>
 
