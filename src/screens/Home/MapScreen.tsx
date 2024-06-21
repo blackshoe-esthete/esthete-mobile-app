@@ -1,45 +1,123 @@
-import React, {useState} from 'react';
-import {Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import React, {useEffect, useState} from 'react';
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import MapView, {MapPressEvent, Marker, PROVIDER_GOOGLE, Region} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Geolocation from '@react-native-community/geolocation';
 import backspaceLogo from '@assets/icons/backspace.png';
 import locationIcon from '@assets/icons/location_icon.png';
 import locationIconSmall from '@assets/icons/location_icon_sm.png';
 import exampleImg from '@assets/imgs/ex3.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function MapScreen(): React.JSX.Element {
   const [isClicked, setIsClicked] = useState(false);
-  // 지도 확대/축소를 위한 상태 추가
-  const [region, setRegion] = useState({
-    latitude: 37.5583,
-    longitude: 127.0002,
-    latitudeDelta: 0.015, // 지도의 위도 범위 (값이 작을수록 확대)
-    longitudeDelta: 0.0121, // 지도의 경도 범위 (값이 작을수록 확대)
-  });
+  const [clickedLocation, setClickedLocation] = useState<{latitude: number; longitude: number} | null>(null); // 클릭한 위치의 좌표 상태 추가
+  const [region, setRegion] = useState<Region | undefined>({
+    latitude: 37.55703563268905,
+    longitude: 126.99773367494346,
+    latitudeDelta: 0.0000001,
+    longitudeDelta: 0.0000001,
+  }); // region을 null로 초기화
+  const navigation = useNavigation();
+  const {top} = useSafeAreaInsets();
 
-  // isClicked 상태가 변경될 때마다 지도의 확대/축소 상태를 업데이트하는 함수
+  const handleMapPress = (event: MapPressEvent) => {
+    const {latitude, longitude} = event.nativeEvent.coordinate;
+    setClickedLocation({latitude, longitude});
+    console.log(`Clicked location: ${latitude}, ${longitude}`);
+  };
+
+  useEffect(() => {
+    const loadCachedLocation = async () => {
+      try {
+        const cachedLocation = await AsyncStorage.getItem('userLocation');
+        if (cachedLocation) {
+          const {latitude, longitude} = JSON.parse(cachedLocation);
+          setRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+          });
+        }
+      } catch (error) {
+        console.log('Failed to load cached location', error);
+      }
+    };
+
+    const requestLocationPermission = async () => {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+          title: '위치 정보 사용 권한 요청',
+          message: '위치 정보를 사용하려면 권한이 필요합니다.',
+          buttonNeutral: '나중에 물어보기',
+          buttonNegative: '취소',
+          buttonPositive: '확인',
+        });
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Location permission denied');
+          return;
+        }
+      }
+
+      Geolocation.getCurrentPosition(
+        position => {
+          const {latitude, longitude} = position.coords;
+          setRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+          });
+          AsyncStorage.setItem('userLocation', JSON.stringify({latitude, longitude}));
+        },
+        error => {
+          console.log(error);
+        },
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      );
+    };
+
+    /* (async () => {
+      try {
+        const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+          params: {
+            address: 'Seoul Jung District',
+            key: Platform.OS === 'android' ? Config.ANDROID_GOOGLE_MAPS_API_KEY : Config.IOS_GOOGLE_MAPS_API_KEY,
+          },
+        });
+        console.log(`Geocode data: ${JSON.stringify(response.data)}`);
+      } catch (error) {
+        console.error('Failed to fetch geocode data:', error);
+      }
+    })(); */
+
+    // AsyncStorage.removeItem('userLocation');
+    loadCachedLocation();
+    requestLocationPermission();
+  }, []);
+
   const toggleZoom = () => {
     setIsClicked(!isClicked);
-    if (!isClicked) {
-      // 확대할 경우의 region 값
+    if (region) {
       setRegion({
         ...region,
-        latitudeDelta: region.latitudeDelta / 2,
-        longitudeDelta: region.longitudeDelta / 2,
-      });
-    } else {
-      // 원래 상태로 돌아갈 경우의 region 값
-      setRegion({
-        ...region,
-        latitudeDelta: 0.015,
-        longitudeDelta: 0.0121,
+        latitudeDelta: isClicked ? 0.015 : region.latitudeDelta / 2,
+        longitudeDelta: isClicked ? 0.0121 : region.longitudeDelta / 2,
       });
     }
   };
-
-  const navigation = useNavigation();
-  const {top} = useSafeAreaInsets();
 
   return (
     <View style={styles.container}>
@@ -48,7 +126,6 @@ function MapScreen(): React.JSX.Element {
         <Image source={backspaceLogo} style={styles.icon} />
       </TouchableOpacity>
 
-      {/* 지도 위에 이미지 리스트를 표시할 FlatList 컴포넌트 */}
       {isClicked && (
         <FlatList
           horizontal={true}
@@ -75,50 +152,25 @@ function MapScreen(): React.JSX.Element {
         />
       )}
 
-      {/* 지도 컴포넌트 */}
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        region={region} // region 상태를 사용
-      >
-        {isClicked && (
+      <MapView provider={PROVIDER_GOOGLE} style={styles.map} region={region} onPress={handleMapPress}>
+        {region && (
           <Marker
+            key={`${region.latitude}-${region.longitude}`}
             coordinate={{
-              latitude: 37.5599,
-              longitude: 127.001283,
-            }}>
-            <View style={styles.markerContainer}>
-              <Image source={locationIcon} style={styles.markerIcon} resizeMode="contain" />
-              <Image source={exampleImg} style={styles.markerImage} resizeMode="cover" />
-            </View>
-          </Marker>
-        )}
-        {isClicked && (
-          <Marker
-            coordinate={{
-              latitude: 37.5575,
-              longitude: 126.9983,
-            }}>
+              latitude: region.latitude,
+              longitude: region.longitude,
+            }}
+            title="My Location"
+            onPress={toggleZoom}>
             <View style={styles.markerContainer}>
               <Image source={locationIconSmall} style={styles.markerIcon} resizeMode="contain" />
               <Image source={exampleImg} style={styles.markerImage} resizeMode="cover" />
+              <View style={styles.numberContainer}>
+                <Text style={styles.number}>{isClicked ? 7 : 3}</Text>
+              </View>
             </View>
           </Marker>
         )}
-        <Marker
-          coordinate={{
-            latitude: 37.5583,
-            longitude: 127.0002,
-          }}
-          onPress={toggleZoom}>
-          <View style={styles.markerContainer}>
-            <Image source={locationIconSmall} style={styles.markerIcon} resizeMode="contain" />
-            <Image source={exampleImg} style={styles.markerImage} resizeMode="cover" />
-            <View style={styles.numberContainer}>
-              <Text style={styles.number}>{isClicked ? 7 : 3}</Text>
-            </View>
-          </View>
-        </Marker>
       </MapView>
     </View>
   );
@@ -153,23 +205,6 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
-  /* markerContainer: {
-    position: 'relative',
-    alignItems: 'center',
-    width: 100,
-    height: 105,
-  },
-  markerIcon: {
-    width: 100,
-    height: 105,
-  },
-  markerImage: {
-    position: 'absolute',
-    top: 2,
-    width: 96,
-    height: 96,
-    borderRadius: 100,
-  }, */
   markerContainer: {
     position: 'relative',
     alignItems: 'center',
@@ -202,20 +237,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFD600',
     borderRadius: 100,
   },
-  number: {color: '#000', fontSize: 18, fontWeight: '700'},
+  number: {
+    color: '#000',
+    fontSize: 18,
+    fontWeight: '700',
+  },
   detailImageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 155,
     height: 155,
-    shadowColor: '#000', // 쉐도우 색상
+    shadowColor: '#000',
     shadowOffset: {
-      width: 1, // 가로 방향으로의 쉐도우 거리
-      height: 1, // 세로 방향으로의 쉐도우 거리
+      width: 1,
+      height: 1,
     },
-    shadowOpacity: 0.25, // 쉐도우 투명도
-    shadowRadius: 4, // 쉐도우의 블러 반경
-    elevation: 4, // 안드로이드에서의 쉐도우 효과
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
     borderRadius: 10,
     backgroundColor: '#FFF',
     zIndex: 100,
