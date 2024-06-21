@@ -16,10 +16,14 @@ import {useExhibitionCreationStore, useExhibitionDetailsStore} from '../../store
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import CommonModal from '@components/common/CommonModal';
+import {finalizeExhibition} from '../../apis/exhibitionCreate';
+import Config from 'react-native-config';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyCompleteScreen = () => {
+  const apiToken = Config.API_TOKEN;
+
   const navigation = useNavigation();
   const {details, setDetails} = useExhibitionDetailsStore(); // 스토어 사용
   //선택한 이미지
@@ -37,6 +41,50 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     details.description &&
     details.mood.length > 0 &&
     details.location;
+
+  const finalizeCreation = async () => {
+    if (!allFieldsFilled) {
+      console.log('details', details);
+      Alert.alert('모든 정보를 입력해야 제작을 진행할 수 있습니다.');
+      return;
+    }
+
+    // filter_photo_list 구성
+    const filterPhotos = additionalImageUri.map(image => ({
+      gray_scale: image.filterDetails?.grayScale,
+      filter_id: image.filterDetails?.id,
+    }));
+    console.log('filterPhotos', filterPhotos);
+    // exhibitionData 구성
+    const exhibitionData = {
+      filter_photo_list: {filter_photos: filterPhotos},
+      exhibition_information: {
+        title: details.title,
+        description: details.description,
+        tag_list: {
+          tag_list: details.mood,
+        },
+      },
+      exhibition_location: {
+        longitude: details.location.longitude,
+        latitude: details.location.latitude,
+        state: details.location.format_address,
+        city: '',
+        town: '',
+      },
+      tmp_exhibition_id: details.tmpExhibitionId || '',
+    };
+
+    try {
+      const token = apiToken;
+      console.log(exhibitionData);
+      await finalizeExhibition({token, exhibitionData});
+      Alert.alert('전시가 성공적으로 제작되었습니다.');
+      navigation.navigate('Main');
+    } catch (error) {
+      Alert.alert('전시 제작 중 오류가 발생했습니다.');
+    }
+  };
 
   const moodOptions = ['초상화', '풍경', '거리', '음식', '여행', '패션'];
 
@@ -140,7 +188,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
             onPress={() => {
               navigation.navigate('PlacesSearch');
             }}>
-            <Text style={styles.text}>{details.location ? details.location : '위치 추가하기'}</Text>
+            <Text style={styles.text}>{details.location ? `${details.location.format_address}` : '위치 추가하기'}</Text>
           </TouchableOpacity>
         </View>
 
@@ -176,7 +224,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           visible={createModalVisible}
           onConfirm={() => {
             setCreateModalVisible(!createModalVisible);
-            navigation.navigate('Main');
+            finalizeCreation(); // 최종 전시 제작 실행
           }}
           onClose={() => setCreateModalVisible(!createModalVisible)}
         />

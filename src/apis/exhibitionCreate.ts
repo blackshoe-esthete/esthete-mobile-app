@@ -4,7 +4,7 @@ import {exhibitionInstance} from './instance';
 //임시저장 및 업데이트
 export const saveOrUpdateExhibition = async ({token, exhibitionData, isNew}) => {
   try {
-    const url = '/api/v1/exhibition/addition/temporary_exhibition';
+    const url = '/addition/temporary_exhibition';
     const response = await exhibitionInstance.post(
       url,
       {
@@ -29,7 +29,7 @@ export const saveOrUpdateExhibition = async ({token, exhibitionData, isNew}) => 
 //전시 제작
 export const finalizeExhibition = async ({token, exhibitionData}) => {
   try {
-    const url = '/api/v1/exhibition/addition';
+    const url = '/addition';
     const response = await exhibitionInstance.post(url, exhibitionData, {
       headers: {
         Authorization: `Bearer ${token}`, // JWT 토큰을 이용한 인증
