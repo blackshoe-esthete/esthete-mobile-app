@@ -1,12 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Button, StyleSheet} from 'react-native';
+import {View, Button, StyleSheet, Dimensions} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import {RootStackParamList} from '../../types/navigations';
-import {CubeNavigationHorizontal} from 'react-native-3dcube-navigation-typescript';
+import Carousel from 'react-native-reanimated-carousel';
+import Animated, {interpolate, Extrapolate} from 'react-native-reanimated';
 
 type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const ExhibitionScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -22,7 +26,6 @@ const ExhibitionScreen: React.FC = () => {
   };
 
   const cubeRef = useRef<any>(null);
-  const [currentExhibitionIndex, setCurrentExhibitionIndex] = useState(0);
   const exhibitionIds = ['123', '456', '789'];
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -31,36 +34,36 @@ const ExhibitionScreen: React.FC = () => {
     setIsPlaying(prevState => !prevState);
   };
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentExhibitionIndex(prevIndex => {
-          let nextIndex = prevIndex + 1;
-          if (nextIndex >= exhibitionIds.length) {
-            goToExhibition(exhibitionIds[0]);
-          } else {
-            if (cubeRef.current) {
-              cubeRef.current.scrollTo(nextIndex, true);
-            }
-          }
-          return nextIndex;
-        });
-      }, 3000); // 3초 간격으로 페이지 전환
-    } else if (interval) {
-      clearInterval(interval);
-    }
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [isPlaying, exhibitionIds.length]);
+  const animationStyle: any = React.useCallback(
+    (value: number) => {
+      'worklet';
+
+      const zIndex = interpolate(value, [-1, 0, 1], [-1200, 0, -1200]);
+      const rotateY = `${interpolate(value, [-1, 0, 1], [-90, 0, 90], Extrapolate.CLAMP)}deg`;
+      const perspective = 1000;
+      const transform = {
+        transform: [{perspective}, {rotateY}, {translateX: value * SCREEN_WIDTH}],
+      };
+      return {
+        ...transform,
+        zIndex,
+      };
+    },
+    [SCREEN_WIDTH, SCREEN_HEIGHT],
+  );
 
   return (
     <View>
-      <CubeNavigationHorizontal ref={cubeRef} loop>
-        {exhibitionIds.map((id, index) => (
+      <Carousel
+        ref={cubeRef}
+        width={SCREEN_WIDTH}
+        height={SCREEN_HEIGHT}
+        autoPlay={isPlaying}
+        autoPlayInterval={3000}
+        data={exhibitionIds}
+        scrollAnimationDuration={2000}
+        customAnimation={animationStyle}
+        renderItem={({item, index}) => (
           <View key={index} style={styles.container}>
             <View style={styles.contentContainer}>
               <View style={styles.mainPicture}>
@@ -68,7 +71,7 @@ const ExhibitionScreen: React.FC = () => {
                   entered={false}
                   handlePlayPause={handlePlayPause}
                   isPlaying={isPlaying}
-                  currentExhibitionIndex={id}
+                  currentExhibitionIndex={item}
                 />
                 <ExhibitionPictureList isVisited={false} />
               </View>
@@ -78,14 +81,14 @@ const ExhibitionScreen: React.FC = () => {
                 title="Visit"
                 color="#000"
                 onPress={() => {
-                  setIsPlaying(prevState => !prevState);
-                  goToExhibitionEntered('123');
+                  setIsPlaying(false);
+                  goToExhibitionEntered(item);
                 }}
               />
             </View>
           </View>
-        ))}
-      </CubeNavigationHorizontal>
+        )}
+      />
     </View>
   );
 };

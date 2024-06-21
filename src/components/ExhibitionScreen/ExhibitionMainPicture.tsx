@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React from 'react';
 import {Image, Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 
 interface ExhibitionMainPictureProps {
@@ -8,6 +8,9 @@ interface ExhibitionMainPictureProps {
   isPlaying: boolean;
   currentExhibitionIndex: string;
 }
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
   entered,
@@ -27,7 +30,12 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
 
   return (
     <View style={styles.container}>
-      <Image source={thumbanilGalleryImage} />
+      <Image
+        source={thumbanilGalleryImage}
+        style={{
+          width: SCREEN_WIDTH,
+        }}
+      />
       <View style={styles.overlayContainer}>
         <View style={styles.overlayFlex}>
           <TouchableOpacity

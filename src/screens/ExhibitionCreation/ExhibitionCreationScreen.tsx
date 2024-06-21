@@ -8,8 +8,8 @@ import nextIcon from '@assets/icons/backspace_white.png';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
-import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
 import Carousel from 'react-native-reanimated-carousel';
+import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
