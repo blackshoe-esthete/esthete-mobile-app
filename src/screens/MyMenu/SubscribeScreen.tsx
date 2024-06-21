@@ -9,7 +9,7 @@ import MyFilter from "@screens/MyGallery/MyFilter";
 type props = NativeStackScreenProps<Routes, 'SubScribe'>
 function SubScribe(){
   return(
-    <SafeAreaView edges={['top']}>
+    <SafeAreaView edges={['top']} style={{flex: 1, display: 'flex'}}>
       <MenuHeader title="필터 구매 내역" />
       <MyFilter />
     </SafeAreaView>
