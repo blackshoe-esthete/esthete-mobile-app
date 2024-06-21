@@ -25,6 +25,7 @@ import {filterServiceToken} from '@utils/dummy';
 import {CreateFilterParams, CreateFilterResponse, FilterTagType, RequestDto} from '@types/filterService.type';
 import {filterNameToId, filterTagsData} from '@utils/filter';
 import {AxiosError, AxiosResponse} from 'axios';
+import cancelIcon from '@assets/icons/cancel_gray.png';
 
 function FilterCreationDescScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -201,6 +202,38 @@ function FilterCreationDescScreen(): React.JSX.Element {
             )}
           />
         </View>
+        {/* 선택한 태그가 없을 경우, 빈 화면을 표시합니다. */}
+        {filterTags.length > 0 && (
+          <>
+            <View style={{paddingHorizontal: 20, paddingTop: 15}}>
+              <Text style={{color: '#FFF', fontSize: 13, fontWeight: '500'}}>내가 선택한 태그</Text>
+            </View>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10}}>
+              <FlatList
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{gap: 10}}
+                data={filterTags}
+                renderItem={({item, index}) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.selectedKeyword,
+                      {
+                        marginLeft: index === 0 ? 20 : 0,
+                        marginRight: index === filterTagsData.length - 1 ? 20 : 0,
+                      },
+                    ]}>
+                    <Text style={styles.selectedKeywordText}>{item}</Text>
+                    <Pressable onPress={() => setFilterTags(filterTags.filter(tag => tag !== item))}>
+                      <Image source={cancelIcon} style={{width: 17, height: 17}} resizeMode="contain" />
+                    </Pressable>
+                  </View>
+                )}
+              />
+            </View>
+          </>
+        )}
         <View style={{gap: 10, marginVertical: 30, paddingHorizontal: 20}}>
           <Text style={{color: '#FFF', fontSize: 14}}>필터를 사용할 사진을 선택해주세요!</Text>
           <View style={{flexDirection: 'row', gap: 10}}>
@@ -283,6 +316,21 @@ const styles = StyleSheet.create({
   keywordText: {
     color: '#F4F4F4',
     fontSize: 16,
+  },
+  selectedKeyword: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 3,
+    borderRadius: 8.5,
+    paddingLeft: 13,
+    paddingRight: 10,
+    paddingVertical: 10,
+    backgroundColor: '#414141',
+  },
+  selectedKeywordText: {
+    color: '#F4F4F4',
+    fontSize: 14,
   },
   imgBox: {
     justifyContent: 'center',
