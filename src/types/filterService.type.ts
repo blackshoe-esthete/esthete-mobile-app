@@ -37,11 +37,16 @@ export interface RequestDto {
 }
 
 export interface CreateFilterParams {
-  url: string;
+  url: '' | '/temporary_filter';
   token: string;
   thumbnail: FileData;
   representationImg: FileData[] | [];
   requestDto: RequestDto;
+}
+
+export interface CreateFilterResponse {
+  filter_id: string;
+  created_at: string;
 }
 
 // 필터 기본 정보

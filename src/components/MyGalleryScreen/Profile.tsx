@@ -1,21 +1,24 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import profile from '@assets/imgs/profile-img.png';
+import {useNavigation} from '@react-navigation/native';
 
 function Profile(): React.JSX.Element {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.textBox}>
         <Text style={styles.titleText}>한줄소개</Text>
-        <Text style={styles.subText}>
-          추가적으로 사진에 관한 추가정보 입력 추가적으로 사진에 관한 추가정보
-          입력
-        </Text>
+        <Text style={styles.subText}>추가적으로 사진에 관한 추가정보 입력 추가적으로 사진에 관한 추가정보 입력</Text>
         <View style={styles.followBox}>
-          <Text style={styles.follower}>팔로워</Text>
-          <Text style={styles.followNum}>158</Text>
-          <Text style={[styles.follower, {marginLeft: 19}]}>팔로잉</Text>
-          <Text style={styles.followNum}>25</Text>
+          <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends')}>
+            <Text style={styles.follower}>팔로워</Text>
+            <Text style={styles.followNum}>158</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends')}>
+            <Text style={[styles.follower, {marginLeft: 19}]}>팔로잉</Text>
+            <Text style={styles.followNum}>25</Text>
+          </TouchableOpacity>
         </View>
       </View>
       <Image source={profile} style={styles.icon} />
@@ -56,20 +59,24 @@ const styles = StyleSheet.create({
     height: 80,
     marginVertical: 25,
   },
-  followBox:{
+  followLayer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  followBox: {
     marginTop: 17,
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
-  follower:{
+  follower: {
     fontSize: 14,
     color: 'white',
-    fontWeight: '400'
+    fontWeight: '400',
   },
   followNum: {
     fontSize: 14,
     color: 'white',
     fontWeight: '600',
-    marginLeft: 11
-  }
+    marginLeft: 11,
+  },
 });

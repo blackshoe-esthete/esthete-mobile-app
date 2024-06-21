@@ -1,6 +1,6 @@
-import {AxiosError} from 'axios';
+import {AxiosError, AxiosResponse} from 'axios';
 import {filterInstance} from './instance';
-import {CreateFilterParams} from '@types/filterService.type';
+import {CreateFilterParams, CreateFilterResponse} from '@types/filterService.type';
 
 // 썸네일 불러오기 (GET 테스트 해보려고)
 export const getThumbnail = async (filterId: string, token: string) => {
@@ -19,7 +19,13 @@ export const getThumbnail = async (filterId: string, token: string) => {
 };
 
 // 필터 제작 (multipart/form-data)
-export const createFilter = async ({url, token, thumbnail, representationImg, requestDto}: CreateFilterParams) => {
+export const createFilter = async ({
+  url,
+  token,
+  thumbnail,
+  representationImg,
+  requestDto,
+}: CreateFilterParams): Promise<CreateFilterResponse> => {
   const formData = new FormData();
 
   // 썸네일 파일 추가
@@ -55,7 +61,7 @@ export const createFilter = async ({url, token, thumbnail, representationImg, re
     console.log('성공', response.data);
     console.log('성공 데이터', response.config.data._parts);
     // console.log('formData', formData);
-    return response;
+    return response.data;
   } catch (error) {
     console.log('실패', (error as AxiosError)?.response?.data);
     console.log('실패 데이터', (error as AxiosError)?.config?.data._parts);

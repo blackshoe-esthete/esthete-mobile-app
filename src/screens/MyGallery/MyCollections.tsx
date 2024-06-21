@@ -19,7 +19,7 @@ function MyCollections(data: any): React.JSX.Element{
         keyExtractor={item => item.id}
         renderItem={({item}: {item:galleryProp}) => {
           if(data.temporary){
-            return <TempoItem {...item} />;
+            return <TempoItem {...item} label="collection"/>;
           }else{
             return <GalleryItem {...item} />;
           }

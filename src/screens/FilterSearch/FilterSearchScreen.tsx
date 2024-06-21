@@ -47,6 +47,22 @@ const data: ImageItem[] = [
     like: false,
     likeNum: '5k',
   },
+  {
+    id: '4',
+    source: require('../../assets/imgs/filter_ex3.png'),
+    author: '작가3',
+    name: '필터3',
+    like: false,
+    likeNum: '5k',
+  },
+  {
+    id: '5',
+    source: require('../../assets/imgs/filter_ex3.png'),
+    author: '작가3',
+    name: '필터3',
+    like: false,
+    likeNum: '5k',
+  },
 ];
 
 function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {

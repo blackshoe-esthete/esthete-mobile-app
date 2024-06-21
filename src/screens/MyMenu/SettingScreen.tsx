@@ -11,12 +11,13 @@ function Settings({ navigation, route}: Props){
   const objects = [
     {id: 1, title: '선호 태그 편집', name: 'Prefer'},
     {id: 2, title: '프로필 편집', name: 'Profile'},
-    {id: 3, title: '회원 탈퇴', name: 'GoOut'},
+    {id: 3, title: '회원 탈퇴', name: 'GoOut', color: '#FFD600'},
   ];
   type menuProp = {
     id: number;
     title: string;
     name?: string;
+    color?: string;
   };
   const nextScreen = (props: menuProp) => {
     const newScreen: any = props?.name;
@@ -26,7 +27,7 @@ function Settings({ navigation, route}: Props){
           newScreen && navigation.navigate(newScreen);
         }}>
         <View style={styles.stackButton}>
-          <Text style={styles.titleStyle}>{props.title}</Text>
+          <Text style={[styles.titleStyle, {color: props.color || 'white'}]}>{props.title}</Text>
           <Image source={nextIcon} style={styles.icon} />
         </View>
       </TouchableOpacity>
@@ -61,10 +62,9 @@ const styles = StyleSheet.create({
     borderWidth: 0.8,
   },
   titleStyle: {
-    color: 'white',
     fontSize: 18,
     fontWeight: '500',
-    lineHeight: -0.36,
+    // lineHeight: -0.36,
   },
   icon: {
     width: 8.5,
