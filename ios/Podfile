@@ -32,6 +32,7 @@ target 'esthete_mobile' do
   rn_pager_view_path = '../node_modules/react-native-pager-view'
   pod 'react-native-pager-view', :path => rn_pager_view_path
   config = use_native_modules!
+  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
 
   use_react_native!(
     :path => config[:reactNativePath],
