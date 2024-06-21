@@ -1,4 +1,5 @@
-import React from 'react';
+import CommonModal from '@components/common/CommonModal';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -19,6 +20,24 @@ type galleryProp = {
 };
 const {width} = Dimensions.get('window');
 function TempoItem(props: galleryProp): React.JSX.Element {
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const deleteModalShow = () => {
+    setDeleteModalVisible(!deleteModalVisible);
+  };
+  const subTitleText = `
+    임시저장한 전시를 삭제하시겠습니까?
+
+    삭제를 완료하면 관련된 정보도 모두 사라지며
+    복구가 불가능합니다.
+    `
+  const deleteProps = {
+    title: '임시저장본을 삭제하시겠습니까?',
+    subTitle: subTitleText,
+    visible: deleteModalVisible,
+    onClose: deleteModalShow,
+    button: ['삭제하기', '닫기']
+  };
+  
   return (
     <View style={{flex: 1}}>
       <View style={styles.photoBox}>
@@ -27,20 +46,19 @@ function TempoItem(props: galleryProp): React.JSX.Element {
           <Text style={styles.textStyle}>{props.date} 임시저장</Text>
         </View>
       </View>
-
-        <View style={styles.buttonLayer}>
-          <TouchableOpacity style={styles.buttonLeftBox}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>삭제하기</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonRightBox}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>편집하기</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      
+      <View style={styles.buttonLayer}>
+        <TouchableOpacity style={styles.buttonLeftBox} onPress={deleteModalShow}>
+          <View style={styles.buttonContent}>
+            <Text style={styles.buttonText}>삭제하기</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonRightBox}>
+          <View style={styles.buttonContent}>
+            <Text style={styles.buttonText}>편집하기</Text>
+          </View>
+        </TouchableOpacity>
+        <CommonModal {...deleteProps}/>
+      </View>
     </View>
   );
 }
@@ -113,6 +131,9 @@ const styles = StyleSheet.create({
   },
   absolute: {
     position: 'absolute',
-    top: 0, left: 0, bottom: 0, right: 0
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 });
