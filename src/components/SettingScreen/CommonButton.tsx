@@ -4,17 +4,20 @@ type styleProp = {
   title: string;
   navigation?: any
   func?: ()=>void;
+  color?: string;
+  background?: string;
+  paddingNumber?: number;
 };
 function CommonButton(prop: styleProp) {
   return (
     <TouchableOpacity
-      style={styles.buttonContainer}
+      style={[styles.buttonContainer, {paddingHorizontal: prop.paddingNumber }]}
       onPress={() => {
         prop.navigation?.navigate('Certification');
         prop?.func && prop.func();
       }}>
-      <View style={styles.button}>
-        <Text style={styles.buttonTitle}>{prop.title}</Text>
+      <View style={[styles.button, {backgroundColor: prop.background || '#FFD600' }]}>
+        <Text style={[styles.buttonTitle, {color: prop.color || '#030303'}]}>{prop.title}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -29,7 +32,6 @@ const styles = StyleSheet.create({
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    paddingHorizontal: 20
   },
   button: {
     backgroundColor: '#FFD600',
@@ -41,7 +43,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonTitle: {
-    color: '#030303',
     fontSize: 18,
     letterSpacing: -0.36,
     fontWeight: '700',

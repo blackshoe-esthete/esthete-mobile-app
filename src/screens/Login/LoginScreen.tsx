@@ -14,11 +14,11 @@ function LoginScreen() {
     <SafeAreaView edges={['top']} style={styles.root}>
       <View style={styles.container}>
         <Text style={styles.title}>ESTHETE</Text>
-        <InputText placeHolder="아이디를 입력해주세요" type="text" margin={20} />
-        <InputText placeHolder="비밀번호를 입력해주세요" type="password" margin={20} />
+        <InputText placeHolder="아이디를 입력해주세요" margin={20} />
+        <InputText placeHolder="비밀번호를 입력해주세요" margin={20} security={true}/>
         <View style={styles.buttonLayer}>
           <LoginButton color="#292929" title="로그인" navigation={() => navigation.goBack()} />
-          <LoginButton color="#424242" title="회원가입" navigation={() => navigation.goBack()} />
+          <LoginButton color="#424242" title="회원가입" navigation={() => navigation.navigate('SignUp1')} />
         </View>
         <View style={styles.socialLayer}>
           <SocialLogin img={naver}/>
