@@ -1,29 +1,37 @@
 import {AxiosError} from 'axios';
 import {exhibitionInstance} from './instance';
-import {ExhibitionDetails} from '../types/exhibitionService.type';
-import {ImageItem} from '../types';
+import {ExhibitionDetails, ImageItem} from '../types/exhibitionService.type';
 
 //임시저장 및 업데이트
-export const saveOrUpdateExhibition = async ({token, exhibitionData, isNew}) => {
+export const saveOrUpdateExhibition = async ({token, exhibition_photo, exhibitionData}: FinalizeExhibitionParams) => {
   try {
     const url = '/addition/temporary_exhibition';
-    const response = await exhibitionInstance.post(
-      url,
-      {
+
+    const formData = new FormData();
+
+    exhibition_photo.forEach((photo, index) => {
+      formData.append(`exhibition_photo[${index}]`, photo);
+    });
+
+    formData.append(
+      'requestDto',
+      JSON.stringify({
         ...exhibitionData,
-        tmp_exhibition_id: isNew ? '' : exhibitionData.tmp_exhibition_id, // 새 전시면 빈 문자열, 업데이트면 기존 ID
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // JWT 토큰을 이용한 인증
-          'Content-Type': 'application/json',
-        },
-      },
+        tmp_exhibition_id: exhibitionData.tmp_exhibition_id,
+      }),
     );
+
+    const response = await exhibitionInstance.post(url, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
     console.log('Exhibition saved or updated', response.data);
     return response;
   } catch (error) {
-    console.error('Error saving or updating exhibition', (error as AxiosError)?.response?.data);
+    console.error('Error finalizing exhibition', (error as AxiosError)?.response?.data);
     throw error;
   }
 };
@@ -46,7 +54,8 @@ export const finalizeExhibition = async ({token, exhibition_photo, exhibitionDat
     });
 
     formData.append('requestDto', JSON.stringify(exhibitionData));
-
+    console.log('exhibitionData', exhibitionData);
+    console.log('exhibition_photo', exhibition_photo);
     const response = await exhibitionInstance.post(url, formData, {
       headers: {
         Authorization: `Bearer ${token}`, // JWT 토큰을 이용한 인증
@@ -57,7 +66,7 @@ export const finalizeExhibition = async ({token, exhibition_photo, exhibitionDat
     return response;
   } catch (error) {
     console.error('Error finalizing exhibition', (error as AxiosError)?.response?.data);
-    console.error('Error finalizing exhibition', error);
+
     throw error;
   }
 };
