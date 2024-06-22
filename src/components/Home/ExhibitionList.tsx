@@ -1,36 +1,30 @@
 import React from 'react';
-import {
-  FlatList,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import exampleImg from '@assets/imgs/ex1.png';
 import anonymousImg from '@assets/imgs/anonymous.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import {useNavigation} from '@react-navigation/native';
 import HorizontalList from './HorizontalList';
+import {useQuery} from '@tanstack/react-query';
+import {getIsolatedExhibitionList, getMainExhibitionList} from 'src/apis/mainExhibitionService';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '@types/navigations';
 
 function ExhibitionList(): React.JSX.Element {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const {data: recommendedExhibitionData} = useQuery({
+    queryKey: ['recommendedExhibition'],
+    queryFn: () => getMainExhibitionList(),
+  });
+  const {data: isolatedExhibitionData} = useQuery({
+    queryKey: ['isolatedExhibition'],
+    queryFn: () => getIsolatedExhibitionList(),
+  });
 
   return (
     <ScrollView contentContainerStyle={styles.exhibitionContainer}>
-      <HorizontalList
-        title="당신을 위한 추천!"
-        data={[1, 2, 3, 4, 5, 6, 7, 8]}
-        imgStyles={styles.exhibitionImg}
-        imgSource={exampleImg}
-      />
-      <HorizontalList
-        title="이런 전시실은 어떠세요?"
-        data={[1, 2, 3, 4, 5, 6, 7, 8]}
-        imgStyles={styles.exhibitionImg}
-        imgSource={exampleImg}
-      />
+      <HorizontalList title="당신을 위한 추천!" data={recommendedExhibitionData} imgStyles={styles.exhibitionImg} />
+      <HorizontalList title="이런 전시실은 어떠세요?" data={isolatedExhibitionData} imgStyles={styles.exhibitionImg} />
       <HorizontalList
         title="선호 작가"
         data={[1, 2, 3, 4, 5, 6, 7, 8]}
@@ -56,14 +50,8 @@ function ExhibitionList(): React.JSX.Element {
               gap: 10,
               alignItems: 'center',
             }}>
-            <Text style={{color: '#D6D6D6', fontSize: 12, fontWeight: '400'}}>
-              지도 보기
-            </Text>
-            <Image
-              source={arrowIcon}
-              style={styles.arrowIcon}
-              resizeMode="contain"
-            />
+            <Text style={{color: '#D6D6D6', fontSize: 12, fontWeight: '400'}}>지도 보기</Text>
+            <Image source={arrowIcon} style={styles.arrowIcon} resizeMode="contain" />
           </TouchableOpacity>
         </View>
       </HorizontalList>
@@ -92,6 +80,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 10,
+    backgroundColor: '#D6D6D6',
   },
   arrowIcon: {
     width: 4.5,

@@ -1,17 +1,21 @@
 import React from 'react';
 import {FlatList, Image, ImageStyle, StyleProp, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '@types/navigations';
+
+import {ImageSourcePropType} from 'react-native';
 
 type HorizontalListProps = {
   imgStyles: StyleProp<ImageStyle>;
   title: string;
-  data: number[] | String[];
-  imgSource: File | Blob | string;
+  data: any[];
+  imgSource?: ImageSourcePropType;
   children?: React.ReactNode;
 };
 
 function HorizontalList({imgStyles, title, data, imgSource, children}: HorizontalListProps): React.JSX.Element {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const goToExhibition = (id: string) => {
     navigation.navigate('Exhibition', {id});
@@ -26,18 +30,26 @@ function HorizontalList({imgStyles, title, data, imgSource, children}: Horizonta
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gap10}
           data={data}
-          renderItem={({index}) => (
+          renderItem={({item, index}: {item: any; index: number}) => (
             <TouchableOpacity
-              onPress={() => goToExhibition('d8265394-573e-4d5e-baf0-8b75fe10896e')}
+              onPress={() => navigation.navigate('Exhibitions')}
               style={{
                 flexDirection: 'row',
                 gap: 10,
                 alignItems: 'center',
               }}>
-              <Image
-                style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
-                source={imgSource}
-              />
+              {imgSource && (
+                <Image
+                  style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
+                  source={imgSource}
+                />
+              )}
+              {item.thumbnail_url && (
+                <Image
+                  style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
+                  source={{uri: item.thumbnail_url}}
+                />
+              )}
             </TouchableOpacity>
           )}
         />
