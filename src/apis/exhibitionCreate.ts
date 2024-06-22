@@ -38,7 +38,11 @@ export const saveOrUpdateExhibition = async ({token, exhibition_photo, exhibitio
 
 interface FinalizeExhibitionParams {
   token: string | undefined;
-  exhibition_photo: ImageItem[];
+  exhibition_photo: {
+    uri: string;
+    type: string;
+    name: string;
+  }[];
   exhibitionData: ExhibitionDetails | any;
 }
 
@@ -54,8 +58,11 @@ export const finalizeExhibition = async ({token, exhibition_photo, exhibitionDat
     });
 
     formData.append('requestDto', JSON.stringify(exhibitionData));
-    console.log('exhibitionData', exhibitionData);
-    console.log('exhibition_photo', exhibition_photo);
+
+    for (let pair of (formData as any).entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+
     const response = await exhibitionInstance.post(url, formData, {
       headers: {
         Authorization: `Bearer ${token}`, // JWT 토큰을 이용한 인증
