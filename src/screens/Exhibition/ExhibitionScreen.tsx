@@ -19,19 +19,18 @@ const ExhibitionScreen: React.FC = () => {
 
   const exhibitionQuery = useExhibitionDetails(id);
 
-  const {data} = exhibitionQuery;
-  console.log('data', data);
+  const {data, isLoading} = exhibitionQuery;
 
   const goToExhibitionEntered = (id: string) => {
     navigation.navigate('ExhibitionEntered', {id});
   };
 
-  const goToExhibition = (id: string) => {
-    navigation.navigate('Exhibition', {id});
-  };
-
   const cubeRef = useRef<any>(null);
-  const exhibitionIds = ['123', '456', '789'];
+  const exhibitionIds = [
+    'd8265394-573e-4d5e-baf0-8b75fe10896e',
+    'd8265394-573e-4d5e-baf0-8b75fe10896e',
+    'd8265394-573e-4d5e-baf0-8b75fe10896e',
+  ];
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -56,6 +55,8 @@ const ExhibitionScreen: React.FC = () => {
     },
     [SCREEN_WIDTH, SCREEN_HEIGHT],
   );
+
+  if (isLoading) return <ActivityIndicator size="large" color="#000" />;
 
   return (
     <View>
