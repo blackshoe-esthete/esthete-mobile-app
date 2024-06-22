@@ -1,13 +1,13 @@
 import InputText from '@components/LoginScreen/InputText';
 import {useEffect, useState} from 'react';
-import {Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import verified from '@assets/icons/verified.png';
-import unverified from '@assets/icons/unverified.png';
 import CommonButton from '@components/SettingScreen/CommonButton';
 import {useNavigation} from '@react-navigation/native';
+import Verification from '@components/LoginScreen/Verification';
 
 const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 function SignUp1() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
@@ -16,30 +16,32 @@ function SignUp1() {
   const [rePassword, setRePassword] = useState('');
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
-      <Text style={styles.header}>ESTHETE</Text>
-      <View style={styles.inputLayer}>
-        <InputText type="email-address" placeHolder="이메일을 입력해주세요" value={email} onChange={setEmail} />
-        <View style={styles.numberLayer}>
-          <TextInput style={styles.numberInput} />
-          <SendButton />
+      {/* <ScrollView style={styles.scrollContainer}> */}
+        <Text style={styles.header}>ESTHETE</Text>
+        <View style={styles.inputLayer}>
+          <InputText type="email-address" placeHolder="이메일을 입력해주세요" value={email} onChange={setEmail} />
+          <View style={styles.numberLayer}>
+            <TextInput style={styles.numberInput} />
+            <SendButton />
+          </View>
+          <Verification label="인증번호" />
+          <InputText
+            security={true}
+            placeHolder="비밀번호를 입력해주세요"
+            value={password}
+            onChange={setPassword}
+            margin={21}
+          />
+          <InputText
+            security={true}
+            placeHolder="비밀번호를 다시 입력해주세요"
+            value={rePassword}
+            onChange={setRePassword}
+            margin={20}
+          />
+          <Verification label="비밀번호" />
         </View>
-        <Verification />
-        <InputText
-          security={true}
-          placeHolder="비밀번호를 입력해주세요"
-          value={password}
-          onChange={setPassword}
-          margin={21}
-        />
-        <InputText
-          security={true}
-          placeHolder="비밀번호를 다시 입력해주세요"
-          value={rePassword}
-          onChange={setRePassword}
-          margin={20}
-        />
-        <Verification />
-      </View>
+      {/* </ScrollView> */}
       <CommonButton
         title="다음"
         background="#292929"
@@ -61,15 +63,6 @@ const SendButton = () => {
   );
 };
 
-const Verification = () => {
-  return (
-    <View style={styles.alertBox}>
-      <Image source={unverified} style={styles.alertIcon} />
-      <Text style={styles.alertText}>인증번호가 불일치합니다.</Text>
-    </View>
-  );
-};
-
 export default SignUp1;
 
 const styles = StyleSheet.create({
@@ -86,6 +79,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: -0.48,
     marginTop: 50,
+  },
+  scrollContainer: {
+    // width: '100%',
+    // height: windowHeight,
+    // marginBottom: 100,
+    // paddingBottom: 60,
   },
   inputLayer: {
     marginTop: 75,
@@ -106,6 +105,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#424242',
     borderRadius: 8,
     width: ((windowWidth - 50) * 6) / 10,
+    paddingHorizontal: 20,
+    color: 'white',
   },
   buttonBox: {
     backgroundColor: '#292929',
@@ -121,21 +122,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     letterSpacing: -0.32,
-  },
-  alertBox: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: 12,
-    gap: 5,
-  },
-  alertIcon: {
-    width: 15,
-    height: 15,
-  },
-  alertText: {
-    color: 'white',
-    fontSize: 12,
-    letterSpacing: -0.24,
-    fontFamily: 'Gothic A1',
   },
 });
