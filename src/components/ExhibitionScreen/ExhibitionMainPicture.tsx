@@ -3,6 +3,11 @@ import React from 'react';
 import {Image, Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 
 interface ExhibitionMainPictureProps {
+  title: string;
+  date: string;
+  author: string;
+  authorProfile: string;
+  thumbnail: string;
   entered: boolean;
   handlePlayPause?: () => void;
   isPlaying: boolean;
@@ -13,6 +18,11 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
+  title,
+  date,
+  author,
+  authorProfile,
+  thumbnail,
   entered,
   handlePlayPause,
   isPlaying,
@@ -24,7 +34,7 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
   const pauseButtonImage = require('../../assets/icons/pause-btn.png');
   const backIcon = require('../../assets/icons/backspace-icon.png');
 
-  const profileImage = require('../../assets/imgs/profile-img.png');
+  const profileImage = authorProfile ? authorProfile : require('../../assets/imgs/profile-img.png');
 
   const navigation = useNavigation();
 
@@ -54,13 +64,13 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
 
         <View style={styles.overlayFlex}>
           <View style={styles.overlayExhibitWrap}>
-            <Text style={styles.overlayTitle}>{currentExhibitionIndex}</Text>
-            <Text style={styles.overlayDateText}>2023.12.25</Text>
+            <Text style={styles.overlayTitle}>{title}</Text>
+            <Text style={styles.overlayDateText}>{date}</Text>
           </View>
 
           <View style={styles.overlayProfileWrap}>
             <Image source={profileImage} />
-            <Text style={styles.overlayProfileText}>작가명</Text>
+            <Text style={styles.overlayProfileText}>{author}</Text>
           </View>
         </View>
       </View>
@@ -97,7 +107,7 @@ const styles = StyleSheet.create({
   overlayTitle: {
     color: 'white',
     fontSize: 24,
-    textAlign: 'center',
+    textAlign: 'left',
     fontWeight: '700',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
   },

@@ -1,12 +1,12 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {View, Button, StyleSheet, Dimensions} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {View, Button, StyleSheet, Dimensions, ActivityIndicator} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import {RootStackParamList} from '../../types/navigations';
 import Carousel from 'react-native-reanimated-carousel';
-import Animated, {interpolate, Extrapolate} from 'react-native-reanimated';
-
+import {interpolate, Extrapolate} from 'react-native-reanimated';
+import {useExhibitionDetails} from '../../hooks/useExhibitionDetails';
 type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -16,6 +16,11 @@ const ExhibitionScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<ExhibitionScreenRouteProp>();
   const {id} = route.params;
+
+  const exhibitionQuery = useExhibitionDetails(id);
+
+  const {data} = exhibitionQuery;
+  console.log('data', data);
 
   const goToExhibitionEntered = (id: string) => {
     navigation.navigate('ExhibitionEntered', {id});
@@ -68,6 +73,11 @@ const ExhibitionScreen: React.FC = () => {
             <View style={styles.contentContainer}>
               <View style={styles.mainPicture}>
                 <ExhibitionMainPicture
+                  title={data.title}
+                  date={data.date}
+                  author={data.author}
+                  authorProfile={data.author_profile_url}
+                  thumbnail={data.thumbnail_url}
                   entered={false}
                   handlePlayPause={handlePlayPause}
                   isPlaying={isPlaying}
