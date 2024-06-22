@@ -65,7 +65,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
         title: details.title,
         description: details.description,
         tag_list: {
-          tag_list: details.mood,
+          tags: details.mood,
         },
       },
       exhibition_location: {
