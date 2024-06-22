@@ -1,16 +1,5 @@
 import {create} from 'zustand';
-import {ExhibitionDetailsStore} from '../types/exhibitionService.type';
-
-interface FilterDetails {
-  id: string;
-  grayScale: number; // 슬라이더 값
-}
-
-interface ImageItem {
-  uri: string;
-  identifier: string;
-  filterDetails?: FilterDetails; // 선택한 필터와 슬라이더 값
-}
+import {ExhibitionDetailsStore, ImageItem} from '../types/exhibitionService.type';
 
 interface ExhibitionCreationStore {
   selectedImageUri: string | undefined;

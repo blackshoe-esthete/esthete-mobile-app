@@ -1,3 +1,14 @@
+export interface FilterDetails {
+  id: string;
+  grayScale: number; // 슬라이더 값
+}
+
+export interface ImageItem {
+  uri: string;
+  identifier: string;
+  filterDetails?: FilterDetails; // 선택한 필터와 슬라이더 값
+}
+
 export interface FilterPhoto {
   gray_scale: number;
   filter_id: string;
