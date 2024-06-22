@@ -31,7 +31,7 @@ const ExhibitionEnteredScreen = () => {
   const commentQuery = useExhibitionComments('d8265394-573e-4d5e-baf0-8b75fe10896e');
 
   const {data, isLoading} = exhibitionQuery;
-  const {data: comments} = commentQuery;
+  const {data: comments, isLoading: isCommentLoading} = commentQuery;
 
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
@@ -86,7 +86,7 @@ const ExhibitionEnteredScreen = () => {
       animatedHeight.setValue(0);
     });
   };
-  if (isLoading) return <ActivityIndicator size="large" color="#000" />;
+  if (isLoading || isCommentLoading) return <ActivityIndicator size="large" color="#000" />;
 
   return (
     <View>
