@@ -16,8 +16,9 @@ import {useExhibitionCreationStore, useExhibitionDetailsStore} from '../../store
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import CommonModal from '@components/common/CommonModal';
-import {finalizeExhibition} from '../../apis/exhibitionCreate';
+import {finalizeExhibition, saveOrUpdateExhibition} from '../../apis/exhibitionCreate';
 import Config from 'react-native-config';
+import cancleIcon from '@assets/icons/cancel_gray.png';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -42,7 +43,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     details.mood.length > 0 &&
     details.location;
 
-  const finalizeCreation = async () => {
+  const finalizeCreation = async type => {
     if (!allFieldsFilled) {
       console.log('details', details);
       Alert.alert('모든 정보를 입력해야 제작을 진행할 수 있습니다.');
@@ -54,9 +55,12 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       gray_scale: image.filterDetails?.grayScale,
       filter_id: image.filterDetails?.id,
     }));
-    console.log('filterPhotos', filterPhotos);
 
-    const exhibition_photo = additionalImageUri;
+    const exhibition_photo = additionalImageUri.map((uri, index) => ({
+      uri: uri.uri,
+      name: `representation${index}${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
+      type: 'image/jpg',
+    }));
 
     // exhibitionData 구성
     const exhibitionData = {
@@ -80,8 +84,13 @@ const ExhibitionFilterApplyCompleteScreen = () => {
 
     try {
       const token = apiToken;
-      console.log(exhibition_photo);
-      await finalizeExhibition({token, exhibition_photo, exhibitionData});
+
+      if (type === 'save') {
+        await saveOrUpdateExhibition({token, exhibition_photo, exhibitionData});
+      } else {
+        await finalizeExhibition({token, exhibition_photo, exhibitionData});
+      }
+
       Alert.alert('전시가 성공적으로 제작되었습니다.');
       navigation.navigate('Main');
     } catch (error) {
@@ -172,21 +181,30 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               contentContainerStyle={{gap: 10}}
               data={moodOptions}
               renderItem={({item}) => (
-                <TouchableOpacity
-                  onPress={() => toggleMood(item)}
-                  style={[
-                    styles.keyword,
-                    {
-                      borderColor: details.mood.includes(item) ? '#FFD600' : '#414141', // 조건에 따라 보더 컬러 설정
-                      borderWidth: 1, // 보더가 보이도록 폭 설정
-                    },
-                  ]}>
+                <TouchableOpacity onPress={() => toggleMood(item)} style={[styles.keyword]}>
                   <Text style={styles.keywordText}>{item}</Text>
                 </TouchableOpacity>
               )}
             />
           </View>
         </View>
+
+        {/* 선택한 태그 표시 */}
+        {details.mood.length > 0 && (
+          <View style={{paddingHorizontal: 20, paddingTop: 15}}>
+            <Text style={{color: '#FFF', fontSize: 13, fontWeight: '500'}}>내가 선택한 태그</Text>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10}}>
+              {details.mood.map((mood, index) => (
+                <View key={index} style={styles.selectedKeyword}>
+                  <Text style={styles.selectedKeywordText}>{mood}</Text>
+                  <Pressable onPress={() => setDetails({mood: details.mood.filter(m => m !== mood)})}>
+                    <Image source={cancleIcon} style={{width: 17, height: 17}} resizeMode="contain" />
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         <View style={{gap: 20, marginTop: 25, paddingHorizontal: 20}}>
           <Text style={{color: '#FFF', fontSize: 14}}>전시 위치</Text>
@@ -221,6 +239,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           onConfirm={() => {
             setTempModalVisible(!tempModalVisible);
             navigation.navigate('Main');
+            finalizeCreation('save'); //임시저장 실행
           }}
           onClose={() => setTempModalVisible(!tempModalVisible)}
         />
@@ -231,7 +250,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           visible={createModalVisible}
           onConfirm={() => {
             setCreateModalVisible(!createModalVisible);
-            finalizeCreation(); // 최종 전시 제작 실행
+            finalizeCreation('create'); // 최종 전시 제작 실행
           }}
           onClose={() => setCreateModalVisible(!createModalVisible)}
         />
@@ -261,10 +280,9 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   keyword: {
-    height: 42,
     borderRadius: 10,
     paddingHorizontal: 15,
-    paddingVertical: 11,
+    paddingVertical: 13,
     backgroundColor: '#414141',
   },
   keywordText: {
@@ -292,6 +310,21 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 18,
     fontWeight: '700',
+  },
+  selectedKeyword: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 3,
+    borderRadius: 8.5,
+    paddingLeft: 13,
+    paddingRight: 10,
+    paddingVertical: 10,
+    backgroundColor: '#414141',
+  },
+  selectedKeywordText: {
+    color: '#F4F4F4',
+    fontSize: 14,
   },
 });
 
