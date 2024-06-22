@@ -1,4 +1,5 @@
 import {create} from 'zustand';
+import {ExhibitionDetailsStore} from '../types/exhibitionService.type';
 
 interface FilterDetails {
   id: string;
@@ -95,53 +96,6 @@ export const useExhibitionCreationStore = create<ExhibitionCreationStore>((set, 
     });
   },
 }));
-
-interface FilterPhoto {
-  gray_scale: number;
-  filter_id: string;
-}
-
-interface TagList {
-  tag_list: string[];
-}
-
-interface ExhibitionInformation {
-  title: string;
-  description: string;
-  tag_list: TagList;
-}
-
-interface ExhibitionLocation {
-  format_address: string;
-  longitude: number;
-  latitude: number;
-  state: string;
-  city: string;
-  town: string;
-}
-
-interface ExhibitionRequest {
-  filter_photo_list: {
-    filter_photos: FilterPhoto[];
-  };
-  exhibition_information: ExhibitionInformation;
-  exhibition_location: ExhibitionLocation;
-  tmp_exhibition_id: string;
-}
-
-interface ExhibitionDetails {
-  filterPhotos: string[];
-  title: string;
-  description: string;
-  mood: string[];
-  location: ExhibitionLocation;
-  tmpExhibitionId?: string;
-}
-
-interface ExhibitionDetailsStore {
-  details: ExhibitionDetails;
-  setDetails: (details: Partial<ExhibitionDetails>) => void;
-}
 
 export const useExhibitionDetailsStore = create<ExhibitionDetailsStore>(set => ({
   details: {
