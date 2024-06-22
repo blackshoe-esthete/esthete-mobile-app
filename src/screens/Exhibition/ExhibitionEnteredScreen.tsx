@@ -10,6 +10,7 @@ import {
   Animated,
   PanResponder,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import {RootStackParamList} from '../../types/navigations';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
@@ -18,7 +19,7 @@ import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
-import {is} from '../../../node_modules/@types/node/crypto.d';
+import {useExhibitionComments, useExhibitionDetails} from '@hooks/useExhibitionDetails';
 
 type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
 
@@ -26,22 +27,12 @@ const ExhibitionEnteredScreen = () => {
   const route = useRoute<ExhibitionScreenRouteProp>();
   const {id} = route.params;
 
-  const comments = [
-    {
-      userId: '1',
-      userImg: '../../assets/imgs/anonymous.png',
-      userName: '프로필명',
-      commentDate: '2024.03.17',
-      commentText: '전시회명에 대한 리뷰를 달아주세요',
-    },
-    {
-      userId: '2',
-      userImg: '../../assets/imgs/anonymous.png',
-      userName: '프로필명',
-      commentDate: '2024.03.17',
-      commentText: '전시회명에 대한 리뷰를 달아주세요',
-    },
-  ];
+  const exhibitionQuery = useExhibitionDetails(id);
+  const commentQuery = useExhibitionComments('d8265394-573e-4d5e-baf0-8b75fe10896e');
+
+  const {data, isLoading} = exhibitionQuery;
+  const {data: comments} = commentQuery;
+
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
 
@@ -95,13 +86,23 @@ const ExhibitionEnteredScreen = () => {
       animatedHeight.setValue(0);
     });
   };
+  if (isLoading) return <ActivityIndicator size="large" color="#000" />;
 
   return (
     <View>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
           <View style={styles.mainPicture}>
-            <ExhibitionMainPicture entered={true} isPlaying={false} currentExhibitionIndex={id} />
+            <ExhibitionMainPicture
+              title={data.title}
+              date={data.date}
+              author={data.author}
+              authorProfile={data.author_profile_url}
+              thumbnail={data.thumbnail_url}
+              entered={true}
+              isPlaying={false}
+              currentExhibitionIndex={id}
+            />
           </View>
           <View style={styles.flexContainer}>
             <TouchableOpacity onPress={() => setOnLike(!onLike)}>
@@ -148,14 +149,16 @@ const ExhibitionEnteredScreen = () => {
           {comments.map((comment, index) => (
             <Comment
               key={index}
-              userImg={comment.userImg}
-              userName={comment.userName}
-              commentDate={comment.commentDate}
-              commentText={comment.commentText}
+              commentId={comment.comment_id}
+              userImg={comment.profile_url}
+              userName={comment.name}
+              commentDate={comment.date}
+              commentText={comment.content}
+              isLiked={comment.is_like}
               setModalVisible={setModalVisible}
             />
           ))}
-          <CommentInputBox />
+          <CommentInputBox exhibitionId={id} />
         </Animated.View>
       </Modal>
     </View>

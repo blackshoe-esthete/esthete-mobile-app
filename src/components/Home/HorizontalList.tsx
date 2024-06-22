@@ -28,7 +28,7 @@ function HorizontalList({imgStyles, title, data, imgSource, children}: Horizonta
           data={data}
           renderItem={({index}) => (
             <TouchableOpacity
-              onPress={() => goToExhibition('123')}
+              onPress={() => goToExhibition('d8265394-573e-4d5e-baf0-8b75fe10896e')}
               style={{
                 flexDirection: 'row',
                 gap: 10,
