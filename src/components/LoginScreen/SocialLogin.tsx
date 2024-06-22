@@ -22,6 +22,7 @@ export default SocialLogin;
 const styles = StyleSheet.create({
   buttonLayer: {
     width: (windowWidth * 9) / 10,
-    borderRadius: 8
+    borderRadius: 8,
+    height: 57
   },
 });
