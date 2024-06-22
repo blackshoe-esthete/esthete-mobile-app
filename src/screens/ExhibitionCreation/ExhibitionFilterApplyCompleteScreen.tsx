@@ -55,6 +55,9 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       filter_id: image.filterDetails?.id,
     }));
     console.log('filterPhotos', filterPhotos);
+
+    const exhibition_photo = additionalImageUri;
+
     // exhibitionData 구성
     const exhibitionData = {
       filter_photo_list: {filter_photos: filterPhotos},
@@ -77,8 +80,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
 
     try {
       const token = apiToken;
-      console.log(exhibitionData);
-      await finalizeExhibition({token, exhibitionData});
+      console.log(exhibition_photo);
+      await finalizeExhibition({token, exhibition_photo, exhibitionData});
       Alert.alert('전시가 성공적으로 제작되었습니다.');
       navigation.navigate('Main');
     } catch (error) {
@@ -141,6 +144,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               placeholderTextColor="#D6D6D6"
               onChangeText={text => setDetails({title: text})}
               value={details.title}
+              autoCorrect={false} // 자동 수정 제안 끄기
+              spellCheck={false} // 철자 검사 끄기
             />
           </View>
           <View style={styles.textInput}>
@@ -150,6 +155,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               placeholderTextColor="#D6D6D6"
               onChangeText={text => setDetails({description: text})}
               value={details.description}
+              autoCorrect={false} // 자동 수정 제안 끄기
+              spellCheck={false} // 철자 검사 끄기
             />
           </View>
         </View>
