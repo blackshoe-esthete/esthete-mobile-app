@@ -32,7 +32,7 @@ function HorizontalList({imgStyles, title, data, imgSource, children}: Horizonta
           data={data}
           renderItem={({item, index}: {item: any; index: number}) => (
             <TouchableOpacity
-              onPress={() => navigation.navigate('Exhibitions')}
+              onPress={() => navigation.navigate('Exhibition', {exhibitionId: item.exhibition_id})}
               style={{
                 flexDirection: 'row',
                 gap: 10,

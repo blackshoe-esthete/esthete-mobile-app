@@ -63,3 +63,14 @@ export const getTagExhibitionList = async (tag: string) => {
     throw error;
   }
 };
+
+// 전시회 상세 정보 조회 (/details/{exhibitionId})
+export const getExhibitionDetail = async (exhibitionId: string) => {
+  try {
+    const response = await exhibitionInstance.get(`/details/${exhibitionId}`);
+    return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', error);
+    throw error;
+  }
+};

@@ -1,13 +1,10 @@
 import {useNavigation} from '@react-navigation/native';
+import {ExhibitionData} from '@types/mainExhibitionService.type';
 import React from 'react';
 import {Image, Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 
 interface ExhibitionMainPictureProps {
-  title: string;
-  date: string;
-  author: string;
-  authorProfile: string;
-  thumbnail: string;
+  exhibitionData: ExhibitionData;
   entered: boolean;
   handlePlayPause?: () => void;
   isPlaying: boolean;
@@ -18,34 +15,25 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
-  title,
-  date,
-  author,
-  authorProfile,
-  thumbnail,
+  exhibitionData,
   entered,
   handlePlayPause,
   isPlaying,
   currentExhibitionIndex,
 }) => {
-  const thumbanilGalleryImage = require('../../assets/imgs/thumbnail-gallery-image.png');
-
   const playButtonImage = require('../../assets/icons/play-btn.png');
   const pauseButtonImage = require('../../assets/icons/pause-btn.png');
   const backIcon = require('../../assets/icons/backspace-icon.png');
 
-  const profileImage = authorProfile ? authorProfile : require('../../assets/imgs/profile-img.png');
+  const profileImage = require('../../assets/imgs/profile-img.png');
 
   const navigation = useNavigation();
 
+  console.log(exhibitionData);
+
   return (
     <View style={styles.container}>
-      <Image
-        source={thumbanilGalleryImage}
-        style={{
-          width: SCREEN_WIDTH,
-        }}
-      />
+      <Image source={{uri: exhibitionData?.thumbnail_url}} style={{width: width, height: 431}} resizeMode="cover" />
       <View style={styles.overlayContainer}>
         <View style={styles.overlayFlex}>
           <TouchableOpacity
@@ -64,13 +52,17 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
 
         <View style={styles.overlayFlex}>
           <View style={styles.overlayExhibitWrap}>
-            <Text style={styles.overlayTitle}>{title}</Text>
-            <Text style={styles.overlayDateText}>{date}</Text>
+            <Text style={styles.overlayTitle}>{exhibitionData?.title}</Text>
+            <Text style={styles.overlayDateText}>{exhibitionData?.date.replaceAll('-', '.')}</Text>
           </View>
 
           <View style={styles.overlayProfileWrap}>
-            <Image source={profileImage} />
-            <Text style={styles.overlayProfileText}>{author}</Text>
+            {exhibitionData?.author_profile_url ? (
+              <Image source={{uri: exhibitionData?.author_profile_url}} style={styles.profileImage} />
+            ) : (
+              <Image source={profileImage} style={styles.profileImage} />
+            )}
+            <Text style={styles.overlayProfileText}>{exhibitionData?.author_name}</Text>
           </View>
         </View>
       </View>
@@ -107,7 +99,7 @@ const styles = StyleSheet.create({
   overlayTitle: {
     color: 'white',
     fontSize: 24,
-    textAlign: 'left',
+    // textAlign: 'center',
     fontWeight: '700',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
   },
@@ -132,6 +124,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     marginTop: 3,
+  },
+  // 프로필 이미지
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#D6D6D6',
   },
 });
 
