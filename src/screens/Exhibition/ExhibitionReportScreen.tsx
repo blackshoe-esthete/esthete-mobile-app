@@ -1,12 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
 const reportOptions = [
@@ -27,22 +21,22 @@ type ExhibitionReportScreenProps = {
   };
 };
 
-const ExhibitionReportScreen: React.FC<ExhibitionReportScreenProps> = ({
-  route,
-}) => {
+const ExhibitionReportScreen: React.FC<ExhibitionReportScreenProps> = ({route}) => {
   const {reportType} = route.params;
 
   const navigation = useNavigation();
-  const [selectedOptions, setSelectedOptions] = useState(
-    new Array(reportOptions.length).fill(false),
-  );
+  // 기타 선택 시 추가 입력창 표시
+  const [showOtherTextInput, setShowOtherTextInput] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState(new Array(reportOptions.length).fill(false));
+  const [otherText, setOtherText] = useState('');
 
-  const toggleCheckbox = index => {
-    const updatedOptions = [...selectedOptions];
-    updatedOptions[index] = !updatedOptions[index];
-    setSelectedOptions(updatedOptions);
+  const toggleCheckbox = (index: number) => {
+    const newSelectedOptions = {...selectedOptions, [index]: !selectedOptions[index]};
+    setSelectedOptions(newSelectedOptions);
+    if (reportOptions[index] === '기타') {
+      setShowOtherTextInput(!selectedOptions[index]);
+    }
   };
-
   const handleSubmit = () => {
     const selected = reportOptions.filter((_, index) => selectedOptions[index]);
     console.log('Selected report options:', selected);
@@ -76,6 +70,17 @@ const ExhibitionReportScreen: React.FC<ExhibitionReportScreenProps> = ({
               />
             </View>
           ))}
+          {showOtherTextInput && (
+            <TextInput
+              style={styles.textInput}
+              placeholder="기타 의견을 작성해주세요"
+              placeholderTextColor="#D6D6D6"
+              value={otherText}
+              onChangeText={setOtherText}
+              multiline={true}
+              numberOfLines={3}
+            />
+          )}
         </View>
         <View style={styles.flexbox}>
           <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -150,6 +155,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#000',
     fontWeight: 'bold',
+  },
+  textInput: {
+    marginTop: 10,
+    paddingVertical: 30,
+    paddingHorizontal: 15,
+    backgroundColor: '#292929',
+    borderRadius: 5,
+    color: '#fff',
+    textAlignVertical: 'center',
   },
 });
 

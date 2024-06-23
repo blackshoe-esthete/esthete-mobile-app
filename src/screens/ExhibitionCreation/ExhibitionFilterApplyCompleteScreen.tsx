@@ -16,8 +16,9 @@ import {useExhibitionCreationStore, useExhibitionDetailsStore} from '../../store
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import CommonModal from '@components/common/CommonModal';
-import {finalizeExhibition} from '../../apis/exhibitionCreate';
+import {finalizeExhibition, saveOrUpdateExhibition} from '../../apis/exhibitionCreate';
 import Config from 'react-native-config';
+import cancleIcon from '@assets/icons/cancel_gray.png';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -25,9 +26,9 @@ const ExhibitionFilterApplyCompleteScreen = () => {
   const apiToken = Config.API_TOKEN;
 
   const navigation = useNavigation();
-  const {details, setDetails} = useExhibitionDetailsStore(); // 스토어 사용
+  const {details, setDetails, resetDetails} = useExhibitionDetailsStore(); // 스토어 사용
   //선택한 이미지
-  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
+  const {selectedImageUri, additionalImageUri, resetImages} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   //모달
   const [tempModalVisible, setTempModalVisible] = useState(false);
@@ -42,8 +43,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     details.mood.length > 0 &&
     details.location;
 
-  const finalizeCreation = async () => {
-    if (!allFieldsFilled) {
+  const finalizeCreation = async (type: string) => {
+    if (type == 'create' && !allFieldsFilled) {
       console.log('details', details);
       Alert.alert('모든 정보를 입력해야 제작을 진행할 수 있습니다.');
       return;
@@ -54,7 +55,13 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       gray_scale: image.filterDetails?.grayScale,
       filter_id: image.filterDetails?.id,
     }));
-    console.log('filterPhotos', filterPhotos);
+
+    const exhibition_photo = additionalImageUri.map((uri, index) => ({
+      uri: uri.uri,
+      name: `representation${index}${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
+      type: 'image/jpg',
+    }));
+
     // exhibitionData 구성
     const exhibitionData = {
       filter_photo_list: {filter_photos: filterPhotos},
@@ -62,7 +69,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
         title: details.title,
         description: details.description,
         tag_list: {
-          tag_list: details.mood,
+          tags: details.mood,
         },
       },
       exhibition_location: {
@@ -75,24 +82,64 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       tmp_exhibition_id: details.tmpExhibitionId || '',
     };
 
+    const formData = new FormData();
+
+    exhibition_photo.forEach(img => {
+      formData.append(`exhibition_photo`, {
+        uri: img.uri,
+        name: img.name,
+        type: img.type,
+      });
+    });
+
+    formData.append('requestDto', JSON.stringify(exhibitionData));
+
+    function logFormData(formData: FormData) {
+      const entries = formData as unknown as {_parts: [string, any][]};
+
+      entries._parts.forEach(([key, value]) => {
+        console.log('key', key);
+        console.log('value', value);
+      });
+    }
+    logFormData(formData);
+
     try {
       const token = apiToken;
-      console.log(exhibitionData);
-      await finalizeExhibition({token, exhibitionData});
-      Alert.alert('전시가 성공적으로 제작되었습니다.');
-      navigation.navigate('Main');
+
+      if (type === 'save') {
+        await saveOrUpdateExhibition({token, formData});
+        Alert.alert('전시 임시저장 완료!');
+      } else {
+        await finalizeExhibition({token, formData});
+        Alert.alert('전시 업로드 완료!');
+      }
+
+      resetDetails();
+      resetImages();
+
+      navigation.navigate('Exhibitions');
     } catch (error) {
       Alert.alert('전시 제작 중 오류가 발생했습니다.');
     }
   };
 
-  const moodOptions = ['초상화', '풍경', '거리', '음식', '여행', '패션'];
+  const moodOptions = [
+    {id: 'fe96c294-b5f3-425e-a6de-8cc1b13beb5a', name: '부드러운'},
+    {id: '118ccbfb-8caf-498b-913a-16a315b3a859', name: '초상화'},
+    {id: '4a0db2eb-f4bc-4fa3-ae47-8381ed0da1ab', name: '풍경'},
+    {id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267', name: '거리'},
+    {id: '1f479a8d-dab2-4d95-96c9-73d5f7382a01', name: '음식'},
+    {id: '8969e7f1-2d1e-4a6d-b234-73c2aa7b24ff', name: '여행'},
+    {id: '9b11a16b-6786-4a28-8273-ff9e06b80318', name: '패션'},
+  ];
 
-  const toggleMood = (selectedMood: string) => {
-    let newMood = details.mood.includes(selectedMood)
-      ? details.mood.filter(m => m !== selectedMood)
-      : [...details.mood, selectedMood];
+  const toggleMood = (selectedMoodId: string) => {
+    let newMood = details.mood.includes(selectedMoodId)
+      ? details.mood.filter(m => m !== selectedMoodId)
+      : [...details.mood, selectedMoodId];
     setDetails({mood: newMood});
+    console.log('newMood', newMood);
   };
 
   return (
@@ -141,6 +188,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               placeholderTextColor="#D6D6D6"
               onChangeText={text => setDetails({title: text})}
               value={details.title}
+              autoCorrect={false} // 자동 수정 제안 끄기
+              spellCheck={false} // 철자 검사 끄기
             />
           </View>
           <View style={styles.textInput}>
@@ -150,6 +199,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               placeholderTextColor="#D6D6D6"
               onChangeText={text => setDetails({description: text})}
               value={details.description}
+              autoCorrect={false} // 자동 수정 제안 끄기
+              spellCheck={false} // 철자 검사 끄기
             />
           </View>
         </View>
@@ -165,21 +216,30 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               contentContainerStyle={{gap: 10}}
               data={moodOptions}
               renderItem={({item}) => (
-                <TouchableOpacity
-                  onPress={() => toggleMood(item)}
-                  style={[
-                    styles.keyword,
-                    {
-                      borderColor: details.mood.includes(item) ? '#FFD600' : '#414141', // 조건에 따라 보더 컬러 설정
-                      borderWidth: 1, // 보더가 보이도록 폭 설정
-                    },
-                  ]}>
-                  <Text style={styles.keywordText}>{item}</Text>
+                <TouchableOpacity onPress={() => toggleMood(item.id)} style={[styles.keyword]}>
+                  <Text style={styles.keywordText}>{item.name}</Text>
                 </TouchableOpacity>
               )}
             />
           </View>
         </View>
+
+        {/* 선택한 태그 표시 */}
+        {details.mood.length > 0 && (
+          <View style={{paddingHorizontal: 20, paddingTop: 15}}>
+            <Text style={{color: '#FFF', fontSize: 13, fontWeight: '500'}}>내가 선택한 태그</Text>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10}}>
+              {details.mood.map((mood, index) => (
+                <View key={index} style={styles.selectedKeyword}>
+                  <Text style={styles.selectedKeywordText}>{moodOptions.find(option => option.id === mood)?.name}</Text>
+                  <Pressable onPress={() => setDetails({mood: details.mood.filter(m => m !== mood)})}>
+                    <Image source={cancleIcon} style={{width: 17, height: 17}} resizeMode="contain" />
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         <View style={{gap: 20, marginTop: 25, paddingHorizontal: 20}}>
           <Text style={{color: '#FFF', fontSize: 14}}>전시 위치</Text>
@@ -214,6 +274,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           onConfirm={() => {
             setTempModalVisible(!tempModalVisible);
             navigation.navigate('Main');
+            finalizeCreation('save'); //임시저장 실행
           }}
           onClose={() => setTempModalVisible(!tempModalVisible)}
         />
@@ -224,7 +285,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           visible={createModalVisible}
           onConfirm={() => {
             setCreateModalVisible(!createModalVisible);
-            finalizeCreation(); // 최종 전시 제작 실행
+            finalizeCreation('create'); // 최종 전시 제작 실행
           }}
           onClose={() => setCreateModalVisible(!createModalVisible)}
         />
@@ -254,10 +315,9 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   keyword: {
-    height: 42,
     borderRadius: 10,
     paddingHorizontal: 15,
-    paddingVertical: 11,
+    paddingVertical: 13,
     backgroundColor: '#414141',
   },
   keywordText: {
@@ -285,6 +345,21 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 18,
     fontWeight: '700',
+  },
+  selectedKeyword: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 3,
+    borderRadius: 8.5,
+    paddingLeft: 13,
+    paddingRight: 10,
+    paddingVertical: 10,
+    backgroundColor: '#414141',
+  },
+  selectedKeywordText: {
+    color: '#F4F4F4',
+    fontSize: 14,
   },
 });
 
