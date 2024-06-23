@@ -23,7 +23,7 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
 
   useEffect(() => {
     if (exhibitionData?.photos?.length > 0) {
-      setLoading(false);
+      setLoading(false); //
     }
   }, [exhibitionData]);
 
@@ -36,8 +36,8 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FFFFFF" />
+      <View style={{flex: 1, alignItems: 'center', paddingTop: 120}}>
+        <Text style={{color: 'white', fontSize: 17}}>No Photos</Text>
       </View>
     );
   }
