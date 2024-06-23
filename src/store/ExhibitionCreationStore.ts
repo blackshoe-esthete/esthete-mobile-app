@@ -4,6 +4,7 @@ import {ExhibitionDetailsStore, ImageItem} from '../types/exhibitionService.type
 interface ExhibitionCreationStore {
   selectedImageUri: string | undefined;
   setSelectedImageUri: (uri: string) => void;
+  resetImages: () => void;
   additionalImageUri: ImageItem[];
   setAdditionalImageUri: (images: ImageItem[]) => void;
   currentFilterId: string;
@@ -84,6 +85,13 @@ export const useExhibitionCreationStore = create<ExhibitionCreationStore>((set, 
       })),
     });
   },
+  resetImages: () =>
+    set({
+      selectedImageUri: undefined,
+      additionalImageUri: [],
+      currentFilterId: '',
+      currentGrayScale: 0,
+    }),
 }));
 
 export const useExhibitionDetailsStore = create<ExhibitionDetailsStore>(set => ({
@@ -106,4 +114,22 @@ export const useExhibitionDetailsStore = create<ExhibitionDetailsStore>(set => (
     set(state => ({
       details: {...state.details, ...newDetails},
     })),
+  resetDetails: () =>
+    set({
+      details: {
+        filterPhotos: [],
+        title: '',
+        description: '',
+        mood: [],
+        location: {
+          format_address: '',
+          longitude: 0,
+          latitude: 0,
+          state: '',
+          city: '',
+          town: '',
+        },
+        tmpExhibitionId: undefined,
+      },
+    }),
 }));

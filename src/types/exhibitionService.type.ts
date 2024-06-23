@@ -54,4 +54,5 @@ export interface ExhibitionDetails {
 export interface ExhibitionDetailsStore {
   details: ExhibitionDetails;
   setDetails: (details: Partial<ExhibitionDetails>) => void;
+  resetDetails: () => void;
 }
