@@ -2,9 +2,9 @@ export type RootStackParamList = {
   Main: undefined;
   Map: undefined;
   HomeSearch: undefined;
-  Exhibitions: undefined;
-  ExhibitionEntered: undefined;
-  ExhibitionReport: undefined;
+  Exhibition: {id: string};
+  ExhibitionEntered: {id: string};
+  ExhibitionReport: {id: string};
   ExhibitionCreation: undefined;
   ExhibitionFilterApply: undefined;
   FilterCreation: undefined;

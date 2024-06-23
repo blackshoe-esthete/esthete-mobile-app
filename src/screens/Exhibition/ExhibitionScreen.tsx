@@ -1,50 +1,118 @@
-import React from 'react';
-
-import {View, ScrollView, Button, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, {useRef, useState} from 'react';
+import {View, Button, StyleSheet, Dimensions, ActivityIndicator} from 'react-native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
+import {RootStackParamList} from '../../types/navigations';
+import Carousel from 'react-native-reanimated-carousel';
+import {interpolate, Extrapolate} from 'react-native-reanimated';
+import {useExhibitionDetails} from '../../hooks/useExhibitionDetails';
+type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
 
-const ExhibitionScreen = () => {
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+const ExhibitionScreen: React.FC = () => {
   const navigation = useNavigation();
+  const route = useRoute<ExhibitionScreenRouteProp>();
+  const {id} = route.params;
+
+  const exhibitionQuery = useExhibitionDetails(id);
+
+  const {data, isLoading} = exhibitionQuery;
+
+  const goToExhibitionEntered = (id: string) => {
+    navigation.navigate('ExhibitionEntered', {id});
+  };
+
+  const cubeRef = useRef<any>(null);
+  const exhibitionIds = [
+    'd8265394-573e-4d5e-baf0-8b75fe10896e',
+    'd8265394-573e-4d5e-baf0-8b75fe10896e',
+    'd8265394-573e-4d5e-baf0-8b75fe10896e',
+  ];
+
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayPause = () => {
+    setIsPlaying(prevState => !prevState);
+  };
+
+  const animationStyle: any = React.useCallback(
+    (value: number) => {
+      'worklet';
+
+      const zIndex = interpolate(value, [-1, 0, 1], [-1200, 0, -1200]);
+      const rotateY = `${interpolate(value, [-1, 0, 1], [-90, 0, 90], Extrapolate.CLAMP)}deg`;
+      const perspective = 1000;
+      const transform = {
+        transform: [{perspective}, {rotateY}, {translateX: value * SCREEN_WIDTH}],
+      };
+      return {
+        ...transform,
+        zIndex,
+      };
+    },
+    [SCREEN_WIDTH, SCREEN_HEIGHT],
+  );
+
+  if (isLoading) return <ActivityIndicator size="large" color="#000" />;
+
   return (
     <View>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        scrollEnabled={false}>
-        <View style={styles.container}>
-          <View style={styles.contentContainer}>
-            <View style={styles.mainPicture}>
-              <ExhibitionMainPicture entered={false} />
+      <Carousel
+        ref={cubeRef}
+        width={SCREEN_WIDTH}
+        height={SCREEN_HEIGHT}
+        autoPlay={isPlaying}
+        autoPlayInterval={3000}
+        data={exhibitionIds}
+        scrollAnimationDuration={2000}
+        customAnimation={animationStyle}
+        renderItem={({item, index}) => (
+          <View key={index} style={styles.container}>
+            <View style={styles.contentContainer}>
+              <View style={styles.mainPicture}>
+                <ExhibitionMainPicture
+                  title={data.title}
+                  date={data.date}
+                  author={data.author}
+                  authorProfile={data.author_profile_url}
+                  thumbnail={data.thumbnail_url}
+                  entered={false}
+                  handlePlayPause={handlePlayPause}
+                  isPlaying={isPlaying}
+                  currentExhibitionIndex={item}
+                />
+                <ExhibitionPictureList isVisited={false} />
+              </View>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Visit"
+                color="#000"
+                onPress={() => {
+                  setIsPlaying(false);
+                  goToExhibitionEntered(item);
+                }}
+              />
             </View>
           </View>
-        </View>
-
-        <View style={styles.pictures}>
-          <ExhibitionPictureList isVisited={false} />
-        </View>
-      </ScrollView>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Visit"
-          color="#000"
-          onPress={() => {
-            navigation.navigate('ExhibitionEntered');
-          }}
-        />
-      </View>
+        )}
+      />
     </View>
   );
 };
 
 export default ExhibitionScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#030303',
+    paddingTop: 55,
   },
   contentContainer: {
     flex: 1,

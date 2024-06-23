@@ -10,7 +10,6 @@ interface FilterItemProps {
 }
 
 const FilterItem: React.FC<FilterItemProps> = ({imageUri, filterName}) => {
-  console.log('image', imageUri);
   return (
     <View style={styles.container}>
       <Image source={imageUri} style={styles.image} />

@@ -1,6 +1,6 @@
 import React from 'react';
 // import type {PropsWithChildren} from 'react';
-
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
@@ -15,10 +15,13 @@ import FilterCreationScreen from './src/screens/FilterCreation/FilterCreationScr
 import FilterCreationDescScreen from './src/screens/FilterCreation/FilterCreationDescScreen';
 import GalleryScreen from './src/screens/FilterCreation/GalleryScreen';
 import {type RootStackParamList} from './src/types/navigations';
+import ExhibitionFilterApplyAllScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyAllScreen';
 import ExhibitionFilterApplyScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyScreen';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import ExhibitionFilterApplyCompleteScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyCompleteScreen';
+import PlacesSearchScreen from './src/screens/ExhibitionCreation/PlacesSearchScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const queryClient = new QueryClient();
 
 const MyTheme = {
   ...DefaultTheme,
@@ -28,13 +31,11 @@ const MyTheme = {
   },
 };
 
-const queryClient = new QueryClient();
-
 function App(): React.JSX.Element {
   // IOS에서는 상태바 색상을 현재 화면의 배경색과 동일하게 하려면 이 방법을 써야함
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
         <NavigationContainer theme={MyTheme}>
           <Stack.Navigator>
             <Stack.Group>
@@ -56,10 +57,21 @@ function App(): React.JSX.Element {
                 options={{headerShown: false}}
               />
               <Stack.Screen
+                name="ExhibitionFilterApplyAll"
+                component={ExhibitionFilterApplyAllScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
                 name="ExhibitionFilterApply"
                 component={ExhibitionFilterApplyScreen}
                 options={{headerShown: false}}
               />
+              <Stack.Screen
+                name="ExhibitionFilterApplyComplete"
+                component={ExhibitionFilterApplyCompleteScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen name="PlacesSearch" component={PlacesSearchScreen} options={{headerShown: false}} />
             </Stack.Group>
             <Stack.Group>
               <Stack.Screen name="FilterCreation" component={FilterCreationScreen} options={{headerShown: false}} />
@@ -76,8 +88,8 @@ function App(): React.JSX.Element {
             </Stack.Group>
           </Stack.Navigator>
         </NavigationContainer>
-      </SafeAreaProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }
 

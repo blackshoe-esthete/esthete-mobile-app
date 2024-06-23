@@ -1,2 +1,5 @@
 export const filterServiceToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1YTBkYjJlYi1mNGJjLTRmYTMtYWU0Ny04MzgxZWQwZGExYWIiLCJleHAiOjE3NDQ3OTAzMjR9.BE1cdu0zQxZi8hYuAsMACzJ9ZSXXgaC9789v4mqqHQU';
+
+export const exhibitionServiceToken =
+  'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIyM2U3YjJiNC1jMWFjLTQ1OTEtYmI3Zi1jNjcwNmRhZjIyYWEiLCJleHAiOjE3MjEwMzg1MDl9.tnRBqIdMlutauMAdSgoutnacHNVTk8qIA3RPftp4D1I';

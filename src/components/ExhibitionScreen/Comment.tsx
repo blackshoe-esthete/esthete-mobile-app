@@ -1,29 +1,51 @@
+import {useDislikeComment, useLikeComment} from '@hooks/useExhibitionDetails';
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 
 type CommentProps = {
+  commentId: string;
   userImg: string;
   userName: string;
   commentDate: string;
   commentText: string;
+  isLiked: boolean;
   setModalVisible: (arg0: boolean) => void;
 };
 
-const Comment = ({
-  userImg,
-  userName,
-  commentDate,
-  commentText,
-  setModalVisible,
-}: CommentProps) => {
+const Comment = ({commentId, userImg, userName, commentDate, commentText, setModalVisible, isLiked}: CommentProps) => {
   const navigation = useNavigation();
-  const [onLike, setOnLike] = useState(false);
+  const [onLike, setOnLike] = useState(isLiked);
 
-  console.log(userImg);
+  const {mutate: likeComment} = useLikeComment();
+  const {mutate: dislikeComment} = useDislikeComment();
 
   const onLikePress = () => {
-    setOnLike(!onLike);
+    if (onLike) {
+      dislikeComment(
+        {commentId},
+        {
+          onSuccess: () => {
+            setOnLike(false);
+          },
+          onError: error => {
+            console.error('Error unliking the comment:', error);
+          },
+        },
+      );
+    } else {
+      likeComment(
+        {commentId},
+        {
+          onSuccess: () => {
+            setOnLike(true);
+          },
+          onError: error => {
+            console.error('Error liking the comment:', error);
+          },
+        },
+      );
+    }
   };
 
   const onReportPress = () => {
@@ -33,10 +55,7 @@ const Comment = ({
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('src/assets/imgs/anonymous.png')}
-        style={styles.profileIcon}
-      />
+      <Image source={userImg ? userImg : require('src/assets/imgs/anonymous.png')} style={styles.profileIcon} />
       <View style={styles.commentSection}>
         <View style={styles.commentFlex}>
           <Text style={styles.userName}>{userName}</Text>
@@ -46,11 +65,7 @@ const Comment = ({
       </View>
       <TouchableOpacity onPress={onLikePress} style={styles.touchArea}>
         <Image
-          source={
-            onLike
-              ? require('src/assets/icons/push-likes.png')
-              : require('src/assets/icons/comment_like.png')
-          }
+          source={onLike ? require('src/assets/icons/push-likes.png') : require('src/assets/icons/comment_like.png')}
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={onReportPress} style={styles.touchArea}>

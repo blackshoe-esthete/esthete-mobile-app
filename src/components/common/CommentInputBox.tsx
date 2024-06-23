@@ -1,23 +1,32 @@
+import {usePostComment} from '@hooks/useExhibitionDetails';
 import React, {useState} from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  TouchableOpacity,
-  Keyboard,
-} from 'react-native';
+import {View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, Text, TouchableOpacity, Alert} from 'react-native';
 
-const CommentInputBox = () => {
-  const [text, setText] = useState('');
+interface CommentInputBoxProps {
+  exhibitionId: string;
+}
 
-  const onSend = () => {
-    if (text) {
-      console.log(text);
-      Keyboard.dismiss();
-      setText('');
+const CommentInputBox = ({exhibitionId}: CommentInputBoxProps) => {
+  const [commentText, setCommentText] = useState('');
+  const {mutate: postComment} = usePostComment();
+
+  const handlePostComment = () => {
+    if (commentText.trim().length > 0) {
+      postComment(
+        {exhibitionId, content: commentText},
+        {
+          onSuccess: () => {
+            setCommentText('');
+            Alert.alert('댓글이 등록되었습니다.');
+          },
+          onError: error => {
+            console.error('댓글 등록 실패:', error);
+            Alert.alert('댓글 등록 중 오류가 발생했습니다.');
+          },
+        },
+      );
+    } else {
+      Alert.alert('댓글 내용을 입력해주세요.');
     }
   };
 
@@ -28,12 +37,12 @@ const CommentInputBox = () => {
       style={styles.container}>
       <View style={styles.inputContainer}>
         <TextInput
-          value={text}
-          onChangeText={setText}
+          value={commentText}
+          onChangeText={setCommentText}
           placeholder="(전시회명)에 대한 리뷰 남기기"
           style={styles.input}
         />
-        <TouchableOpacity onPress={onSend} style={styles.sendBbutton}>
+        <TouchableOpacity onPress={handlePostComment} style={styles.sendButton}>
           <Text style={styles.buttonText}>전송</Text>
         </TouchableOpacity>
       </View>
@@ -66,7 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
   },
-  sendBbutton: {
+  sendButton: {
     position: 'absolute',
     right: 30,
     top: '35%',
