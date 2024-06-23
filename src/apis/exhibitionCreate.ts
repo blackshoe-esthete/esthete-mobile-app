@@ -1,25 +1,10 @@
 import {AxiosError} from 'axios';
 import {exhibitionInstance} from './instance';
-import {ExhibitionDetails, ImageItem} from '../types/exhibitionService.type';
 
 //임시저장 및 업데이트
-export const saveOrUpdateExhibition = async ({token, exhibition_photo, exhibitionData}: FinalizeExhibitionParams) => {
+export const saveOrUpdateExhibition = async ({token, formData}: FinalizeExhibitionParams) => {
   try {
     const url = '/addition/temporary_exhibition';
-
-    const formData = new FormData();
-
-    exhibition_photo.forEach((photo, index) => {
-      formData.append(`exhibition_photo[${index}]`, photo);
-    });
-
-    formData.append(
-      'requestDto',
-      JSON.stringify({
-        ...exhibitionData,
-        tmp_exhibition_id: exhibitionData.tmp_exhibition_id,
-      }),
-    );
 
     const response = await exhibitionInstance.post(url, formData, {
       headers: {
@@ -38,30 +23,13 @@ export const saveOrUpdateExhibition = async ({token, exhibition_photo, exhibitio
 
 interface FinalizeExhibitionParams {
   token: string | undefined;
-  exhibition_photo: {
-    uri: string;
-    type: string;
-    name: string;
-  }[];
-  exhibitionData: ExhibitionDetails | any;
+  formData: any;
 }
 
 //전시 제작
-export const finalizeExhibition = async ({token, exhibition_photo, exhibitionData}: FinalizeExhibitionParams) => {
+export const finalizeExhibition = async ({token, formData}: FinalizeExhibitionParams) => {
   try {
     const url = '/addition';
-
-    const formData = new FormData();
-
-    exhibition_photo.forEach((photo, index) => {
-      formData.append(`exhibition_photo[${index}]`, photo);
-    });
-
-    formData.append('requestDto', JSON.stringify(exhibitionData));
-
-    for (let pair of (formData as any).entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
 
     const response = await exhibitionInstance.post(url, formData, {
       headers: {
@@ -69,11 +37,12 @@ export const finalizeExhibition = async ({token, exhibition_photo, exhibitionDat
         'Content-Type': 'multipart/form-data',
       },
     });
+
     console.log('Exhibition finalized', response.data);
     return response;
   } catch (error) {
     console.error('Error finalizing exhibition', (error as AxiosError)?.response?.data);
-
+    console.log(error);
     throw error;
   }
 };

@@ -26,9 +26,9 @@ const ExhibitionFilterApplyCompleteScreen = () => {
   const apiToken = Config.API_TOKEN;
 
   const navigation = useNavigation();
-  const {details, setDetails} = useExhibitionDetailsStore(); // 스토어 사용
+  const {details, setDetails, resetDetails} = useExhibitionDetailsStore(); // 스토어 사용
   //선택한 이미지
-  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
+  const {selectedImageUri, additionalImageUri, resetImages} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   //모달
   const [tempModalVisible, setTempModalVisible] = useState(false);
@@ -43,8 +43,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     details.mood.length > 0 &&
     details.location;
 
-  const finalizeCreation = async type => {
-    if (!allFieldsFilled) {
+  const finalizeCreation = async (type: string) => {
+    if (type == 'create' && !allFieldsFilled) {
       console.log('details', details);
       Alert.alert('모든 정보를 입력해야 제작을 진행할 수 있습니다.');
       return;
@@ -82,29 +82,64 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       tmp_exhibition_id: details.tmpExhibitionId || '',
     };
 
+    const formData = new FormData();
+
+    exhibition_photo.forEach(img => {
+      formData.append(`exhibition_photo`, {
+        uri: img.uri,
+        name: img.name,
+        type: img.type,
+      });
+    });
+
+    formData.append('requestDto', JSON.stringify(exhibitionData));
+
+    function logFormData(formData: FormData) {
+      const entries = formData as unknown as {_parts: [string, any][]};
+
+      entries._parts.forEach(([key, value]) => {
+        console.log('key', key);
+        console.log('value', value);
+      });
+    }
+    logFormData(formData);
+
     try {
       const token = apiToken;
 
       if (type === 'save') {
-        await saveOrUpdateExhibition({token, exhibition_photo, exhibitionData});
+        await saveOrUpdateExhibition({token, formData});
+        Alert.alert('전시 임시저장 완료!');
       } else {
-        await finalizeExhibition({token, exhibition_photo, exhibitionData});
+        await finalizeExhibition({token, formData});
+        Alert.alert('전시 업로드 완료!');
       }
 
-      Alert.alert('전시가 성공적으로 제작되었습니다.');
-      navigation.navigate('Main');
+      resetDetails();
+      resetImages();
+
+      navigation.navigate('Exhibitions');
     } catch (error) {
       Alert.alert('전시 제작 중 오류가 발생했습니다.');
     }
   };
 
-  const moodOptions = ['초상화', '풍경', '거리', '음식', '여행', '패션'];
+  const moodOptions = [
+    {id: 'fe96c294-b5f3-425e-a6de-8cc1b13beb5a', name: '부드러운'},
+    {id: '118ccbfb-8caf-498b-913a-16a315b3a859', name: '초상화'},
+    {id: '4a0db2eb-f4bc-4fa3-ae47-8381ed0da1ab', name: '풍경'},
+    {id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267', name: '거리'},
+    {id: '1f479a8d-dab2-4d95-96c9-73d5f7382a01', name: '음식'},
+    {id: '8969e7f1-2d1e-4a6d-b234-73c2aa7b24ff', name: '여행'},
+    {id: '9b11a16b-6786-4a28-8273-ff9e06b80318', name: '패션'},
+  ];
 
-  const toggleMood = (selectedMood: string) => {
-    let newMood = details.mood.includes(selectedMood)
-      ? details.mood.filter(m => m !== selectedMood)
-      : [...details.mood, selectedMood];
+  const toggleMood = (selectedMoodId: string) => {
+    let newMood = details.mood.includes(selectedMoodId)
+      ? details.mood.filter(m => m !== selectedMoodId)
+      : [...details.mood, selectedMoodId];
     setDetails({mood: newMood});
+    console.log('newMood', newMood);
   };
 
   return (
@@ -181,8 +216,8 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               contentContainerStyle={{gap: 10}}
               data={moodOptions}
               renderItem={({item}) => (
-                <TouchableOpacity onPress={() => toggleMood(item)} style={[styles.keyword]}>
-                  <Text style={styles.keywordText}>{item}</Text>
+                <TouchableOpacity onPress={() => toggleMood(item.id)} style={[styles.keyword]}>
+                  <Text style={styles.keywordText}>{item.name}</Text>
                 </TouchableOpacity>
               )}
             />
@@ -196,7 +231,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
             <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10}}>
               {details.mood.map((mood, index) => (
                 <View key={index} style={styles.selectedKeyword}>
-                  <Text style={styles.selectedKeywordText}>{mood}</Text>
+                  <Text style={styles.selectedKeywordText}>{moodOptions.find(option => option.id === mood)?.name}</Text>
                   <Pressable onPress={() => setDetails({mood: details.mood.filter(m => m !== mood)})}>
                     <Image source={cancleIcon} style={{width: 17, height: 17}} resizeMode="contain" />
                   </Pressable>
