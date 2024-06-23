@@ -2,15 +2,22 @@ import React from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import anonymousImg from '@assets/imgs/anonymous.png';
 
-const SearchAuthorItem = () => (
-  <View style={styles.container}>
-    <Image source={anonymousImg} style={styles.image} resizeMode="cover" />
-    <View style={styles.textContainer}>
-      <Text style={styles.exhibitionName}>작가명</Text>
-      <Text style={styles.artistName}>description</Text>
+const SearchAuthorItem = ({author, introduction, profile}: {author: string; introduction: string; profile: string}) => {
+  // console.log(profile);
+  return (
+    <View style={styles.container}>
+      {profile ? (
+        <Image source={{uri: profile}} style={styles.image} />
+      ) : (
+        <Image source={anonymousImg} style={styles.image} />
+      )}
+      <View style={styles.textContainer}>
+        <Text style={styles.exhibitionName}>{author}</Text>
+        <Text style={styles.artistName}>{introduction}</Text>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -25,6 +32,8 @@ const styles = StyleSheet.create({
   image: {
     width: 80,
     height: 80,
+    borderRadius: 40,
+    backgroundColor: '#D6D6D6',
   },
   textContainer: {
     justifyContent: 'center',
