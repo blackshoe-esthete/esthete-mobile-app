@@ -13,7 +13,7 @@ import {
 import MapView, {MapPressEvent, Marker, PROVIDER_GOOGLE, Region} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import Geolocation from '@react-native-community/geolocation';
+// import Geolocation from '@react-native-community/geolocation';
 import backspaceLogo from '@assets/icons/backspace.png';
 import locationIcon from '@assets/icons/location_icon.png';
 import locationIconSmall from '@assets/icons/location_icon_sm.png';
@@ -71,22 +71,22 @@ function MapScreen(): React.JSX.Element {
         }
       }
 
-      Geolocation.getCurrentPosition(
-        position => {
-          const {latitude, longitude} = position.coords;
-          setRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          });
-          AsyncStorage.setItem('userLocation', JSON.stringify({latitude, longitude}));
-        },
-        error => {
-          console.log(error);
-        },
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
-      );
+      // Geolocation.getCurrentPosition(
+      //   position => {
+      //     const {latitude, longitude} = position.coords;
+      //     setRegion({
+      //       latitude,
+      //       longitude,
+      //       latitudeDelta: 0.015,
+      //       longitudeDelta: 0.0121,
+      //     });
+      //     AsyncStorage.setItem('userLocation', JSON.stringify({latitude, longitude}));
+      //   },
+      //   error => {
+      //     console.log(error);
+      //   },
+      //   {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      // );
     };
 
     /* (async () => {

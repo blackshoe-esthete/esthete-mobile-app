@@ -2,28 +2,47 @@ import InputText from '@components/LoginScreen/InputText';
 import LoginButton from '@components/LoginScreen/LoginButton';
 import SocialLogin from '@components/LoginScreen/SocialLogin';
 import {useNavigation} from '@react-navigation/native';
-import {StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import naver from '@assets/imgs/naverlogin.png';
 import kakao from '@assets/imgs/kakaologin.png';
 import google from '@assets/imgs/googlelogin.png';
+import {useEffect} from 'react';
+import Config from 'react-native-config';
+
+/** Fill your keys */
+//  const consumerKey = Config.NAVER_CLIENT_ID as string;
+const consumerKey = 'ZfO0ig9DpGws3YIWOrQu';
+//  const consumerSecret = Config.NAVER_SECRET_KEY as string;
+const consumerSecret = 'ZBedwHbyjg';
+const appName = 'com.esthete_mobile';
+const serviceUrlScheme = 'naverlogin';
 
 function LoginScreen() {
   const navigation = useNavigation();
+
+  // useEffect(() => {
+  //   NaverLogin.initialize({
+  //     appName,
+  //     consumerKey,
+  //     consumerSecret,
+  //   });
+  // }, []);
+
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
       <View style={styles.container}>
         <Text style={styles.title}>ESTHETE</Text>
         <InputText placeHolder="아이디를 입력해주세요" margin={20} />
-        <InputText placeHolder="비밀번호를 입력해주세요" margin={20} security={true}/>
+        <InputText placeHolder="비밀번호를 입력해주세요" margin={20} security={true} />
         <View style={styles.buttonLayer}>
           <LoginButton color="#292929" title="로그인" navigation={() => navigation.goBack()} />
           <LoginButton color="#424242" title="회원가입" navigation={() => navigation.navigate('SignUp1')} />
         </View>
         <View style={styles.socialLayer}>
-          <SocialLogin img={naver}/>
-          <SocialLogin img={kakao}/>
-          <SocialLogin img={google}/>
+          <SocialLogin img={naver} label="naver" />
+          <SocialLogin img={kakao} label="kakao" />
+          <SocialLogin img={google} label="google" />
         </View>
       </View>
     </SafeAreaView>
@@ -65,6 +84,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     marginTop: 50,
-    gap: 20
-  }
+    gap: 20,
+  },
 });

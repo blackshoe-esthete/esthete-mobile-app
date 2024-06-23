@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import naver from '@assets/imgs/naverlogin.png';
-import * as KakaoLogin from '@react-native-seoul/kakao-login';
 
 const windowWidth = Dimensions.get('window').width;
 type socialProp = {
   img: string;
   navigation?: () => void;
+  label?: string;
 };
 function SocialLogin(props: socialProp): React.JSX.Element {
   // const login = () => {
@@ -23,25 +23,40 @@ function SocialLogin(props: socialProp): React.JSX.Element {
   //       }
   //     });
   // };
+  // const [success, setSuccessResponse] = useState<NaverLoginResponse['successResponse']>();
 
-  const getKakaoIdToken = async (): Promise<KakaoLogin.KakaoOAuthToken> => {
-    const res = await KakaoLogin.login();
-    console.log(res.accessToken);
-    return res;
-  };
-  const getProfile = () => {
-    KakaoLogin.getProfile()
-      .then(result => {
-        console.log('GetProfile Success', JSON.stringify(result));
-      })
-      .catch(error => {
-        console.log(`GetProfile Fail(code:${error.code})`, error.message);
-      });
-  };
+  // const [failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
+  // const [getProfileRes, setGetProfileRes] = useState<GetProfileResponse>();
+
+  // const getNaverLogin = async (): Promise<void> => {
+  //   const {failureResponse, successResponse} = await NaverLogin.login();
+  //   setSuccessResponse(successResponse);
+  //   setFailureResponse(failureResponse);
+  //   console.log(success!.accessToken);
+  // };
+
+  // const getKakaoIdToken = async (): Promise<KakaoLogin.KakaoOAuthToken> => {
+  //   const res = await KakaoLogin.login();
+  //   console.log(res.accessToken);
+  //   return res;
+  // };
+  // const getProfile = () => {
+  //   KakaoLogin.getProfile()
+  //     .then(result => {
+  //       console.log('GetProfile Success', JSON.stringify(result));
+  //     })
+  //     .catch(error => {
+  //       console.log(`GetProfile Fail(code:${error.code})`, error.message);
+  //     });
+  // };
   return (
     <TouchableOpacity
       onPress={() => {
-        getKakaoIdToken();
+        if (props.label == 'kakao') {
+          // getKakaoIdToken();
+        } else if (props.label == 'naver') {
+          // getNaverLogin();
+        }
       }}>
       <Image source={props.img} style={styles.buttonLayer} />
     </TouchableOpacity>
