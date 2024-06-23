@@ -1,20 +1,39 @@
 import SearchAuthorItem from '@components/Home/SearchAuthorItem';
-import React from 'react';
-import {StyleSheet, FlatList} from 'react-native';
+import {useHomeSearchStore} from '@store/searchStore';
+import {useQuery} from '@tanstack/react-query';
+import React, {useDeferredValue} from 'react';
+import {StyleSheet, FlatList, Text, View} from 'react-native';
+import {searchAuthor} from 'src/apis/mainExhibitionService';
 
 function AuthorSearchScreen(): React.JSX.Element {
-  // 임시 데이터 생성. 실제 애플리케이션에서는 이 데이터를 API 호출 등을 통해 가져올 수 있습니다.
-  const data = new Array(10)
-    .fill(null)
-    .map((_, index) => ({id: index.toString()}));
+  const {keyword} = useHomeSearchStore();
+  const deferredKeyword = useDeferredValue(keyword);
+
+  const {data: searchResult} = useQuery({
+    queryKey: ['searchAuthor', deferredKeyword],
+    queryFn: () => searchAuthor(deferredKeyword),
+    select: data => data?.content,
+    enabled: !!deferredKeyword,
+  });
 
   return (
     <FlatList
-      data={data}
-      renderItem={({item}) => <SearchAuthorItem />}
-      keyExtractor={item => item.id}
+      data={searchResult}
+      renderItem={({item}) => (
+        <SearchAuthorItem
+          author={item.photographer_name}
+          introduction={item.photographer_introduction}
+          profile={item.profile_img_url}
+        />
+      )}
+      keyExtractor={item => item.photographer_id}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={[styles.container, {paddingBottom: '70%'}]}
+      ListEmptyComponent={
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100}}>
+          <Text style={{color: '#fff', fontSize: 16}}>검색 결과가 없습니다.</Text>
+        </View>
+      }
     />
   );
 }

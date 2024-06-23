@@ -1,20 +1,39 @@
-import React from 'react';
-import {StyleSheet, FlatList} from 'react-native';
+import React, {useDeferredValue, useEffect} from 'react';
+import {StyleSheet, FlatList, View, Text} from 'react-native';
 import SearchExhibitionItem from '@components/Home/SearchExhibitionItem';
+import {useHomeSearchStore} from '@store/searchStore';
+import {useQuery} from '@tanstack/react-query';
+import {searchExhibition} from 'src/apis/mainExhibitionService';
 
 function ExhibitionSearchScreen(): React.JSX.Element {
-  // 임시 데이터 생성. 실제 애플리케이션에서는 이 데이터를 API 호출 등을 통해 가져올 수 있습니다.
-  const data = new Array(10)
-    .fill(null)
-    .map((_, index) => ({id: index.toString()}));
+  const {keyword} = useHomeSearchStore();
+  const deferredKeyword = useDeferredValue(keyword);
+
+  const {data: searchResult} = useQuery({
+    queryKey: ['searchExhibition', deferredKeyword],
+    queryFn: () => searchExhibition(deferredKeyword),
+    select: data => data?.content,
+    enabled: !!deferredKeyword, // keyword가 존재할 때만 query를 활성화
+  });
 
   return (
     <FlatList
-      data={data}
-      renderItem={({item}) => <SearchExhibitionItem />}
-      keyExtractor={item => item.id}
+      data={searchResult}
+      renderItem={({item}) => (
+        <SearchExhibitionItem
+          title={item.exhibition_title}
+          author={item.photographer_name}
+          thumbnail={item.thumbnail_img_url}
+        />
+      )}
+      keyExtractor={item => item.exhibition_id}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={[styles.container, {paddingBottom: '70%'}]}
+      ListEmptyComponent={
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100}}>
+          <Text style={{color: '#fff', fontSize: 16}}>검색 결과가 없습니다.</Text>
+        </View>
+      }
     />
   );
 }

@@ -1,31 +1,19 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Text,
-  Dimensions,
-} from 'react-native';
+import {Modal, View, Image, TouchableOpacity, StyleSheet, Text, Dimensions} from 'react-native';
 
 type ImageModalProps = {
   visible: boolean;
-  image: {source: any};
+  image: string | null;
   onClose: () => void;
   onReport: () => void;
 };
 
 const ImageModal = ({visible, image, onClose, onReport}: ImageModalProps) => {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}>
+    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.outerContainer}>
         <View style={styles.modalView}>
-          {image && <Image source={image.source} style={styles.image} />}
+          {image && <Image source={{uri: image}} style={styles.image} />}
           <View style={styles.buttonWrapper}>
             <TouchableOpacity style={styles.submitButton} onPress={onReport}>
               <Text style={styles.submitButtonText}>신고하기</Text>

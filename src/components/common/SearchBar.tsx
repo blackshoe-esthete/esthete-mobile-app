@@ -1,69 +1,57 @@
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, Image, ImageSourcePropType, StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import backIcon from '@assets/icons/backspace_white.png';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '@types/navigations';
+import {useHomeSearchStore} from '@store/searchStore';
 
 type SearchBarProps = {
-  iconSource: File | Blob | string;
-  to: string;
+  iconSource: ImageSourcePropType;
+  to: any;
   back?: boolean;
-  placeHolder? : string;
+  placeHolder?: string;
 };
 
 function SearchBar({iconSource, to, back, placeHolder}: SearchBarProps): React.JSX.Element {
-  const navigation = useNavigation();
-  if (back) {
-    return (
-      <View style={styles.wrapper}>
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const {keyword, setKeyword} = useHomeSearchStore();
+
+  const onPressSearch = () => {
+    if (keyword === '') {
+      Alert.alert('검색어를 입력해주세요.');
+      return;
+    }
+    navigation.navigate(to);
+  };
+
+  return (
+    <View style={[styles.textInput, back && styles.wrapper]}>
+      {back && (
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={backIcon} style={styles.icon} />
         </TouchableOpacity>
-        <View style={[styles.textInput, {marginTop: 0, width: '95%'}]}>
-          <TextInput
-            editable
-            placeholder= {placeHolder ? placeHolder : "전시회, 작가 검색"}
-            placeholderTextColor="#DADADA"
-            style={[styles.text, {fontWeight: '400'}]}
-          />
-          <TouchableOpacity onPress={() => navigation.navigate(to)}>
-            <Image
-              source={iconSource}
-              style={{
-                width: 18,
-                height: 18,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.textInput}>
-        <TextInput
-          editable
-          placeholder="전시회, 작가 검색"
-          placeholderTextColor="#DADADA"
-          style={[styles.text, {fontWeight: '400'}]}
+      )}
+      <TextInput
+        editable
+        value={keyword}
+        onChangeText={setKeyword}
+        placeholder={placeHolder ? placeHolder : '전시회, 작가 검색'}
+        placeholderTextColor="#DADADA"
+        style={[styles.text, {fontWeight: '400'}, back && {width: '85%'}]}
+        onSubmitEditing={onPressSearch}
+      />
+      <TouchableOpacity onPress={onPressSearch}>
+        <Image
+          source={iconSource}
+          style={{
+            width: 18,
+            height: 18,
+          }}
         />
-        <TouchableOpacity onPress={() => navigation.navigate(to)}>
-          <Image
-            source={iconSource}
-            style={{
-              width: 18,
-              height: 18,
-            }}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  }
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 export default SearchBar;
@@ -74,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 30,
     width: '100%',
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   textInput: {
     flexDirection: 'row',

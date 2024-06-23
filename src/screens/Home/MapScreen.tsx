@@ -10,29 +10,93 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import MapView, {MapPressEvent, Marker, PROVIDER_GOOGLE, Region} from 'react-native-maps';
+import MapView, {Details, MapPressEvent, Marker, PROVIDER_GOOGLE, Region} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 // import Geolocation from '@react-native-community/geolocation';
 import backspaceLogo from '@assets/icons/backspace.png';
 import locationIcon from '@assets/icons/location_icon.png';
-import locationIconSmall from '@assets/icons/location_icon_sm.png';
-import exampleImg from '@assets/imgs/ex3.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useQueries, useQuery} from '@tanstack/react-query';
+import {getExhibitionCluster, getExhibitionList, getGeocode} from 'src/apis/mapService';
+import {Cluster} from '@types/mapService.type';
 
 function MapScreen(): React.JSX.Element {
   const [isClicked, setIsClicked] = useState(false);
   const [clickedLocation, setClickedLocation] = useState<{latitude: number; longitude: number} | null>(null); // 클릭한 위치의 좌표 상태 추가
+  const [clickedCluster, setClickedCluster] = useState<Cluster | null>(null);
   const [region, setRegion] = useState<Region | undefined>({
     latitude: 37.55703563268905,
     longitude: 126.99773367494346,
     latitudeDelta: 0.0000001,
     longitudeDelta: 0.0000001,
-  }); // region을 null로 초기화
+  });
+
   const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
 
+  const calculateRadius = (latitudeDelta: number, longitudeDelta: number): number => {
+    // Approximate calculation of radius based on latitudeDelta and longitudeDelta
+    const latRadius = (latitudeDelta / 2) * 111; // 111 km per degree of latitude
+    const lonRadius = (longitudeDelta / 2) * (40075 / 360); // 40075 km circumference of the earth / 360 degrees
+    return Math.max(latRadius, lonRadius); // Return the larger value as the radius
+  };
+
+  const radius = calculateRadius(region?.latitudeDelta || 0.015, region?.longitudeDelta || 0.0121);
+  const group = region?.latitudeDelta! < 0.381 ? 'town' : region?.latitudeDelta! < 4.3 ? 'city' : 'state';
+
+  const {data: clusterData} = useQuery({
+    queryKey: ['exhibitionCluster', {latitude: region?.latitude, longitude: region?.longitude, radius, group}],
+    queryFn: () => getExhibitionCluster({latitude: region?.latitude, longitude: region?.longitude, radius, group}),
+  });
+
+  const geocodeQueries = useQueries({
+    queries: (clusterData?.content || []).map((cluster: Cluster) => ({
+      queryKey: ['geocode', `${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim()],
+      queryFn: () => getGeocode(`${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim()),
+      enabled: !!clusterData, // Ensure the cluster data is available
+    })),
+  });
+
+  const geocodedClusters =
+    clusterData?.content.map((cluster: Cluster, index: number) => ({
+      ...cluster,
+      location: geocodeQueries[index]?.data,
+    })) || [];
+
+  const {data: clickedClusterExhibitionList} = useQuery({
+    queryKey: [
+      'clickedClusterExhibitionList',
+      {
+        state: clickedCluster?.state || '',
+        city: clickedCluster?.city || '',
+        town: clickedCluster?.town || '',
+        page: 0,
+        size: 10,
+        sort: 'trending',
+      },
+    ],
+    queryFn: () =>
+      getExhibitionList({
+        state: clickedCluster?.state || '',
+        city: clickedCluster?.city || '',
+        town: clickedCluster?.town || '',
+        page: 0,
+        size: 10,
+        sort: 'trending',
+      }),
+    enabled: !!clickedCluster,
+  });
+
+  const handleMarkerPress = (cluster: Cluster) => {
+    setClickedCluster(cluster);
+    setIsClicked(true); // Assuming you want to toggle some UI when a cluster is clicked
+  };
+
   const handleMapPress = (event: MapPressEvent) => {
+    if (isClicked) {
+      setIsClicked(false);
+    }
     const {latitude, longitude} = event.nativeEvent.coordinate;
     setClickedLocation({latitude, longitude});
     console.log(`Clicked location: ${latitude}, ${longitude}`);
@@ -89,35 +153,14 @@ function MapScreen(): React.JSX.Element {
       // );
     };
 
-    /* (async () => {
-      try {
-        const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-          params: {
-            address: 'Seoul Jung District',
-            key: Platform.OS === 'android' ? Config.ANDROID_GOOGLE_MAPS_API_KEY : Config.IOS_GOOGLE_MAPS_API_KEY,
-          },
-        });
-        console.log(`Geocode data: ${JSON.stringify(response.data)}`);
-      } catch (error) {
-        console.error('Failed to fetch geocode data:', error);
-      }
-    })(); */
-
     // AsyncStorage.removeItem('userLocation');
     loadCachedLocation();
     requestLocationPermission();
   }, []);
 
-  const toggleZoom = () => {
-    setIsClicked(!isClicked);
-    if (region) {
-      setRegion({
-        ...region,
-        latitudeDelta: isClicked ? 0.015 : region.latitudeDelta / 2,
-        longitudeDelta: isClicked ? 0.0121 : region.longitudeDelta / 2,
-      });
-    }
-  };
+  useEffect(() => {
+    console.log('Region changed:', region);
+  }, [region]);
 
   return (
     <View style={styles.container}>
@@ -129,16 +172,17 @@ function MapScreen(): React.JSX.Element {
       {isClicked && (
         <FlatList
           horizontal={true}
-          data={[1, 2, 3]}
-          keyExtractor={item => item.toString()}
+          data={clickedClusterExhibitionList?.content}
+          keyExtractor={item => item.exhibition_id.toString()}
           renderItem={({item, index}) => (
             <View
+              key={item.exhibition_id}
               style={[
                 styles.detailImageContainer,
-                {marginRight: index === 2 ? 25 : 0},
+                {marginRight: index === clickedClusterExhibitionList?.content.length - 1 ? 25 : 0},
                 {marginLeft: index === 0 ? 25 : 0},
               ]}>
-              <Image source={exampleImg} style={styles.detailImage} resizeMode="cover" />
+              <Image source={{uri: item.thumbnail_url}} style={styles.detailImage} resizeMode="cover" />
             </View>
           )}
           showsHorizontalScrollIndicator={false}
@@ -152,25 +196,36 @@ function MapScreen(): React.JSX.Element {
         />
       )}
 
-      <MapView provider={PROVIDER_GOOGLE} style={styles.map} region={region} onPress={handleMapPress}>
-        {region && (
+      <MapView
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        region={region}
+        onPress={handleMapPress}
+        showsUserLocation
+        onRegionChangeComplete={(region: Region, detail: Details) => {
+          if (detail.isGesture) {
+            setRegion(region);
+          }
+        }}
+        showsMyLocationButton>
+        {geocodedClusters.map((cluster: Cluster, index: number) => (
           <Marker
-            key={`${region.latitude}-${region.longitude}`}
+            key={`${cluster.state}-${cluster.city}-${cluster.town}-${index}`}
             coordinate={{
-              latitude: region.latitude,
-              longitude: region.longitude,
+              latitude: cluster.location?.lat!,
+              longitude: cluster.location?.lng!,
             }}
-            title="My Location"
-            onPress={toggleZoom}>
+            onPress={() => handleMarkerPress(cluster)}>
             <View style={styles.markerContainer}>
-              <Image source={locationIconSmall} style={styles.markerIcon} resizeMode="contain" />
-              <Image source={exampleImg} style={styles.markerImage} resizeMode="cover" />
+              <Image source={locationIcon} style={styles.markerIcon} resizeMode="contain" />
+              <Image source={{uri: cluster.thumbnail}} style={styles.markerImage} resizeMode="cover" />
               <View style={styles.numberContainer}>
-                <Text style={styles.number}>{isClicked ? 7 : 3}</Text>
+                {/* <Text style={styles.number}>{group === 'town' ? cluster.count : clusterData.content.length}</Text> */}
+                <Text style={styles.number}>{cluster.count}</Text>
               </View>
             </View>
           </Marker>
-        )}
+        ))}
       </MapView>
     </View>
   );

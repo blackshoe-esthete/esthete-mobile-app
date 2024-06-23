@@ -1,9 +1,12 @@
+import {ExhibitionData} from './mainExhibitionService.type';
+
 export type RootStackParamList = {
   Main: undefined;
   Map: undefined;
   HomeSearch: undefined;
   Exhibition: {id: string};
-  ExhibitionEntered: {id: string};
+  Exhibitions: undefined;
+  ExhibitionEntered: {id: string; exhibitionData: ExhibitionData};
   ExhibitionReport: {id: string};
   ExhibitionCreation: undefined;
   ExhibitionFilterApply: undefined;
