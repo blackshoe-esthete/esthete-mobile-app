@@ -35,7 +35,7 @@ function GoOut({navigation, route}: Props) {
           ref={scrollViewRef}>
           <GoOutList />
         </ScrollView>
-        <CommonButton title="다음" navigation={navigation} />
+        <CommonButton title="다음" navigation={navigation} paddingNumber={20}/>
       </View>
     </SafeAreaView>
   );

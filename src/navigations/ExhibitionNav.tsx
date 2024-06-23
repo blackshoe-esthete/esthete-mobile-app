@@ -22,9 +22,6 @@ function ExhibitionNav(): React.JSX.Element {
         <Stack.Screen name="SelectPage" options={{headerShown: false}}>
           {(props: any) => <ExhibitionCreationScreen {...props} />}
         </Stack.Screen>
-        {/* <Stack.Screen name="InfomationPage" options={{headerShown: false}}>
-          {(props: any) => <MediaPage {...props} />}
-        </Stack.Screen> */}
       </Stack.Navigator>
     </SafeAreaProvider>
   );

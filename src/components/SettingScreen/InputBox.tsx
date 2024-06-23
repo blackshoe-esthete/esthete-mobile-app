@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     display: 'flex',
     // alignItems: 'flex-start',
+    
     borderRadius: 10,
   },
   inputText: {

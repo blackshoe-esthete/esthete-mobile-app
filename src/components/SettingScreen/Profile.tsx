@@ -10,7 +10,7 @@ import camera from '@assets/icons/camera.png';
 import InputBox from './InputBox';
 import {useEffect, useRef, useState} from 'react';
 import verified from '@assets/icons/verified.png';
-import cancel from '@assets/icons/cancel.png';
+import unverified from '@assets/icons/unverified.png';
 
 function Profile() {
   const profileSelect = () => {
@@ -76,7 +76,7 @@ function Profile() {
       ) : (
         <View style={styles.alertBox}>
           <View style={styles.cancelIcon}>
-            <Image source={cancel} style={{width: 10, height: 10, tintColor: '#f00'}} />
+            <Image source={unverified} style={styles.alertIcon} />
           </View>
           <Text style={styles.alertText}>사용 불가능한 닉네임입니다.</Text>
         </View>
