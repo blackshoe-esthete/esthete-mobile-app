@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions} from 'react-native';
 import FilterItem from './FilterItem';
-import filterImg1 from '@assets/imgs/filter-cover1.png';
-import filterImg2 from '@assets/imgs/filter-cover2.png';
-import filterImg3 from '@assets/imgs/filter-cover3.png';
+
 import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
+import {getCreatedFilters, getPurchasedFilters} from 'src/apis/exhibitionCreate';
+import {filterServiceToken} from 'src/utils/dummy';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -13,17 +13,33 @@ const FilterTab = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>('');
   const {setCurrentFilterId, setCurrentFilterIdForAll} = useExhibitionCreationStore();
 
-  const myFilters = [
-    {id: '0', name: 'Original', imageUri: filterImg1},
-    {id: 'd20e2654-3c4a-4ebe-b1c9-5695ac2a6207', name: '따뜻한', imageUri: filterImg3},
-    {id: 'fe96c294-b5f3-425e-a6de-8cc1b13beb5a', name: '부드러운', imageUri: filterImg2},
-    {id: '118ccbfb-8caf-498b-913a-16a315b3a859', name: '평화로운', imageUri: filterImg1},
-  ];
+  // 초기 필터 목록 설정 및 상태 관리
+  const [myFilters, setMyFilters] = useState([{filter_id: '0', filter_name: 'Original', filter_thumbnail_url: ''}]);
 
-  const purchasedFilters = [
-    {id: '4a0db2eb-f4bc-4fa3-ae47-8381ed0da1ab', name: '차가운', imageUri: filterImg2},
-    {id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267', name: '세련된', imageUri: filterImg1},
-  ];
+  const [purchasedFilters, setPurchasedFilters] = useState([
+    {filter_id: '0', filter_name: 'Original', filter_thumbnail_url: ''},
+  ]);
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const createdResults = await getCreatedFilters(filterServiceToken);
+        if (createdResults && createdResults.payload && createdResults.payload.created_filter_list) {
+          setMyFilters(currentFilters => [...currentFilters, ...createdResults.payload.created_filter_list]);
+          console.log('Updated created filter list:', myFilters);
+        }
+
+        const purchasedResults = await getPurchasedFilters(filterServiceToken);
+        if (purchasedResults && purchasedResults.payload && purchasedResults.payload.created_filter_list) {
+          setPurchasedFilters(currentFilters => [...currentFilters, ...purchasedResults.payload.created_filter_list]);
+          console.log('Updated purchased filter list:', purchasedFilters);
+        }
+      } catch (error) {
+        console.log('Error fetching filters:', error);
+      }
+    };
+    fetchFilters();
+  }, []);
 
   const filters = activeTab === '내 필터' ? myFilters : purchasedFilters;
 
@@ -49,12 +65,12 @@ const FilterTab = () => {
       <View style={styles.flatListContent}>
         <FlatList
           data={filters}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.filter_id || item.filter_id}
           horizontal
           renderItem={({item}) => (
-            <TouchableOpacity onPress={() => onPressFilter(item.id)}>
-              <FilterItem imageUri={item.imageUri} filterName={item.name} />
-              {selectedFilter === item.id && <View style={styles.selectedOverlay}></View>}
+            <TouchableOpacity onPress={() => onPressFilter(item.filter_id || item.filter_id)}>
+              <FilterItem imageUri={item.filter_thumbnail_url} filterName={item.filter_name} />
+              {selectedFilter === (item.filter_id || item.filter_id) && <View style={styles.selectedOverlay}></View>}
             </TouchableOpacity>
           )}
           contentContainerStyle={styles.flatListContent}
