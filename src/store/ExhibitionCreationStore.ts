@@ -134,7 +134,7 @@ export const useExhibitionDetailsStore = create<ExhibitionDetailsStore>(set => (
     }),
 }));
 
-interface FilterAttributes {
+export interface FilterAttributes {
   brightness?: number;
   sharpness?: number;
   exposure?: number;
