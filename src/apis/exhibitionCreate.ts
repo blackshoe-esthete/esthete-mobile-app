@@ -34,6 +34,22 @@ export const getCreatedFilters = async (token: string | undefined) => {
   }
 };
 
+export const getFilterDetails = async (filterId: string, authToken: string) => {
+  const url = `/${filterId}/details`;
+  const headers = {
+    Authorization: `Bearer ${authToken}`,
+  };
+
+  try {
+    const response = await filterInstance.get(url, {headers});
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching filter details:', error);
+    throw error;
+  }
+};
+
 //임시저장 및 업데이트
 export const saveOrUpdateExhibition = async ({token, formData}: FinalizeExhibitionParams) => {
   try {

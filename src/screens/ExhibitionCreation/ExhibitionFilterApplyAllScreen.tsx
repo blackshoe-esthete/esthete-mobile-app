@@ -1,17 +1,36 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
-import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
+import {useExhibitionCreationStore, useFilterDetailsStore} from '../../store/exhibitionCreationStore';
 import {Slider} from '@miblanchard/react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import FilterTab from '@components/ExhibitionCreation/FilterTab';
+import {
+  Sharpen,
+  ColorMatrix,
+  concatColorMatrices,
+  hueRotate,
+  saturate,
+  brightness,
+  contrast,
+  temperature,
+  grayscale,
+} from 'react-native-image-filter-kit';
+import {filterServiceToken} from 'src/utils/dummy';
+import {getFilterDetails} from 'src/apis/exhibitionCreate';
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
+  const {selectedFilterId, setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes} =
+    useFilterDetailsStore();
   const {selectedImageUri, additionalImageUri, setCurrentGrayScaleForAll} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [sliderValue, setSliderValue] = useState<number>(0);
+  const [selectedFilter, setSelectedFilter] = useState<string>('');
+
+  const {setCurrentFilterId, setCurrentFilterIdForAll} = useExhibitionCreationStore();
 
   // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
@@ -27,6 +46,25 @@ const ExhibitionFilterApplyAllScreen = () => {
     }
     navigation.navigate('ExhibitionFilterApplyComplete');
   };
+
+  const onPressFilter = async (id: string) => {
+    setSelectedFilter(id);
+    setCurrentFilterId(id);
+    setCurrentFilterIdForAll(id);
+    setSelectedFilterId(id);
+    try {
+      const filterDetails = await getFilterDetails(id, filterServiceToken);
+      setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
+    } catch (error) {
+      console.error('Failed to fetch filter details:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedFilterId) {
+      console.log('a', selectedFilterAttributes);
+    }
+  }, [selectedFilterAttributes]);
 
   return (
     <View style={{flex: 1}}>
@@ -56,7 +94,22 @@ const ExhibitionFilterApplyAllScreen = () => {
             onSnapToItem={index => setCurrentImageIndex(index)}
             renderItem={({item, index}) => (
               <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index: index})}>
-                <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+                <Sharpen
+                  image={
+                    <ColorMatrix
+                      matrix={concatColorMatrices([
+                        brightness(selectedFilterAttributes?.brightness),
+                        contrast(selectedFilterAttributes?.contrast),
+                        saturate(selectedFilterAttributes?.saturation),
+                        hueRotate(selectedFilterAttributes?.hue),
+                        temperature(selectedFilterAttributes?.temperature),
+                        grayscale(selectedFilterAttributes?.grayScale),
+                      ])}
+                      image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                    />
+                  }
+                  amount={selectedFilterAttributes?.sharpness}
+                />
               </TouchableOpacity>
             )}
           />
@@ -80,7 +133,7 @@ const ExhibitionFilterApplyAllScreen = () => {
         </View>
 
         {/* 필터 선택 */}
-        <FilterTab />
+        <FilterTab onPressFilter={onPressFilter} selectedFilter={selectedFilter} />
 
         <View>
           <Text

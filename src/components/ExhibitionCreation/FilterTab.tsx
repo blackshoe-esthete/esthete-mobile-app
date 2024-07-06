@@ -1,21 +1,22 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions} from 'react-native';
 import FilterItem from './FilterItem';
-
 import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
-import {getCreatedFilters, getPurchasedFilters} from 'src/apis/exhibitionCreate';
+import {getCreatedFilters, getFilterDetails, getPurchasedFilters} from 'src/apis/exhibitionCreate';
 import {filterServiceToken} from 'src/utils/dummy';
+import {useFilterDetailsStore} from '@store/ExhibitionCreationStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-const FilterTab = () => {
+interface FilterTabProps {
+  onPressFilter: (filterId: string) => void; // 필터를 처리할 함수
+  selectedFilter: string; // 선택된 필터의 ID
+}
+
+const FilterTab: React.FC<FilterTabProps> = ({onPressFilter, selectedFilter}) => {
   const [activeTab, setActiveTab] = useState('내 필터');
-  const [selectedFilter, setSelectedFilter] = useState<string>('');
-  const {setCurrentFilterId, setCurrentFilterIdForAll} = useExhibitionCreationStore();
 
-  // 초기 필터 목록 설정 및 상태 관리
   const [myFilters, setMyFilters] = useState([{filter_id: '0', filter_name: 'Original', filter_thumbnail_url: ''}]);
-
   const [purchasedFilters, setPurchasedFilters] = useState([
     {filter_id: '0', filter_name: 'Original', filter_thumbnail_url: ''},
   ]);
@@ -26,13 +27,11 @@ const FilterTab = () => {
         const createdResults = await getCreatedFilters(filterServiceToken);
         if (createdResults && createdResults.payload && createdResults.payload.created_filter_list) {
           setMyFilters(currentFilters => [...currentFilters, ...createdResults.payload.created_filter_list]);
-          console.log('Updated created filter list:', myFilters);
         }
 
         const purchasedResults = await getPurchasedFilters(filterServiceToken);
         if (purchasedResults && purchasedResults.payload && purchasedResults.payload.created_filter_list) {
           setPurchasedFilters(currentFilters => [...currentFilters, ...purchasedResults.payload.created_filter_list]);
-          console.log('Updated purchased filter list:', purchasedFilters);
         }
       } catch (error) {
         console.log('Error fetching filters:', error);
@@ -41,17 +40,10 @@ const FilterTab = () => {
     fetchFilters();
   }, []);
 
-  const filters = activeTab === '내 필터' ? myFilters : purchasedFilters;
-
-  const onPressFilter = (id: string) => {
-    setSelectedFilter(id);
-    setCurrentFilterId(id);
-    setCurrentFilterIdForAll(id);
-  };
+  const allFilters = activeTab === '내 필터' ? myFilters : purchasedFilters;
 
   return (
     <View style={styles.container}>
-      {/* Tab Bar */}
       <View style={styles.tabBar}>
         <TouchableOpacity style={styles.tab} onPress={() => setActiveTab('내 필터')}>
           <Text style={[styles.tabText, activeTab === '내 필터' && styles.activeTabText]}>내 필터</Text>
@@ -60,17 +52,15 @@ const FilterTab = () => {
           <Text style={[styles.tabText, activeTab === '구매한 필터' && styles.activeTabText]}>구매한 필터</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Filters FlatList */}
       <View style={styles.flatListContent}>
         <FlatList
-          data={filters}
-          keyExtractor={item => item.filter_id || item.filter_id}
+          data={allFilters}
+          keyExtractor={item => item.filter_name}
           horizontal
           renderItem={({item}) => (
-            <TouchableOpacity onPress={() => onPressFilter(item.filter_id || item.filter_id)}>
+            <TouchableOpacity onPress={() => onPressFilter(item.filter_id)}>
               <FilterItem imageUri={item.filter_thumbnail_url} filterName={item.filter_name} />
-              {selectedFilter === (item.filter_id || item.filter_id) && <View style={styles.selectedOverlay}></View>}
+              {selectedFilter === item.filter_id && <View style={styles.selectedOverlay}></View>}
             </TouchableOpacity>
           )}
           contentContainerStyle={styles.flatListContent}
