@@ -10,6 +10,7 @@ import {useQueries, useQuery} from '@tanstack/react-query';
 import {getExhibitionCluster, getExhibitionList, getGeocode} from 'src/apis/mapService';
 import {Cluster} from '@types/mapService.type';
 import useMyLocation from '@hooks/useMyLocation';
+import {useExhibitionCluster, useNearbyExhibitions} from '@hooks/useNearbyExhibitions';
 
 function MapScreen(): React.JSX.Element {
   const [isClicked, setIsClicked] = useState(false);
@@ -37,10 +38,7 @@ function MapScreen(): React.JSX.Element {
 
   const radius = calculateRadius(region?.latitudeDelta || 0.015, region?.longitudeDelta || 0.0121);
 
-  const {data: clusterData} = useQuery({
-    queryKey: ['exhibitionCluster', {latitude: region?.latitude, longitude: region?.longitude, radius, group}],
-    queryFn: () => getExhibitionCluster({latitude: region?.latitude, longitude: region?.longitude, radius, group}),
-  });
+  const {data: clusterData} = useExhibitionCluster(region?.latitude!, region?.longitude!, 1000, group);
 
   const geocodeQueries = useQueries({
     queries: (clusterData?.content || []).map((cluster: Cluster) => ({
@@ -58,29 +56,7 @@ function MapScreen(): React.JSX.Element {
 
   // console.log('geocodedClusters:', clusterData);
 
-  const {data: clickedClusterExhibitionList} = useQuery({
-    queryKey: [
-      'clickedClusterExhibitionList',
-      {
-        state: clickedCluster?.state || '',
-        city: clickedCluster?.city || '',
-        town: clickedCluster?.town || '',
-        page: 0,
-        size: 10,
-        sort: 'trending',
-      },
-    ],
-    queryFn: () =>
-      getExhibitionList({
-        state: clickedCluster?.state || '',
-        city: clickedCluster?.city || '',
-        town: clickedCluster?.town || '',
-        page: 0,
-        size: 10,
-        sort: 'trending',
-      }),
-    enabled: !!clickedCluster,
-  });
+  const {data: clickedClusterExhibitionList} = useNearbyExhibitions(clickedCluster);
 
   const handleMarkerPress = (cluster: Cluster) => {
     setClickedCluster(cluster);
