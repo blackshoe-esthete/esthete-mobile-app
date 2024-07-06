@@ -1,24 +1,58 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
-import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
+import {useExhibitionCreationStore, useFilterDetailsStore, FilterAttributes} from '../../store/exhibitionCreationStore';
 import {Slider} from '@miblanchard/react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import FilterTab from '@components/ExhibitionCreation/FilterTab';
+import {
+  Sharpen,
+  ColorMatrix,
+  concatColorMatrices,
+  hueRotate,
+  saturate,
+  brightness,
+  contrast,
+  temperature,
+  grayscale,
+} from 'react-native-image-filter-kit';
+import {filterServiceToken} from 'src/utils/dummy';
+import {getFilterDetails} from 'src/apis/exhibitionCreate';
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
-  const {selectedImageUri, additionalImageUri, setCurrentGrayScaleForAll} = useExhibitionCreationStore();
+  const {selectedFilterId, setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes} =
+    useFilterDetailsStore();
+  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [sliderValue, setSliderValue] = useState<number>(0);
+  const [selectedFilter, setSelectedFilter] = useState<string>('');
+  const [currentFilterAttributes, setCurrentFilterAttributes] = useState<FilterAttributes>({
+    brightness: 1,
+    sharpness: 0,
+    exposure: 0,
+    contrast: 1,
+    saturation: 1,
+    hue: 0,
+    temperature: 0,
+    grayScale: 0,
+  });
+  const {setCurrentFilterId, setCurrentFilterIdForAll} = useExhibitionCreationStore();
+
+  useEffect(() => {
+    setSelectedFilterId('0');
+  }, []);
 
   // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
-    setSliderValue(prevState => value);
-    setCurrentGrayScaleForAll(value);
+    setSliderValue(value);
+    if (selectedFilterAttributes) {
+      // 슬라이더 값에 따라 필터 속성 조정
+      applyAdjustedAttributes(value);
+    }
   };
-
   // 다음 버튼 클릭
   const onPressNext = () => {
     if (!selectedImageUri && additionalImageUri.length === 0) {
@@ -26,6 +60,39 @@ const ExhibitionFilterApplyAllScreen = () => {
       return;
     }
     navigation.navigate('ExhibitionFilterApplyComplete');
+  };
+
+  const onPressFilter = async (id: string) => {
+    setSelectedFilter(id);
+    setCurrentFilterId(id);
+    setCurrentFilterIdForAll(id);
+    setSelectedFilterId(id);
+    try {
+      const filterDetails = await getFilterDetails(id, filterServiceToken);
+      setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
+      setCurrentFilterAttributes(filterDetails.payload.filter_attributes);
+    } catch (error) {
+      console.error('Failed to fetch filter details:', error);
+    }
+  };
+
+  const applyAdjustedAttributes = (scale: number) => {
+    // Converts the slider value to a scale factor (e.g., 0 to 1 slider value maps to 0.5 to 1.5 scale factor)
+    const scaleToFactor = (value, factorRange) => 1 + (value - 0.5) * factorRange;
+
+    if (selectedFilterAttributes) {
+      const adjustedAttributes = {
+        brightness: (selectedFilterAttributes.brightness || 0) * scale, // Allows 50% decrease to 50% increase
+        contrast: (selectedFilterAttributes.contrast || 0) * scale, // Similar to brightness
+        saturation: (selectedFilterAttributes.saturation || 0) * scale, // Keeping the saturation adjustments reasonable
+        hue: (selectedFilterAttributes.hue || 0) * scale, // Hue might be a straightforward scaling
+        temperature: (selectedFilterAttributes.temperature || 0) * scale, // Direct scaling for temperature
+        grayscale: scale < 0.5 ? scale * 2 : 1, // Grayscale increases more quickly
+        sharpness: (selectedFilterAttributes.sharpness || 0) * scale, // Direct scaling for sharpness
+      };
+
+      setCurrentFilterAttributes(adjustedAttributes);
+    }
   };
 
   return (
@@ -56,7 +123,26 @@ const ExhibitionFilterApplyAllScreen = () => {
             onSnapToItem={index => setCurrentImageIndex(index)}
             renderItem={({item, index}) => (
               <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index: index})}>
-                <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+                {selectedFilterId !== '0' && sliderValue !== 0 ? (
+                  <Sharpen
+                    image={
+                      <ColorMatrix
+                        matrix={concatColorMatrices([
+                          brightness(currentFilterAttributes?.brightness),
+                          contrast(currentFilterAttributes?.contrast),
+                          saturate(currentFilterAttributes?.saturation),
+                          hueRotate(currentFilterAttributes?.hue),
+                          temperature(currentFilterAttributes?.temperature),
+                          grayscale(currentFilterAttributes?.grayScale),
+                        ])}
+                        image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                      />
+                    }
+                    amount={selectedFilterAttributes?.sharpness}
+                  />
+                ) : (
+                  <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+                )}
               </TouchableOpacity>
             )}
           />
@@ -80,7 +166,7 @@ const ExhibitionFilterApplyAllScreen = () => {
         </View>
 
         {/* 필터 선택 */}
-        <FilterTab />
+        <FilterTab onPressFilter={onPressFilter} selectedFilter={selectedFilter} />
 
         <View>
           <Text

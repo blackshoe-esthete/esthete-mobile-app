@@ -1,5 +1,5 @@
-// components/FilterItem.tsx
 import React from 'react';
+import filterImg from '@assets/imgs/filter-cover1.png';
 import {View, Image, Text, StyleSheet, Dimensions} from 'react-native';
 
 const {width} = Dimensions.get('window');
@@ -10,9 +10,11 @@ interface FilterItemProps {
 }
 
 const FilterItem: React.FC<FilterItemProps> = ({imageUri, filterName}) => {
+  const imageSource = filterName === 'Original' ? filterImg : {uri: imageUri};
+
   return (
     <View style={styles.container}>
-      <Image source={imageUri} style={styles.image} />
+      <Image source={imageSource} style={styles.image} />
       <View style={styles.overlay}>
         <Text style={styles.text}>{filterName}</Text>
       </View>
@@ -30,7 +32,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    gap: 10,
   },
   overlay: {
     position: 'absolute',
