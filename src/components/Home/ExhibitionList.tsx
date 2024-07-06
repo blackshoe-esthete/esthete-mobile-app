@@ -25,8 +25,6 @@ function ExhibitionList(): React.JSX.Element {
     queryFn: () => getPreferAuthorList(),
   });
 
-  console.log('preferedAuthorData: ', preferedAuthorData);
-
   return (
     <ScrollView contentContainerStyle={styles.exhibitionContainer}>
       <HorizontalList
