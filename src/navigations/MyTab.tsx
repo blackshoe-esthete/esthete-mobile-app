@@ -10,21 +10,10 @@ import { Routes } from '@screens/Routes';
 import useNavigateStore from '../store/navigate-store';
 import ex1 from '@assets/imgs/gallery1.png';
 import ex2 from '@assets/imgs/gallery2.png';
+import { useQuery } from '@tanstack/react-query';
+import { mineExhibition, mineFilter } from 'src/apis/mygallery';
 
 type Props = NativeStackScreenProps<Routes, 'MyTab'>;
-type galleryProp = {
-  id: string;
-  title: string;
-  src: ImageProps;
-  author?: string;
-  date?: string;
-};
-const DATA: galleryProp[] = [
-  {id:'1', title: "전시회명", src: ex1},
-  {id:'2', title: "전시회명", src: ex2},
-  {id:'3', title: "전시회명", src: ex1},
-  {id:'4', title: "전시회명", src: ex2},
-];
 
 function MyTab({navigation, route}: Props): React.JSX.Element {
   const layout = useWindowDimensions();
@@ -37,9 +26,19 @@ function MyTab({navigation, route}: Props): React.JSX.Element {
     {key: 'second', title: '필터'},
   ]);
 
+  const {data: galleryData} = useQuery({
+    queryKey: ['my-gallery'],
+    queryFn: mineExhibition
+  });
+
+  const {data: filterData} = useQuery({
+    queryKey: ['my-filter'],
+    queryFn: mineFilter
+  });
+
   const renderScene = SceneMap({
-    first: () => <MyCollections props={DATA} temporary={false}/>,
-    second: MyFilter,
+    first: () => <MyCollections props={galleryData} temporary={false}/>,
+    second: () => <MyFilter props={filterData} temporary={false}/>
   });
 
   const renderTabBar = (props: any) => (
@@ -69,7 +68,7 @@ function MyTab({navigation, route}: Props): React.JSX.Element {
 
   return (
     <SafeAreaProvider>
-      <MyHeader />
+      <MyHeader navigation={navigation} route={route} />
       <TabView
         navigationState={{index, routes}}
         renderScene={renderScene}

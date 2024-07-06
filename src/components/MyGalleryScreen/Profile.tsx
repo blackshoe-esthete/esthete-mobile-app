@@ -1,21 +1,34 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import profile from '@assets/imgs/profile-img.png';
-import {useNavigation} from '@react-navigation/native';
+import {useQuery} from '@tanstack/react-query';
+import {getMyFollower, getMyFollowing} from 'src/apis/userInfo';
+import { NativeStackScreenProps} from '@react-navigation/native-stack';
+import {Routes} from '@screens/Routes';
 
-function Profile(): React.JSX.Element {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<Routes, 'MyTab'>;
+
+function Profile({route, navigation}: Props): React.JSX.Element {
+  const {data: following} = useQuery({
+    queryKey: ['following'],
+    queryFn: getMyFollowing,
+  });
+  const {data: follower} = useQuery({
+    queryKey: ['follower'],
+    queryFn: getMyFollower
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.textBox}>
-        <Text style={styles.titleText}>한줄소개</Text>
+        <Text style={styles.titleText}>한줄소개</Text>  
         <Text style={styles.subText}>추가적으로 사진에 관한 추가정보 입력 추가적으로 사진에 관한 추가정보 입력</Text>
         <View style={styles.followBox}>
-          <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends')}>
+          <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends', following)}>
             <Text style={styles.follower}>팔로워</Text>
             <Text style={styles.followNum}>158</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends')}>
+          <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends', follower)}>
             <Text style={[styles.follower, {marginLeft: 19}]}>팔로잉</Text>
             <Text style={styles.followNum}>25</Text>
           </TouchableOpacity>

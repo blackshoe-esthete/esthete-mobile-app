@@ -2,15 +2,16 @@ import React, {useCallback} from 'react';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import menu from '@assets/icons/menu.png';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {NativeStackNavigationProp, NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../../screens/Routes';
 import Profile from '@components/MyGalleryScreen/Profile';
 // import useNavigateStore from '@store/navigate-store';
 import useNavigateStore from '../../store/navigate-store';
 import { useFocusEffect } from '@react-navigation/native';
 
-type Props = NativeStackScreenProps<Routes, 'MyGalleryScreen'>;
-function MyHeader(): React.JSX.Element {
+// type Props = NativeStackScreenProps<Routes, 'MyGalleryScreen'>;
+type Props = NativeStackScreenProps<Routes, 'MyTab'>;
+function MyHeader({route, navigation}: Props): React.JSX.Element {
   const {status} = useNavigateStore();
   const changePress = useNavigateStore(state=>state.changeStatus);
   const focusChange = useNavigateStore(state => state.getFalse);
@@ -23,7 +24,7 @@ function MyHeader(): React.JSX.Element {
           <Image source={menu} style={styles.menuIcon} />
         </TouchableOpacity>
       </View>
-      <Profile />
+      <Profile navigation={navigation} route={route} />
     </SafeAreaView>
   );
 }
