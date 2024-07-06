@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Button,
   Dimensions,
   FlatList,
   Image,
@@ -10,6 +9,7 @@ import {
   Text,
   TextInput,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import TopTab from '@components/FilterCreation/TopTab';
@@ -187,7 +187,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
             contentContainerStyle={{gap: 10}}
             data={filterTagsData}
             renderItem={({item, index}) => (
-              <Pressable
+              <TouchableOpacity
                 key={index}
                 onPress={() => onPressAddTag(item.name)}
                 style={[
@@ -198,7 +198,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
                   },
                 ]}>
                 <Text style={styles.keywordText}>{item.name}</Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
           />
         </View>
@@ -221,7 +221,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
                       styles.selectedKeyword,
                       {
                         marginLeft: index === 0 ? 20 : 0,
-                        marginRight: index === filterTagsData.length - 1 ? 20 : 0,
+                        marginRight: index === filterTags.length - 1 ? 20 : 0,
                       },
                     ]}>
                     <Text style={styles.selectedKeywordText}>{item}</Text>

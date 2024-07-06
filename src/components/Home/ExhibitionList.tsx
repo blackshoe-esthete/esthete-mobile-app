@@ -1,36 +1,69 @@
 import React from 'react';
 import {FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import exampleImg from '@assets/imgs/ex1.png';
-import anonymousImg from '@assets/imgs/anonymous.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import {useNavigation} from '@react-navigation/native';
 import HorizontalList from './HorizontalList';
-import {useQuery} from '@tanstack/react-query';
-import {getIsolatedExhibitionList, getMainExhibitionList, getPreferAuthorList} from 'src/apis/mainExhibitionService';
+import {useQueries, useQuery} from '@tanstack/react-query';
+import {
+  getIsolatedExhibitionList,
+  getIsolatedExhibitionListWithTag,
+  getMainExhibitionList,
+  getMainExhibitionListWithTag,
+  getPreferAuthorList,
+} from 'src/apis/mainExhibitionService';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
 import {useExhibitionCluster, useNearbyExhibitions} from '@hooks/useNearbyExhibitions';
 import useMyLocation from '@hooks/useMyLocation';
 
-function ExhibitionList(): React.JSX.Element {
+interface ExhibitionListProps {
+  selectedTags: string[];
+}
+
+function ExhibitionList({selectedTags}: ExhibitionListProps): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {data: recommendedExhibitionData} = useQuery({
-    queryKey: ['recommendedExhibition'],
-    queryFn: () => getMainExhibitionList(),
-  });
-  const {data: isolatedExhibitionData} = useQuery({
-    queryKey: ['isolatedExhibition'],
-    queryFn: () => getIsolatedExhibitionList(),
-  });
+
   const {data: preferedAuthorData} = useQuery({
     queryKey: ['preferedAuthor'],
     queryFn: () => getPreferAuthorList(),
   });
+
+  const recommendedQueries = useQueries({
+    queries: selectedTags.map(tag => ({
+      queryKey: ['recommendedExhibition', tag],
+      queryFn: () => getMainExhibitionListWithTag([tag]),
+    })),
+  });
+
+  const isolatedQueries = useQueries({
+    queries: selectedTags.map(tag => ({
+      queryKey: ['isolatedExhibition', tag],
+      queryFn: () => getIsolatedExhibitionListWithTag([tag]),
+    })),
+  });
+
+  const defaultRecommendedQuery = useQuery({
+    queryKey: ['recommendedExhibition'],
+    queryFn: () => getMainExhibitionList(),
+    enabled: selectedTags.length === 0,
+  });
+
+  const defaultIsolatedQuery = useQuery({
+    queryKey: ['isolatedExhibition'],
+    queryFn: () => getIsolatedExhibitionList(),
+    enabled: selectedTags.length === 0,
+  });
+
+  const recommendedExhibitionData =
+    selectedTags.length === 0 ? defaultRecommendedQuery.data : recommendedQueries.flatMap(query => query.data || []);
+
+  const isolatedExhibitionData =
+    selectedTags.length === 0 ? defaultIsolatedQuery.data : isolatedQueries.flatMap(query => query.data || []);
+
   const myRegion = useMyLocation();
   const {data: clusterData} = useExhibitionCluster(myRegion?.latitude!, myRegion?.longitude!, 1000, 'state');
   const {data: nearbyExhibitionData} = useNearbyExhibitions(clusterData?.content[0]);
 
-  console.log('nearbyExhibitionData:', myRegion);
   return (
     <ScrollView contentContainerStyle={styles.exhibitionContainer}>
       <HorizontalList
