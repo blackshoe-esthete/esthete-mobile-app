@@ -1,50 +1,58 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet, Dimensions, TouchableOpacity, ActivityIndicator, Text, Image} from 'react-native';
 import MasonryList from 'reanimated-masonry-list';
-import {ImageItem} from '../../types';
 import RenderImage from '../common/RenderImage';
 import ImageModal from '@components/common/ImageModal';
 import {useNavigation} from '@react-navigation/native';
+import {ExhibitionData, Photo} from '@types/mainExhibitionService.type';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '@types/navigations';
 
 interface ExhibitionPictureListProps {
   isVisited: boolean;
+  exhibitionData: ExhibitionData;
+  id: string;
 }
 
-const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({
-  isVisited,
-}) => {
+const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited, exhibitionData, id}) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentImage, setCurrentImage] = useState<ImageItem | null>(null);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const openModal = (item: ImageItem) => {
+  useEffect(() => {
+    if (exhibitionData?.photos?.length > 0) {
+      setLoading(false); //
+    }
+  }, [exhibitionData]);
+
+  const openModal = (item: string) => {
     if (isVisited) {
       setCurrentImage(item);
       setModalVisible(true);
     }
   };
 
-  const data: ImageItem[] = [
-    {id: '4', source: require('src/assets/imgs/pic-2.png')},
-    {id: '1', source: require('src/assets/imgs/pic-1.png')},
-    {id: '3', source: require('src/assets/imgs/pic-3.png')},
-    {id: '2', source: require('src/assets/imgs/pic-1.png')},
-    {id: '5', source: require('src/assets/imgs/pic-1.png')},
-    {id: '6', source: require('src/assets/imgs/pic-2.png')},
-    {id: '7', source: require('src/assets/imgs/pic-3.png')},
-    {id: '8', source: require('src/assets/imgs/pic-1.png')},
-  ];
+  if (loading) {
+    return (
+      <View style={{flex: 1, alignItems: 'center', paddingTop: 120}}>
+        <Text style={{color: 'white', fontSize: 17}}>No Photos</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <MasonryList
-        data={data}
-        keyExtractor={item => item.id}
+        data={exhibitionData?.photos}
+        keyExtractor={item => item.photo_id}
         numColumns={2}
-        renderItem={({item, i}) => (
-          <TouchableOpacity onPress={() => openModal(item as ImageItem)}>
-            <RenderImage item={item as ImageItem} index={i} />
+        // contentContainer height를 임시로 window height로 설정
+        contentContainerStyle={{height: Dimensions.get('window').height}}
+        renderItem={({item}) => (
+          <TouchableOpacity onPress={() => openModal((item as Photo).photo_url)}>
+            <RenderImage item={(item as Photo).photo_url} />
           </TouchableOpacity>
         )}
       />
@@ -54,7 +62,7 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({
         onClose={() => setModalVisible(false)}
         onReport={() => {
           setModalVisible(false);
-          navigation.navigate('ExhibitionReport', {reportType: '사진'});
+          navigation.navigate('ExhibitionReport', {id});
         }}
       />
     </View>
@@ -73,5 +81,12 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     backgroundColor: '#030303',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#030303',
+  },
 });
+
 export default ExhibitionPictureList;

@@ -2,13 +2,19 @@ import React from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import exhibitionImg from '@assets/imgs/ex2.jpeg';
 
-const SearchExhibitionItem = () => (
+interface SearchExhibitionItemProps {
+  title: string;
+  author: string;
+  thumbnail: string;
+}
+
+const SearchExhibitionItem = ({title, author, thumbnail}: SearchExhibitionItemProps) => (
   <View style={styles.container}>
     <View style={styles.imageContainer}>
-      <Image source={exhibitionImg} style={styles.image} resizeMode="cover" />
+      <Image source={{uri: thumbnail}} style={styles.image} resizeMode="cover" />
       <View style={styles.textContainer}>
-        <Text style={styles.exhibitionName}>전시회명</Text>
-        <Text style={styles.artistName}>작가명</Text>
+        <Text style={styles.exhibitionName}>{title}</Text>
+        <Text style={styles.artistName}>{author}</Text>
       </View>
     </View>
   </View>
@@ -17,7 +23,7 @@ const SearchExhibitionItem = () => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#030303',
+    backgroundColor: '#D6D6D6',
   },
   imageContainer: {
     position: 'relative',

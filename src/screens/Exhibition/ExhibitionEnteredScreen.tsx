@@ -12,25 +12,25 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import {RootStackParamList} from '../../types/navigations';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
-import {useExhibitionComments, useExhibitionDetails} from '@hooks/useExhibitionDetails';
+import {useExhibitionComments} from '@hooks/useExhibitionDetails';
+import {ExhibitionData, IComment} from '@types/mainExhibitionService.type';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '@types/navigations';
 
-type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
-
-const ExhibitionEnteredScreen = () => {
-  const route = useRoute<ExhibitionScreenRouteProp>();
+const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: ExhibitionData; id: string}}}) => {
+  const {exhibitionData} = route.params;
   const {id} = route.params;
 
-  const exhibitionQuery = useExhibitionDetails(id);
-  const commentQuery = useExhibitionComments('d8265394-573e-4d5e-baf0-8b75fe10896e');
+  // const exhibitionQuery = useExhibitionDetails(id);
+  const commentQuery = useExhibitionComments(id);
 
-  const {data, isLoading} = exhibitionQuery;
+  // const {data, isLoading} = exhibitionQuery;
   const {data: comments, isLoading: isCommentLoading} = commentQuery;
 
   const screenHeight = Dimensions.get('window').height;
@@ -44,7 +44,7 @@ const ExhibitionEnteredScreen = () => {
   const likesIcon = require('../../assets/icons/likes.png');
   const fillLikesIcon = require('../../assets/icons/push-likes-big.png');
   const commentsIcon = require('../../assets/icons/comments.png');
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const panResponder = useRef(
     PanResponder.create({
@@ -86,7 +86,7 @@ const ExhibitionEnteredScreen = () => {
       animatedHeight.setValue(0);
     });
   };
-  if (isLoading || isCommentLoading) return <ActivityIndicator size="large" color="#000" />;
+  if (isCommentLoading) return <ActivityIndicator size="large" color="#000" />;
 
   return (
     <View>
@@ -94,12 +94,8 @@ const ExhibitionEnteredScreen = () => {
         <View style={styles.container}>
           <View style={styles.mainPicture}>
             <ExhibitionMainPicture
-              title={data.title}
-              date={data.date}
-              author={data.author}
-              authorProfile={data.author_profile_url}
-              thumbnail={data.thumbnail_url}
               entered={true}
+              exhibitionData={exhibitionData}
               isPlaying={false}
               currentExhibitionIndex={id}
             />
@@ -113,10 +109,10 @@ const ExhibitionEnteredScreen = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.pictures}>
-            <ExhibitionPictureList isVisited={true} />
+            <ExhibitionPictureList isVisited={true} exhibitionData={exhibitionData} id={id} />
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>전시회 설명이 노출되는 곳입니다.</Text>
+            <Text style={styles.infoText}>{exhibitionData?.description}</Text>
           </View>
           <Text style={styles.title}>위치 정보</Text>
           <TouchableOpacity
@@ -146,7 +142,7 @@ const ExhibitionEnteredScreen = () => {
           {...panResponder.panHandlers}>
           <View style={styles.commentModalHeader}></View>
           <Text style={styles.commentTitle}>전시회 방명록</Text>
-          {comments.map((comment, index) => (
+          {comments.map((comment: IComment, index: number) => (
             <Comment
               key={index}
               commentId={comment.comment_id}

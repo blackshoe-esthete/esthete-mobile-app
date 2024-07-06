@@ -7,13 +7,17 @@ import {RootStackParamList} from '../../types/navigations';
 import Carousel from 'react-native-reanimated-carousel';
 import {interpolate, Extrapolate} from 'react-native-reanimated';
 import {useExhibitionDetails} from '../../hooks/useExhibitionDetails';
+import {useQuery} from '@tanstack/react-query';
+import {getExhibitionDetail} from 'src/apis/mainExhibitionService';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+
 type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const ExhibitionScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<ExhibitionScreenRouteProp>();
   const {id} = route.params;
 
@@ -22,7 +26,7 @@ const ExhibitionScreen: React.FC = () => {
   const {data, isLoading} = exhibitionQuery;
 
   const goToExhibitionEntered = (id: string) => {
-    navigation.navigate('ExhibitionEntered', {id});
+    navigation.navigate('ExhibitionEntered', {exhibitionData: data, id});
   };
 
   const cubeRef = useRef<any>(null);
@@ -74,17 +78,13 @@ const ExhibitionScreen: React.FC = () => {
             <View style={styles.contentContainer}>
               <View style={styles.mainPicture}>
                 <ExhibitionMainPicture
-                  title={data.title}
-                  date={data.date}
-                  author={data.author}
-                  authorProfile={data.author_profile_url}
-                  thumbnail={data.thumbnail_url}
+                  exhibitionData={data}
                   entered={false}
                   handlePlayPause={handlePlayPause}
                   isPlaying={isPlaying}
                   currentExhibitionIndex={item}
                 />
-                <ExhibitionPictureList isVisited={false} />
+                <ExhibitionPictureList isVisited={false} exhibitionData={data} id={id} />
               </View>
             </View>
             <View style={styles.buttonContainer}>
@@ -93,7 +93,7 @@ const ExhibitionScreen: React.FC = () => {
                 color="#000"
                 onPress={() => {
                   setIsPlaying(false);
-                  goToExhibitionEntered(item);
+                  goToExhibitionEntered(id);
                 }}
               />
             </View>
