@@ -4,19 +4,19 @@ import GalleryItem from "@components/MyGalleryScreen/GalleryItem";
 import TempoItem from "@components/MyMenuScreen/TempoItem";
 
 type galleryProp = {
-  id: string;
+  exhibition_id: string;
   title: string;
-  src: ImageProps;
+  thumbnail_url: string;
   author?: string;
   date?: string;
 };
 
 function MyCollections(data: any): React.JSX.Element{
-  return(
+  return(  
     <SafeAreaView style={{flex: 1}}>
       <FlatList 
         data={data.props}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.exhibition_id}
         renderItem={({item}: {item:galleryProp}) => {
           if(data.temporary){
             return <TempoItem {...item} label="collection"/>;

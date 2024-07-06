@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 
 type galleryProp = {
-  id: string;
+  exhibition_id: string;
   title: string;
-  src: ImageProps;
+  thumbnail_url: string;
   author?: string;
   date?: string;
   label?: string;
@@ -51,7 +51,7 @@ function TempoItem(props: galleryProp): React.JSX.Element {
   return (
     <View style={{flex: 1}}>
       <View style={styles.photoBox}>
-        <Image source={props.src} style={styles.photoIcon} />
+        <Image src={props.thumbnail_url} style={styles.photoIcon} />
         <View style={styles.titleBox}>
           <Text style={styles.textStyle}>{props.date} 임시저장</Text>
         </View>

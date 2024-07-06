@@ -4,7 +4,7 @@ import FilterItem from './FilterItem';
 import filterImg1 from '@assets/imgs/filter-cover1.png';
 import filterImg2 from '@assets/imgs/filter-cover2.png';
 import filterImg3 from '@assets/imgs/filter-cover3.png';
-import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
+import {useExhibitionCreationStore} from '../../store/ExhibitionCreationStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
