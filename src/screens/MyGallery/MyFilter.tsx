@@ -20,7 +20,7 @@ function MyFilter(data: any): React.JSX.Element{
         renderItem={({item}: {item: galleryProp}) => {
           if(data.temporary){
             // return <TempoItem {...item} label="filter" />
-            return <FilterItem {...item}/>
+            return <FilterItem {...item} />
           }else{
             return <FilterItem {...item} />;
           }

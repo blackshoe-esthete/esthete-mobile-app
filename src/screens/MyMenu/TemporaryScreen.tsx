@@ -9,6 +9,8 @@ import MyCollections from '@screens/MyGallery/MyCollections';
 import MyFilter from '@screens/MyGallery/MyFilter';
 import ex1 from '@assets/imgs/gallery1.png';
 import ex2 from '@assets/imgs/gallery2.png';
+import { useQuery } from '@tanstack/react-query';
+import { myTempExhibition, myTempFilter } from 'src/apis/mygallery';
 
 type Props = NativeStackScreenProps<Routes, 'Temporary'>;
 type galleryProp = {
@@ -32,9 +34,18 @@ function Temporary({navigation, route}: Props) {
     {key: 'first', title: '전시'},
     {key: 'second', title: '필터'},
   ]);
+  const {data: myTempGallery} = useQuery({
+    queryKey: ['temp-gallery'],
+    queryFn: myTempExhibition
+  })
+
+  const {data: myTempoFilter} = useQuery({
+    queryKey: ['temp-filter'],
+    queryFn: myTempFilter
+  });
 
   const renderScene = SceneMap({
-    first: () => <MyCollections props={DATA} temporary={true}/>,
+    first: () => <MyCollections props={myTempGallery} temporary={true}/>,
     second: () => <MyFilter props={DATA} temporary={true}/>,
   });
 

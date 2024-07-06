@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 
 type galleryProp = {
-  exhibition_id: string;
-  title: string;
+  temporary_exhibition_id: string;
+  title?: string;
   thumbnail_url: string;
   author?: string;
   date?: string;
