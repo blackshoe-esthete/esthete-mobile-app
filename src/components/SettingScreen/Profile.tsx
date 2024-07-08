@@ -62,11 +62,10 @@ function Profile() {
       <InputBox
         onChange={getText}
         placeholder="기존 닉네임이 출력됩니다"
-        height={70}
+        height={70} 
         ref={textState}
         marginTop={30}
         value={nickname}
-       //ref가 중복된 닉네임인지 확인
       />
       {enable ? (
         <View style={styles.alertBox}>

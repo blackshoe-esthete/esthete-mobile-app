@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
-import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
+import {useExhibitionCreationStore} from '../../store/ExhibitionCreationStore';
 import {Slider} from '@miblanchard/react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';

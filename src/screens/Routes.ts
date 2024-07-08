@@ -24,4 +24,6 @@ export type Routes = {
   MyInfo: undefined;
   CompanyInfo: undefined;
   OpenSource: undefined;
+  Profile: undefined;
+  Friends: undefined;
 };
