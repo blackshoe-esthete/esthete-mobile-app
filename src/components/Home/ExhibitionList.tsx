@@ -61,7 +61,7 @@ function ExhibitionList({selectedTags}: ExhibitionListProps): React.JSX.Element 
     selectedTags.length === 0 ? defaultIsolatedQuery.data : isolatedQueries.flatMap(query => query.data || []);
 
   const myRegion = useMyLocation();
-  const {data: clusterData} = useExhibitionCluster(myRegion?.latitude!, myRegion?.longitude!, 1000, 'state');
+  const {data: clusterData} = useExhibitionCluster(myRegion?.latitude!, myRegion?.longitude!, 10, 'state');
   const {data: nearbyExhibitionData} = useNearbyExhibitions(clusterData?.content[0]);
 
   return (

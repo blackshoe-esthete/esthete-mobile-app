@@ -38,7 +38,7 @@ function MapScreen(): React.JSX.Element {
 
   const radius = calculateRadius(region?.latitudeDelta || 0.015, region?.longitudeDelta || 0.0121);
 
-  const {data: clusterData} = useExhibitionCluster(region?.latitude!, region?.longitude!, 1000, group);
+  const {data: clusterData} = useExhibitionCluster(region?.latitude!, region?.longitude!, radius, group);
 
   const geocodeQueries = useQueries({
     queries: (clusterData?.content || []).map((cluster: Cluster) => ({
