@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useCallback} from 'react';
 import {View, Button, StyleSheet, Dimensions, ActivityIndicator} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
@@ -8,7 +8,7 @@ import Carousel from 'react-native-reanimated-carousel';
 import {interpolate, Extrapolate} from 'react-native-reanimated';
 import {useExhibitionDetails} from '../../hooks/useExhibitionDetails';
 import {useQuery} from '@tanstack/react-query';
-import {getExhibitionDetail} from 'src/apis/mainExhibitionService';
+import {searchExhibition} from 'src/apis/mainExhibitionService';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
@@ -22,7 +22,6 @@ const ExhibitionScreen: React.FC = () => {
   const {id} = route.params;
 
   const exhibitionQuery = useExhibitionDetails(id);
-
   const {data, isLoading} = exhibitionQuery;
 
   const goToExhibitionEntered = (id: string) => {
@@ -30,11 +29,24 @@ const ExhibitionScreen: React.FC = () => {
   };
 
   const cubeRef = useRef<any>(null);
-  const exhibitionIds = [
-    'd8265394-573e-4d5e-baf0-8b75fe10896e',
-    'd8265394-573e-4d5e-baf0-8b75fe10896e',
-    'd8265394-573e-4d5e-baf0-8b75fe10896e',
-  ];
+
+  const {data: searchResult} = useQuery({
+    queryKey: ['searchExhibition', ''],
+    queryFn: () => searchExhibition(''),
+    select: data => data?.content,
+  });
+
+  const exhibitionIds = searchResult?.map((exhibition: any) => exhibition.exhibition_id) || [];
+
+  const shuffleArray = (array: string[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
+  const shuffledExhibitionIds = shuffleArray(exhibitionIds);
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -42,7 +54,7 @@ const ExhibitionScreen: React.FC = () => {
     setIsPlaying(prevState => !prevState);
   };
 
-  const animationStyle: any = React.useCallback(
+  const animationStyle: any = useCallback(
     (value: number) => {
       'worklet';
 
@@ -70,7 +82,7 @@ const ExhibitionScreen: React.FC = () => {
         height={SCREEN_HEIGHT}
         autoPlay={isPlaying}
         autoPlayInterval={3000}
-        data={exhibitionIds}
+        data={shuffledExhibitionIds}
         scrollAnimationDuration={2000}
         customAnimation={animationStyle}
         renderItem={({item, index}) => (
@@ -82,9 +94,10 @@ const ExhibitionScreen: React.FC = () => {
                   entered={false}
                   handlePlayPause={handlePlayPause}
                   isPlaying={isPlaying}
-                  currentExhibitionIndex={item}
+                  currentExhibitionIndex={item} // 현재 아이템을 전달
                 />
-                <ExhibitionPictureList isVisited={false} exhibitionData={data} id={id} />
+                <ExhibitionPictureList isVisited={false} exhibitionData={data} id={item} />{' '}
+                {/* id를 현재 아이템으로 변경 */}
               </View>
             </View>
             <View style={styles.buttonContainer}>
@@ -93,7 +106,7 @@ const ExhibitionScreen: React.FC = () => {
                 color="#000"
                 onPress={() => {
                   setIsPlaying(false);
-                  goToExhibitionEntered(id);
+                  goToExhibitionEntered(item); // 현재 아이템을 전달
                 }}
               />
             </View>
