@@ -2,7 +2,33 @@ import React, {useState} from 'react';
 import {FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import cancelIcon from '@assets/icons/cancel_gray.png';
 
-const tags = ['초상화', '풍경', '거리', '음식', '패션', '건축', '야경', '스포츠', '저널리즘', '야생', '미술'];
+const tags = [
+  '따뜻한',
+  '부드러운',
+  '평화로운',
+  '차가운',
+  '세련된',
+  '자연스러운',
+  '클래식한',
+  '쾌활한',
+  '우아한',
+  '잔잔한',
+  '풍요로운',
+  '짙은',
+  '빈티지한',
+  '화사한',
+  '모던한',
+  '수수한',
+  '사랑스러운',
+  '캐주얼한',
+  '자유분방한',
+  '다채로운',
+  '차분한',
+  '신비로운',
+  '순수한',
+  '고요한',
+  '고급스러운',
+];
 
 interface KeywordProps {
   selectedTags: string[];
