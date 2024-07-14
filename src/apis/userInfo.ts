@@ -38,13 +38,30 @@ export const getMyFollower = async () => {
   }
 };
 
+export const getMyInfo = async () => {
+  try {
+    const response = await mygalleryInstance.get(`/authors`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`,
+      },
+    });
+    if(response.data.code == 200){
+      console.log(response.data.message);
+    }
+    return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', (error as AxiosError).config);
+    throw error;
+  }
+};
+
 export const putMyProfile = async (image: string) => {
   try {
     const formData = new FormData();
     formData.append('file', {
       uri: image as string,
       name: `image{${Date.now()}}.jpg`,
-      type: 'image/jpg'
+      type: 'image/jpg',
     });
     // formData.append('file', image);
     const response = await mygalleryInstance.put(`/edit/user/profile/img`, formData, {

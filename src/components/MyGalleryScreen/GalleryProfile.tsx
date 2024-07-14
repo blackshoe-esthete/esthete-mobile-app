@@ -1,14 +1,14 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import profile from '@assets/imgs/profile-img.png';
-import {useQuery} from '@tanstack/react-query';
-import {getMyFollower, getMyFollowing} from 'src/apis/userInfo';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {getMyFollower, getMyFollowing, getMyInfo} from 'src/apis/userInfo';
 import { NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
 
 type Props = NativeStackScreenProps<Routes, 'MyTab'>;
 
-function Profile({route, navigation}: Props): React.JSX.Element {
+function GalleryProfile({route, navigation}: Props): React.JSX.Element {
   const {data: following} = useQuery({
     queryKey: ['following'],
     queryFn: getMyFollowing,
@@ -17,29 +17,39 @@ function Profile({route, navigation}: Props): React.JSX.Element {
     queryKey: ['follower'],
     queryFn: getMyFollower
   });
+  type info = {
+    introduce?: string;
+    biography?: string;
+    follower_count: number;
+    following_count: number;
+    profile_url?: string;
+  }
+
+  const queryClient = useQueryClient();
+  const userProfile = queryClient.getQueryData<info>(['my-profile']);
 
   return (
     <View style={styles.container}>
       <View style={styles.textBox}>
-        <Text style={styles.titleText}>한줄소개</Text>  
-        <Text style={styles.subText}>추가적으로 사진에 관한 추가정보 입력 추가적으로 사진에 관한 추가정보 입력</Text>
+        <Text style={styles.titleText}>{userProfile?.introduce}</Text>  
+        <Text style={styles.subText}>{userProfile?.biography}</Text>
         <View style={styles.followBox}>
           <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends', following)}>
             <Text style={styles.follower}>팔로워</Text>
-            <Text style={styles.followNum}>158</Text>
+            <Text style={styles.followNum}>{userProfile?.follower_count}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends', follower)}>
             <Text style={[styles.follower, {marginLeft: 19}]}>팔로잉</Text>
-            <Text style={styles.followNum}>25</Text>
+            <Text style={styles.followNum}>{userProfile?.following_count}</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <Image source={profile} style={styles.icon} />
+      <Image source={{uri: `https://${userProfile?.profile_url}`}} style={styles.icon} />
     </View>
   );
 }
 
-export default Profile;
+export default GalleryProfile;
 
 const styles = StyleSheet.create({
   container: {
@@ -71,6 +81,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     marginVertical: 25,
+    borderRadius: 100
   },
   followLayer: {
     display: 'flex',
