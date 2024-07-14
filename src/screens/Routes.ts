@@ -26,4 +26,5 @@ export type Routes = {
   OpenSource: undefined;
   Profile: undefined;
   Friends: undefined;
+  ProfileEdit: {imageUri?: string, currentImage?: string} | undefined;
 };

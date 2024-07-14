@@ -11,13 +11,32 @@ import InputBox from './InputBox';
 import {useEffect, useRef, useState} from 'react';
 import verified from '@assets/icons/verified.png';
 import unverified from '@assets/icons/unverified.png';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { Routes } from '@screens/Routes';
 
-function Profile() {
+type ProfileScreenNavigationProp = NativeStackScreenProps<Routes, 'ProfileEdit'>;
+interface NavigationProps {
+  navigation: ProfileScreenNavigationProp['navigation'];
+  route: ProfileScreenNavigationProp['route'];
+}
+interface ImageProps {
+  image: string;
+};
+
+interface Props extends NavigationProps, ImageProps {}
+
+function Profile({navigation, route, image}: Props) {
   const profileSelect = () => {
     return (
       <View style={styles.profileBox}>
-        <View style={styles.circle} />
-        <TouchableOpacity>
+        {
+          image ? (
+            <Image source={{uri: image}} style={styles.profileCircle}/>
+          ): (
+            <View style={styles.circle} />
+          )
+        }
+        <TouchableOpacity onPress={()=>navigation.navigate('GetPhotoScreen')}>
           <View style={styles.cameraBox}>
             <Image source={camera} style={styles.icon} />
           </View>
@@ -122,6 +141,11 @@ const styles = StyleSheet.create({
   },
   circle: {
     backgroundColor: '#D9D9D9',
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
+  },
+  profileCircle: {
     width: '100%',
     height: '100%',
     borderRadius: 100,
