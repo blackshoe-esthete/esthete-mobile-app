@@ -1,6 +1,6 @@
 import {AxiosError} from 'axios';
 import {filterInstance, mygalleryInstance} from './instance';
-import { filterServiceToken, mygalleryToken } from '@utils/dummy';
+import { exhibitionServiceToken, filterServiceToken, mygalleryToken } from '@utils/dummy';
 
 type galleryProp = {
   token: string | undefined;
@@ -38,7 +38,7 @@ export const mineFilter = async () => {
 
     return response.data.payload.created_filter_list;
   }catch(error){
-    console.log('실패 데이터: ', (error as AxiosError).config);
+    console.log('내가 만든 필터 실패 데이터: ', (error as AxiosError).config);
     throw error;
   }
 }
@@ -49,7 +49,7 @@ export const myLikeExhibition = async () => {
   try{
     const response = await mygalleryInstance.get(`/exhibitions/likes`, {
       headers: {
-        Authorization: `Bearer ${mygalleryToken}`
+        Authorization: `Bearer ${exhibitionServiceToken}`
       }
     });
 
@@ -69,7 +69,7 @@ export const myTempExhibition = async() =>{
   try{
     const response = await mygalleryInstance.get(`/temp-exhibitions`, {
       headers: {
-        Authorization: `Bearer ${mygalleryToken}`
+        Authorization: `Bearer ${filterServiceToken}`
       }
     })
     if(response.data.code == 200){

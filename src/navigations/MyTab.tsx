@@ -8,8 +8,6 @@ import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
 import useNavigateStore from '../store/navigate-store';
-import ex1 from '@assets/imgs/gallery1.png';
-import ex2 from '@assets/imgs/gallery2.png';
 import { useQuery } from '@tanstack/react-query';
 import { mineExhibition, mineFilter } from 'src/apis/mygallery';
 
@@ -17,7 +15,6 @@ type Props = NativeStackScreenProps<Routes, 'MyTab'>;
 
 function MyTab({navigation, route}: Props): React.JSX.Element {
   const layout = useWindowDimensions();
-  // const {status, changeStatus, getStatue} = useNavigateStore();
   const status = useNavigateStore();
   const focusChange = useNavigateStore(state => state.getFalse);
   const [index, setIndex] = useState(0);

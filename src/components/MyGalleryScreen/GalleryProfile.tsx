@@ -44,7 +44,7 @@ function GalleryProfile({route, navigation}: Props): React.JSX.Element {
           </TouchableOpacity>
         </View>
       </View>
-      <Image source={{uri: `https://${userProfile?.profile_url}`}} style={styles.icon} />
+      <Image source={{uri: userProfile?.profile_url?.startsWith('http') ? userProfile?.profile_url : `https://${userProfile?.profile_url}`}} style={styles.icon} resizeMode='cover' />
     </View>
   );
 }

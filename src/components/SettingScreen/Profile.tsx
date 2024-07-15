@@ -13,6 +13,8 @@ import verified from '@assets/icons/verified.png';
 import unverified from '@assets/icons/unverified.png';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
+import { useQueryClient } from '@tanstack/react-query';
+import { useProfileStore } from '@store/profileEditStore';
 
 type ProfileScreenNavigationProp = NativeStackScreenProps<Routes, 'ProfileEdit'>;
 interface NavigationProps {
@@ -26,6 +28,14 @@ interface ImageProps {
 interface Props extends NavigationProps, ImageProps {}
 
 function Profile({navigation, route, image}: Props) {
+  type info = {
+    name?: string;
+    introduce?: string;
+    biography?: string;
+    profile_url?: string;
+  }
+  const queryClient = useQueryClient();
+  const userInfo = queryClient.getQueryData<info>(['my-profile']);
   const profileSelect = () => {
     return (
       <View style={styles.profileBox}>
@@ -33,7 +43,11 @@ function Profile({navigation, route, image}: Props) {
           image ? (
             <Image source={{uri: image}} style={styles.profileCircle}/>
           ): (
-            <View style={styles.circle} />
+            userInfo?.profile_url ? (
+              <Image source={{uri: userInfo.profile_url?.startsWith('http') ? userInfo.profile_url : `https://${userInfo.profile_url}`}} style={styles.profileCircle} resizeMode='cover' />
+            ): (
+              <View style={styles.circle}/>
+            )
           )
         }
         <TouchableOpacity onPress={()=>navigation.navigate('GetPhotoScreen')}>
@@ -46,10 +60,8 @@ function Profile({navigation, route, image}: Props) {
   };
 
   const textState = useRef<TextInput>();
-  const [nickname, setNickname] = useState('');
-  const [intro, setIntro] = useState('');
-  const [script, setScript] = useState('');
   const [enable, setEnable] = useState(false);
+  const {nickname, intro, script, setNickname, setIntro, setScript} = useProfileStore();
   const getText = (newText: any) => {
     setNickname(newText);
   };
@@ -80,7 +92,7 @@ function Profile({navigation, route, image}: Props) {
       {profileSelect()}
       <InputBox
         onChange={getText}
-        placeholder="기존 닉네임이 출력됩니다"
+        placeholder={userInfo?.name}
         height={70} 
         ref={textState}
         marginTop={30}
@@ -100,14 +112,14 @@ function Profile({navigation, route, image}: Props) {
         </View>
       )}
       <InputBox 
-        placeholder="기존 한줄소개가 출력됩니다"
+        placeholder={userInfo?.introduce}
         height={70}
         marginTop={21}
         onChange={getIntro}
         value={intro}
       />
       <InputBox 
-        placeholder="주로 사용하는 카메라 기종, 컨셉 등을 추가로 입력하는 곳입니다"
+        placeholder={userInfo?.biography}
         onChange={getScript}
         height={130}
         marginTop={10}

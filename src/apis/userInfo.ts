@@ -45,7 +45,7 @@ export const getMyInfo = async () => {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
     });
-    if(response.data.code == 200){
+    if (response.data.code == 200) {
       console.log(response.data.message);
     }
     return response.data.payload;
@@ -75,6 +75,25 @@ export const putMyProfile = async (image: string) => {
     }
 
     return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', (error as AxiosError).config);
+    throw error;
+  }
+};
+
+type profileInfo = {
+  user_name: string;
+  user_introduce: string;
+  user_biography: string;
+};
+
+export const putMyAdditional = async (info: profileInfo) => {
+  try {
+    const response = await mygalleryInstance.put(`/edit/user/profile/infos`, info, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`,
+      },
+    });
   } catch (error) {
     console.log('실패 데이터: ', (error as AxiosError).config);
     throw error;

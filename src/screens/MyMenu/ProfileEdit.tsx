@@ -7,8 +7,9 @@ import CommonButton from '@components/SettingScreen/CommonButton';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
 import {useFocusEffect} from '@react-navigation/native';
-import { useMutation } from '@tanstack/react-query';
-import { putMyProfile } from 'src/apis/userInfo';
+import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
+import { putMyAdditional, putMyProfile } from 'src/apis/userInfo';
+import { useProfileStore } from '@store/profileEditStore';
 
 const windowHeight = Dimensions.get('window').height;
 type Props = NativeStackScreenProps<Routes, 'ProfileEdit'>;
@@ -16,6 +17,7 @@ function ProfileEdit({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
   const [image, setImage] = useState<string>('');
+  const queryClient = useQueryClient();
   useFocusEffect(
     useCallback(() => {
       if (route.params?.imageUri) {
@@ -27,15 +29,43 @@ function ProfileEdit({navigation, route}: Props) {
     mutationFn: () => putMyProfile(image),
     onSuccess(data) {
       console.log(data);
+      queryClient.invalidateQueries({queryKey: ['my-profile']})
       navigation.goBack();
     },
     onError(err) {
       console.log(err);
     },
   });
-  const submitUserInfo = () => {
-    mutationProfileImg.mutate();
-  }
+  const {nickname, intro, script} = useProfileStore();
+  const mutationProfileInfo = useMutation({
+    mutationFn: () => putMyAdditional({
+      user_name: nickname,
+      user_introduce: intro,
+      user_biography: script
+    }),
+    onSuccess(data) {
+      console.log(data);
+      queryClient.invalidateQueries({queryKey: ['my-profile']})
+      navigation.goBack();
+    },
+    onError(err) {
+      console.log(err);
+    },
+  })
+
+  const submitUserInfo = async () => {
+    try {
+      // const [data1, data2] = await Promise.all([
+      //   mutationProfileImg.mutateAsync({ some: 'data' }),
+      //   mutationProfileInfo.mutateAsync({ other: 'data' })
+      // ]);
+
+      mutationProfileImg.mutate();
+      mutationProfileInfo.mutate();
+    } catch (error) {
+      console.error('Error executing mutations', error);
+    }
+  };
 
   return (
     <SafeAreaView edges={['top']} style={{flex: 1}}>

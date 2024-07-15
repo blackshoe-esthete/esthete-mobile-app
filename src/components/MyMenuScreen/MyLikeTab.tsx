@@ -8,18 +8,9 @@ import {
 } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
-import ex1 from '@assets/imgs/gallery1.png';
-import ex2 from '@assets/imgs/gallery2.png';
 import { useQuery } from '@tanstack/react-query';
 import { myLikeExhibition } from 'src/apis/mygallery';
 
-// type galleryProp = {
-//   exhibition_id: string;
-//   title: string;
-//   thumbnail_url: string;
-//   author?: string;
-//   date?: string;
-// };
 function MyLikeTab(): React.JSX.Element {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
