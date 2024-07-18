@@ -9,7 +9,7 @@ import {
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import { useQuery } from '@tanstack/react-query';
-import { myLikeExhibition } from 'src/apis/mygallery';
+import { myLikeExhibition, myLikeFilter } from 'src/apis/mygallery';
 
 function MyLikeTab(): React.JSX.Element {
   const layout = useWindowDimensions();
@@ -22,10 +22,14 @@ function MyLikeTab(): React.JSX.Element {
     queryKey: ['liked-gallery'],
     queryFn: myLikeExhibition
   });
+  const {data: likedFilter} = useQuery({
+    queryKey: ['liked-filter'],
+    queryFn: myLikeFilter
+  });
 
   const renderScene = SceneMap({
     first: () => <MyCollections props={likedData} temporary={false}/>,
-    second: MyFilter,
+    second: () => <MyFilter props={likedFilter} temporary={false} />,
   });
 
   const renderTabBar = (props: any) => (

@@ -20,12 +20,6 @@ type galleryProp = {
   author?: string;
   date?: string;
 };
-const DATA: galleryProp[] = [
-  {id:'1', title: "전시회명", src: ex1, author: "작가명", date: "2024.03.29"},
-  {id:'2', title: "전시회명", src: ex2, author: "작가명", date: "2024.03.29"},
-  {id:'3', title: "전시회명", src: ex1, author: "작가명", date: "2024.03.29"},
-  {id:'4', title: "전시회명", src: ex2, author: "작가명", date: "2024.03.29"},
-];
 
 function Temporary({navigation, route}: Props) {
   const layout = useWindowDimensions();
@@ -46,7 +40,7 @@ function Temporary({navigation, route}: Props) {
 
   const renderScene = SceneMap({
     first: () => <MyCollections props={myTempGallery} temporary={true}/>,
-    second: () => <MyFilter props={DATA} temporary={true}/>,
+    second: () => <MyFilter props={myTempoFilter} temporary={true}/>,
   });
 
   const renderTabBar = (props: any) => (

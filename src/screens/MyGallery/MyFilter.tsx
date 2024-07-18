@@ -5,24 +5,45 @@ import ex2 from '@assets/imgs/gallery2.png';
 import FilterItem from "@components/MyGalleryScreen/FilterItem";
 import TempoItem from "@components/MyMenuScreen/TempoItem";
 
-type galleryProp = {
+// 구매한 필터, 내가 만든 필터, 내가 좋아요한 필터
+type filterProp = {
   filter_id: string;
   filter_name: string;
   filter_thumbnail_url: string;
 };
 
-function MyFilter(data: any): React.JSX.Element{
+// 임시저장한 필터
+type tempoProp = {
+  temporary_filter_id: string;
+  filter_thumbnail: string;
+  filter_attributes: string[];
+  representation_img_list: string[];
+  filter_tag_list: string[];
+  updated_at: string;
+};
+
+type DataType = {
+  temporary?: boolean;
+  props: (filterProp | tempoProp)[];
+}
+
+function MyFilter(data: DataType): React.JSX.Element{
   return(
     <SafeAreaView style={{flex: 1}}>
       <FlatList 
         data={data.props}
-        keyExtractor={item => item.filter_id}
-        renderItem={({item}: {item: galleryProp}) => {
+        keyExtractor={item => {
+          return data.temporary
+          ? (item as tempoProp).temporary_filter_id
+          : (item as filterProp).filter_id
+        }}
+        renderItem={({ item }) => {
           if(data.temporary){
-            // return <TempoItem {...item} label="filter" />
-            return <FilterItem {...item} />
+            const tempoItem = item as tempoProp;
+            return <TempoItem {...tempoItem} label="filter" />
           }else{
-            return <FilterItem {...item} />;
+            const filterItem = item as filterProp;
+            return <FilterItem {...filterItem} />;
           }
         }}
       />

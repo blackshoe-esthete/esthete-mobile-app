@@ -7,9 +7,7 @@ import {
   Image,
   Text,
   Dimensions,
-  ImageProps,
   TouchableOpacity,
-  useWindowDimensions,
 } from 'react-native';
 
 type galleryProp = {
@@ -20,8 +18,23 @@ type galleryProp = {
   date?: string;
   label?: string;
 };
+type filterProp = {
+  temporary_filter_id: string;
+  filter_thumbnail: string;
+  filter_attributes: Object[];
+  representation_img_list: string[];
+  filter_tag_list: string[];
+  updated_at: string;
+  label?: string;
+};
+
+// type DataType = {
+//   label?: string;
+//   props: (galleryProp | filterProp)[];
+// }
+
 const {width} = Dimensions.get('window');
-function TempoItem(props: galleryProp): React.JSX.Element {
+function TempoItem(props: (galleryProp | filterProp)): React.JSX.Element {
   const navigation = useNavigation();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const deleteModalShow = () => {
@@ -47,13 +60,39 @@ function TempoItem(props: galleryProp): React.JSX.Element {
       navigation.navigate('FilterCreate');
     }
   }
-  
+
+  const thumbnailImage = () => {
+    if(props.label == 'collection'){
+      return (
+        <Image src={(props as galleryProp).thumbnail_url} style={styles.photoIcon} />
+      );
+    }else if(props.label == 'filter'){
+      return (
+        <Image src={(props as filterProp).filter_thumbnail} style={styles.photoIcon} />
+      )
+    }
+    return null;
+  }
+
+  const resume = () => {
+    if(props.label == 'collection'){
+      return (
+        <Text style={styles.textStyle}>{(props as galleryProp).date} 임시저장</Text>
+      );
+    }else if(props.label == 'filter'){
+      return (
+        <Text style={styles.textStyle}>{(props as filterProp).updated_at} 임시저장</Text>
+      )
+    }
+    return null;
+  }
+
   return (
     <View style={{flex: 1}}>
       <View style={styles.photoBox}>
-        <Image src={props.thumbnail_url} style={styles.photoIcon} />
+        {thumbnailImage()}
         <View style={styles.titleBox}>
-          <Text style={styles.textStyle}>{props.date} 임시저장</Text>
+          {resume()}
         </View>
       </View>
       <View style={styles.buttonLayer}>
@@ -67,7 +106,7 @@ function TempoItem(props: galleryProp): React.JSX.Element {
             <Text style={styles.buttonText}>편집하기</Text>
           </View>
         </TouchableOpacity>
-        <CommonModal {...deleteProps}/>
+        <CommonModal {...deleteProps}/> 
       </View>
     </View>
   );

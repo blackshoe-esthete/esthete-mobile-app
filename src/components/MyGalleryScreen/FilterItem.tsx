@@ -8,13 +8,13 @@ import {
   ImageBackground,
 } from 'react-native';
 
-type galleryProp = {
+type filterProp = {
   filter_id: string;
   filter_name: string;
   filter_thumbnail_url: string;
 };
 const {width} = Dimensions.get('window');
-function FilterItem(props: galleryProp): React.JSX.Element {
+function FilterItem(props: filterProp): React.JSX.Element {
   return (
     <View style={styles.photoBox}>
       <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
