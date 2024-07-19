@@ -7,14 +7,14 @@ import CommonButton from '@components/SettingScreen/CommonButton';
 import { useNavigation } from '@react-navigation/native';
 
 const height = Dimensions.get('window').height;
-function PreferEdit() {
+function FilterPreferEdit() {
   const navigation = useNavigation();
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
   return (
     <SafeAreaView edges={['top']} style={{flex: 1}}>
       <View style={{position: 'relative', flex: 1}}>
-        <MenuHeader title="전시회 선호 태그 편집" />
+        <MenuHeader title="필터 선호 태그 편집" />
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={styles.scrollContainer}
@@ -34,7 +34,7 @@ function PreferEdit() {
   );
 }
 
-export default PreferEdit;
+export default FilterPreferEdit;
 
 const styles = StyleSheet.create({
   scrollContainer: {

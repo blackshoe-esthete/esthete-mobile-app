@@ -9,9 +9,10 @@ import nextIcon from '@assets/icons/arrow.png';
 type Props = NativeStackScreenProps<Routes, 'Settings'>
 function Settings({ navigation, route}: Props){
   const objects = [
-    {id: 1, title: '선호 태그 편집', name: 'Prefer'},
-    {id: 2, title: '프로필 편집', name: 'Profile'},
-    {id: 3, title: '회원 탈퇴', name: 'GoOut', color: '#FFD600'},
+    {id: 1, title: '전시회 선호 태그 편집', name: 'ExhibitionPrefer'},
+    {id: 2, title: '필터 선호 태그 편집', name: 'FilterPrefer'},
+    {id: 3, title: '프로필 편집', name: 'Profile'},
+    {id: 4, title: '회원 탈퇴', name: 'GoOut', color: '#FFD600'},
   ];
   type menuProp = {
     id: number;
