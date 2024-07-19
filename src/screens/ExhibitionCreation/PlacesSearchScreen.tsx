@@ -14,7 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import Config from 'react-native-config';
 import searchIcon from '@assets/icons/search.png';
-import {useExhibitionDetailsStore} from '../../store/ExhibitionCreationStore';
+import {useExhibitionDetailsStore} from '../../store/exhibitionCreationStore';
 
 interface Place {
   place_id: string;

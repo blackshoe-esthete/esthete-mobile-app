@@ -12,7 +12,7 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import {useExhibitionCreationStore, useExhibitionDetailsStore} from '../../store/ExhibitionCreationStore';
+import {useExhibitionCreationStore, useExhibitionDetailsStore} from '../../store/exhibitionCreationStore';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import CommonModal from '@components/common/CommonModal';
