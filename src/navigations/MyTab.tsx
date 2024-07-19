@@ -1,13 +1,12 @@
 import MyHeader from '@components/MyGalleryScreen/MyHeader';
 import MyCollections from '@screens/MyGallery/MyCollections';
 import MyFilter from '@screens/MyGallery/MyFilter';
-import React, {useEffect, useState, useCallback} from 'react';
-import {useWindowDimensions, StyleSheet, ImageProps, Text} from 'react-native';
+import React, { useState } from 'react';
+import {useWindowDimensions, StyleSheet, Text} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
-import useNavigateStore from '../store/navigate-store';
 import { useQuery } from '@tanstack/react-query';
 import { mineExhibition, mineFilter } from 'src/apis/mygallery';
 

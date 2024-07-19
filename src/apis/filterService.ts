@@ -108,3 +108,40 @@ export const indexFilterDetail = async (filterId: string) => {
     throw error;
   }
 }  
+
+//필터 좋아요
+export const pushLikeToFilter = async (filterId: string) => {
+  try{
+    console.log(filterId)
+    const response = await filterInstance.post(`/${filterId}/like`, {}, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자의 좋아요가 정상적으로 동작했습니다.');
+    }
+    return response.data.payload;
+  }catch (error) {
+    console.log('필터 좋아요 api 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
+
+//필터 좋아요 취소
+export const deleteLikeToFilter = async (filterId: string) => {
+  try{
+    const response = await filterInstance.delete(`/${filterId}/unlike`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자의 좋아요 취소가 정상적으로 동작했습니다.');
+    }
+    return response.data.payload;
+  }catch (error) {
+    console.log('필터 좋아요취소 api 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
