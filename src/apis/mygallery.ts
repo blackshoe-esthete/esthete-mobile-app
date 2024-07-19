@@ -94,7 +94,6 @@ export const myTempExhibition = async() =>{
 }
 
 //내가 임시저장한 필터 조회
-//서버 끔
 export const myTempFilter = async() => {
   try{
     const response = await filterInstance.get(`/temporary`, {
@@ -120,6 +119,9 @@ export const myPurchasedFilter = async() => {
         Authorization: `Bearer ${exhibitionServiceToken}`
       }
     });
+    if(response.status == 200){
+      console.log("구매한 필터내역이 조회되었습니다.");      
+    }
     return response.data.payload;
   }catch(error){
     console.log('구매한 필터내역 조회 실패: ', (error as AxiosError).config);
