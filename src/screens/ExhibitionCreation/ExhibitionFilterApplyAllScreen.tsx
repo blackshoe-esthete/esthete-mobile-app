@@ -26,9 +26,15 @@ const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
   const {selectedFilterId, setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes} =
     useFilterDetailsStore();
-  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
+  const {
+    selectedImageUri,
+    additionalImageUri,
+    sliderValue,
+    setSliderValue,
+    setCurrentFilterId,
+    setCurrentFilterIdForAll,
+  } = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [sliderValue, setSliderValue] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>('');
   const [currentFilterAttributes, setCurrentFilterAttributes] = useState<FilterAttributes>({
     brightness: 1,
@@ -40,7 +46,6 @@ const ExhibitionFilterApplyAllScreen = () => {
     temperature: 0,
     grayScale: 0,
   });
-  const {setCurrentFilterId, setCurrentFilterIdForAll} = useExhibitionCreationStore();
 
   useEffect(() => {
     setSelectedFilterId('0');
@@ -220,12 +225,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: 30,
     justifyContent: 'center',
-  },
-  circle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#424242',
   },
   text: {
     color: '#E9E9E9',

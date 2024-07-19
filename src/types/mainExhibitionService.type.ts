@@ -22,7 +22,9 @@ export interface Photo {
 
 // 메인 데이터 인터페이스
 export interface ExhibitionData {
+  exhibition_id: string;
   author_name: string;
+  photographer_name?: string;
   author_profile_url: string;
   date: string;
   description: string;

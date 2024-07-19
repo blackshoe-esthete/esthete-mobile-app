@@ -1,33 +1,104 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
 import {Slider} from '@miblanchard/react-native-slider';
-import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
+import {FilterAttributes, useExhibitionCreationStore, useFilterDetailsStore} from '../../store/exhibitionCreationStore';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import FilterTab from '@components/ExhibitionCreation/FilterTab';
+import {getFilterDetails} from 'src/apis/exhibitionCreate';
+import {filterServiceToken} from 'src/utils/dummy';
+import {
+  Sharpen,
+  ColorMatrix,
+  concatColorMatrices,
+  grayscale,
+  brightness,
+  contrast,
+  saturate,
+  hueRotate,
+  temperature,
+} from 'react-native-image-filter-kit';
 
 interface RouteParams {
   index: number;
 }
 
-interface CarouselImage {
-  uri: string;
-}
-
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyScreen: React.FC = () => {
-  const {selectedImageUri, additionalImageUri, setCurrentGrayScale} = useExhibitionCreationStore();
+  const {
+    selectedImageUri,
+    additionalImageUri,
+    setCurrentGrayScale,
+    sliderValue,
+    setSliderValue,
+    currentFilterId,
+    setCurrentFilterId,
+  } = useExhibitionCreationStore();
+  const {selectedFilterId, setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes} =
+    useFilterDetailsStore();
   const navigation = useNavigation();
   const route = useRoute();
   const {index} = route.params as RouteParams;
-  const [sliderValue, setSliderValue] = useState<number>(0);
+  const [selectedFilter, setSelectedFilter] = useState<string>(currentFilterId);
+  const [currentFilterAttributes, setCurrentFilterAttributes] = useState<FilterAttributes>({
+    brightness: 1,
+    sharpness: 0,
+    exposure: 0,
+    contrast: 1,
+    saturation: 1,
+    hue: 0,
+    temperature: 0,
+    grayScale: 0,
+  });
+
+  useEffect(() => {
+    if (currentFilterId) {
+      applyFilterAttributes(currentFilterId);
+    }
+  }, [currentFilterId]);
+
+  useEffect(() => {
+    if (selectedFilterId) {
+      applyFilterAttributes(selectedFilterId);
+    }
+  }, [selectedFilterId]);
+
+  useEffect(() => {
+    applyAdjustedAttributes(sliderValue);
+  }, [sliderValue]);
+
+  const applyFilterAttributes = async (id: string) => {
+    try {
+      const filterDetails = await getFilterDetails(id, filterServiceToken);
+      setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
+      setCurrentFilterAttributes(filterDetails.payload.filter_attributes);
+    } catch (error) {
+      console.error('Failed to fetch filter details:', error);
+    }
+  };
 
   // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
-    setSliderValue(prevState => value);
+    setSliderValue(value);
     setCurrentGrayScale(value, index);
+  };
+
+  const applyAdjustedAttributes = (scale: number) => {
+    if (selectedFilterAttributes) {
+      const adjustedAttributes = {
+        brightness: (selectedFilterAttributes.brightness || 0) * scale,
+        contrast: (selectedFilterAttributes.contrast || 0) * scale,
+        saturation: (selectedFilterAttributes.saturation || 0) * scale,
+        hue: (selectedFilterAttributes.hue || 0) * scale,
+        temperature: (selectedFilterAttributes.temperature || 0) * scale,
+        grayScale: scale < 0.5 ? scale * 2 : 1,
+        sharpness: (selectedFilterAttributes.sharpness || 0) * scale,
+      };
+
+      setCurrentFilterAttributes(adjustedAttributes);
+    }
   };
 
   const onPressNext = () => {
@@ -36,6 +107,13 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
       return;
     }
     navigation.goBack();
+  };
+
+  const onPressFilter = async (id: string) => {
+    setSelectedFilter(id);
+    setCurrentFilterId(id);
+    setSelectedFilterId(id);
+    applyFilterAttributes(id);
   };
 
   return (
@@ -57,7 +135,22 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
             data={additionalImageUri.length > 0 ? [additionalImageUri[index].uri] : [selectedImageUri].filter(Boolean)}
             scrollAnimationDuration={1000}
             renderItem={({item}: {item: string}) => (
-              <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+              <Sharpen
+                image={
+                  <ColorMatrix
+                    matrix={concatColorMatrices([
+                      brightness(currentFilterAttributes.brightness),
+                      contrast(currentFilterAttributes.contrast),
+                      saturate(currentFilterAttributes.saturation),
+                      hueRotate(currentFilterAttributes.hue),
+                      temperature(currentFilterAttributes.temperature),
+                      grayscale(currentFilterAttributes.grayScale),
+                    ])}
+                    image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                  />
+                }
+                amount={currentFilterAttributes.sharpness}
+              />
             )}
           />
         </View>
@@ -80,10 +173,9 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
         </View>
 
         {/* 필터 선택 */}
-        <FilterTab />
+        <FilterTab onPressFilter={onPressFilter} selectedFilter={selectedFilter} />
 
         {/* 완료 */}
-
         <View
           style={{
             flex: 1,
