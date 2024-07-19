@@ -1,6 +1,7 @@
 import {AxiosError, AxiosResponse} from 'axios';
 import {filterInstance} from './instance';
 import {CreateFilterParams, CreateFilterResponse} from '@types/filterService.type';
+import { exhibitionServiceToken } from '@utils/dummy';
 
 // 썸네일 불러오기 (GET 테스트 해보려고)
 export const getThumbnail = async (filterId: string, token: string) => {
@@ -68,3 +69,22 @@ export const createFilter = async ({
     throw error;
   }
 };
+
+//필터조회
+export const filterSearch = async () => {
+  try{
+    const response = await filterInstance.get(`/searching`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log("필터 searching 조회에 성공했습니다.");
+    }
+
+    return response.data.content;
+  }catch (error) {
+    console.log('필터조회실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
