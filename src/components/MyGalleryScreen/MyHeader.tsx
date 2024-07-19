@@ -12,9 +12,6 @@ import { getMyInfo } from 'src/apis/userInfo';
 
 type Props = NativeStackScreenProps<Routes, 'MyTab'>;
 function MyHeader({route, navigation}: Props): React.JSX.Element {
-  const {status} = useNavigateStore();
-  const changePress = useNavigateStore(state=>state.changeStatus);
-  const focusChange = useNavigateStore(state => state.getFalse);
   const {data: userProfile} = useQuery({
     queryKey: ['my-profile'],
     queryFn: getMyInfo,
@@ -24,7 +21,7 @@ function MyHeader({route, navigation}: Props): React.JSX.Element {
     <SafeAreaView style={styles.container}>
       <View style={styles.root}>
         <Text style={styles.textFont}>{userProfile?.name}</Text>
-        <TouchableOpacity onPress={changePress}>
+        <TouchableOpacity onPress={()=>navigation.navigate('MyMenu')}>
           <Image source={menu} style={styles.menuIcon} />
         </TouchableOpacity>
       </View>

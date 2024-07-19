@@ -15,8 +15,6 @@ type Props = NativeStackScreenProps<Routes, 'MyTab'>;
 
 function MyTab({navigation, route}: Props): React.JSX.Element {
   const layout = useWindowDimensions();
-  const status = useNavigateStore();
-  const focusChange = useNavigateStore(state => state.getFalse);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'first', title: '전시'},
@@ -56,12 +54,6 @@ function MyTab({navigation, route}: Props): React.JSX.Element {
       style={{ backgroundColor: '#030303' }}
     />
   );
-
-  useEffect(()=>{
-    if(status){
-      navigation.navigate('MyMenu');
-    }
-  }, [status]);
 
   return (
     <SafeAreaProvider>
