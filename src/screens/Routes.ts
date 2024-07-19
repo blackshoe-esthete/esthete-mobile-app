@@ -6,7 +6,7 @@ export type Routes = {
   };
   HomeScreen: undefined;
   FilterSearchPage: undefined;
-  FilterIndexScreen: undefined;
+  FilterIndexScreen: {filterId: string} | undefined;
   FilterSearchSingle: {screen: string} | undefined;
   MyGalleryScreen: undefined;
   MyTab: {

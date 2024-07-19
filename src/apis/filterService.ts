@@ -88,3 +88,23 @@ export const filterSearch = async () => {
     throw error;
   }
 }
+
+// 필터 id 세부 디테일 조회
+export const indexFilterDetail = async (filterId: string) => {
+  console.log("이 필터아이디는" + filterId);
+  try{
+    const response = await filterInstance.get(`/${filterId}/details`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('개별 필터 상세조회에 성공했습니다.');
+    }
+
+    return response.data.payload;
+  }catch (error) {
+    console.log('개별 필터 상세조회 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}  

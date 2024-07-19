@@ -51,7 +51,7 @@ function RenderItem({item}: {item: ImageItem; index: number}) {
         }
         <Text style={styles.num}>{item.like_count}</Text>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('FilterIndexScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate('FilterIndexScreen', {filterId: item.filter_id})}>
         <Image
           source={{uri: item.filter_thumbnail_url}}
           style={{...styles.image, height: imageHeight}}
