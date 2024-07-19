@@ -24,7 +24,8 @@ export type Routes = {
   MyInfo: undefined;
   CompanyInfo: undefined;
   OpenSource: undefined;
-  Profile: undefined;
+  Profile: {imageUri: string} | undefined;
+  GetPhotoScreen: undefined;
   Friends: undefined;
   ProfileEdit: {imageUri?: string, currentImage?: string} | undefined;
 };

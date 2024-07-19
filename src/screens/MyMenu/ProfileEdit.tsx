@@ -30,7 +30,7 @@ function ProfileEdit({navigation, route}: Props) {
     onSuccess(data) {
       console.log(data);
       queryClient.invalidateQueries({queryKey: ['my-profile']})
-      navigation.goBack();
+      mutationProfileInfo.mutate();
     },
     onError(err) {
       console.log(err);
@@ -55,13 +55,7 @@ function ProfileEdit({navigation, route}: Props) {
 
   const submitUserInfo = async () => {
     try {
-      // const [data1, data2] = await Promise.all([
-      //   mutationProfileImg.mutateAsync({ some: 'data' }),
-      //   mutationProfileInfo.mutateAsync({ other: 'data' })
-      // ]);
-
       mutationProfileImg.mutate();
-      mutationProfileInfo.mutate();
     } catch (error) {
       console.error('Error executing mutations', error);
     }
