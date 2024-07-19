@@ -28,11 +28,6 @@ type filterProp = {
   label?: string;
 };
 
-// type DataType = {
-//   label?: string;
-//   props: (galleryProp | filterProp)[];
-// }
-
 const {width} = Dimensions.get('window');
 function TempoItem(props: (galleryProp | filterProp)): React.JSX.Element {
   const navigation = useNavigation();

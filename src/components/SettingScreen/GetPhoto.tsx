@@ -9,7 +9,7 @@ import cancelIcon from '@assets/icons/cancel_black.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
 import {Routes} from '@screens/Routes';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 interface ImageItem {
   uri: string;
@@ -22,12 +22,13 @@ interface GalleryItem extends PhotoIdentifier {
   thumbnailUri?: string;
 }
 
-function GetPhoto(): React.JSX.Element {
-  const navigation = useNavigation<NativeStackNavigationProp<Routes>>();
+type Props = NativeStackScreenProps<Routes, 'GetPhotoScreen'>;
+
+function GetPhoto({navigation, route}: Props): React.JSX.Element {
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-  const [selectedImageUri, setSelectedImageUri] = useState<String | undefined>(undefined);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | undefined>(undefined);
   const [additionalImageUri, setAdditionalImageUri] = useState<ImageItem | null>(null);
 
   const onPressNext = () => {
@@ -35,8 +36,11 @@ function GetPhoto(): React.JSX.Element {
       Alert.alert('이미지를 선택해주세요');
       return;
     } 
-
-    navigation.navigate('Profile', {imageUri: additionalImageUri?.uri});
+    if(additionalImageUri){
+      navigation.navigate('Profile', {imageUri: additionalImageUri.uri});
+    }else{
+      navigation.navigate('Profile');
+    }
   };
 
   const selectImage = async (item: GalleryItem, index: number) => {
