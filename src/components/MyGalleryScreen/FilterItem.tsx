@@ -5,25 +5,24 @@ import {
   Image,
   Text,
   Dimensions,
-  ImageProps,
   ImageBackground,
 } from 'react-native';
 
-type galleryProp = {
-  id: string;
-  title: string;
-  src: ImageProps;
+type filterProp = {
+  filter_id: string;
+  filter_name: string;
+  filter_thumbnail_url: string;
 };
 const {width} = Dimensions.get('window');
-function FilterItem(props: galleryProp): React.JSX.Element {
+function FilterItem(props: filterProp): React.JSX.Element {
   return (
     <View style={styles.photoBox}>
-      <Image source={props.src} style={styles.photoIcon} />
+      <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
       {/* <View style={styles.titleBox}>
         <Text style={styles.textStyle}>{props.title}</Text>
       </View> */}
       <ImageBackground style={styles.titleBox} borderRadius={4}>
-        <Text style={styles.textStyle}>{props.title}</Text>
+        <Text style={styles.textStyle}>{props.filter_name}</Text>
       </ImageBackground>
     </View>
   );

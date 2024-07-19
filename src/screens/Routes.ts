@@ -6,7 +6,7 @@ export type Routes = {
   };
   HomeScreen: undefined;
   FilterSearchPage: undefined;
-  FilterIndexScreen: undefined;
+  FilterIndexScreen: {filterId: string} | undefined;
   FilterSearchSingle: {screen: string} | undefined;
   MyGalleryScreen: undefined;
   MyTab: {
@@ -24,4 +24,8 @@ export type Routes = {
   MyInfo: undefined;
   CompanyInfo: undefined;
   OpenSource: undefined;
+  Profile: {imageUri: string} | undefined;
+  GetPhotoScreen: undefined;
+  Friends: undefined;
+  ProfileEdit: {imageUri?: string, currentImage?: string} | undefined;
 };

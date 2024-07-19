@@ -1,28 +1,45 @@
-import { FlatList, ImageProps } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import GalleryItem from "@components/MyGalleryScreen/GalleryItem";
-import TempoItem from "@components/MyMenuScreen/TempoItem";
+import {FlatList, ImageProps} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import GalleryItem from '@components/MyGalleryScreen/GalleryItem';
+import TempoItem from '@components/MyMenuScreen/TempoItem';
 
 type galleryProp = {
-  id: string;
+  exhibition_id: string;
   title: string;
-  src: ImageProps;
+  thumbnail_url: string;
   author?: string;
   date?: string;
 };
 
-function MyCollections(data: any): React.JSX.Element{
-  return(
+type tempoProp = {
+  temporary_exhibition_id: string;
+  thumbnail_url: string;
+  date: string;
+};
+
+type DataType = {
+  temporary?: boolean;
+  props: (galleryProp | tempoProp)[];
+};
+
+function MyCollections(data: DataType): React.JSX.Element {
+  return (
     <SafeAreaView style={{flex: 1}}>
-      <FlatList 
+      <FlatList
         data={data.props}
-        keyExtractor={item => item.id}
-        renderItem={({item}: {item:galleryProp}) => {
-          if(data.temporary){
-            return <TempoItem {...item} label="collection"/>;
-          }else{
-            return <GalleryItem {...item} />;
-          }
+        keyExtractor={item => {
+          return data.temporary 
+          ? (item as tempoProp).temporary_exhibition_id 
+          : (item as galleryProp).exhibition_id;
+        }}
+        renderItem={({ item }) => {
+          if (data.temporary) {
+            const tempoItem = item as tempoProp;
+            return <TempoItem {...tempoItem} label="collection" />;
+          } else {
+            const galleryItem = item as galleryProp;
+            return <GalleryItem {...galleryItem} />;
+          } 
         }}
         contentContainerStyle={{}}
       />

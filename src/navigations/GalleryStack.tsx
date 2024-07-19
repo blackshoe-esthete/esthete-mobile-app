@@ -23,6 +23,7 @@ import OpenSource from '@screens/MyMenu/OpenSource';
 import FilterCreationScreen from '@screens/FilterCreation/FilterCreationScreen';
 import ExhibitionCreationScreen from '@screens/ExhibitionCreation/ExhibitionCreationScreen';
 import FollowScreen from '@screens/MyGallery/FollowScreen';
+import GetPhoto from '@components/SettingScreen/GetPhoto';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,6 +74,9 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
           </Stack.Screen>
           <Stack.Screen name="Profile">
             {(props: any) => <ProfileEdit {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="GetPhotoScreen">
+            {(props: any) => <GetPhoto {...props} />}
           </Stack.Screen>
         </Stack.Group>
         <Stack.Group>

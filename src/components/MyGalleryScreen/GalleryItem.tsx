@@ -9,16 +9,16 @@ import {
 } from 'react-native';
 
 type galleryProp = {
-  id: string;
+  exhibition_id: string;
   title: string;
-  src: ImageProps;
+  thumbnail_url: string;
   author?: string;
 };
 const {width} = Dimensions.get('window');
 function GalleryItem(props: galleryProp): React.JSX.Element {
   return (
     <View style={styles.photoBox}>
-      <Image source={props.src} style={styles.photoIcon} />
+      <Image src={props.thumbnail_url} style={styles.photoIcon} />
       <View style={styles.titleBox}>
         <Text style={styles.textStyle}>{props.title}</Text>
         {props.author && <Text style={styles.authorStyle}>{props.author}</Text>}

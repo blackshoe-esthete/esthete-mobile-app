@@ -1,16 +1,66 @@
 import MenuHeader from '@components/MyMenuScreen/MenuHeader';
 import Profile from '@components/SettingScreen/Profile';
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
-import { useNavigation } from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {Routes} from '@screens/Routes';
+import {useFocusEffect} from '@react-navigation/native';
+import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
+import { putMyAdditional, putMyProfile } from 'src/apis/userInfo';
+import { useProfileStore } from '@store/profileEditStore';
 
 const windowHeight = Dimensions.get('window').height;
-function ProfileEdit() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<Routes, 'ProfileEdit'>;
+function ProfileEdit({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const [image, setImage] = useState<string>('');
+  const queryClient = useQueryClient();
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.imageUri) {
+        setImage(route.params.imageUri);
+      }
+    }, [route.params?.imageUri]),
+  );
+  const mutationProfileImg = useMutation({
+    mutationFn: () => putMyProfile(image),
+    onSuccess(data) {
+      console.log(data);
+      queryClient.invalidateQueries({queryKey: ['my-profile']})
+      mutationProfileInfo.mutate();
+    },
+    onError(err) {
+      console.log(err);
+    },
+  });
+  const {nickname, intro, script} = useProfileStore();
+  const mutationProfileInfo = useMutation({
+    mutationFn: () => putMyAdditional({
+      user_name: nickname,
+      user_introduce: intro,
+      user_biography: script
+    }),
+    onSuccess(data) {
+      console.log(data);
+      queryClient.invalidateQueries({queryKey: ['my-profile']})
+      navigation.goBack();
+    },
+    onError(err) {
+      console.log(err);
+    },
+  })
+
+  const submitUserInfo = async () => {
+    try {
+      mutationProfileImg.mutate();
+    } catch (error) {
+      console.error('Error executing mutations', error);
+    }
+  };
+
   return (
     <SafeAreaView edges={['top']} style={{flex: 1}}>
       <View style={{position: 'relative', flex: 1}}>
@@ -18,17 +68,17 @@ function ProfileEdit() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={styles.scrollContainer}
-          onContentSizeChange={()=>{
-            if(contentLoaded){
-              scrollViewRef.current?.scrollToEnd()
-            }else{
+          onContentSizeChange={() => {
+            if (contentLoaded) {
+              scrollViewRef.current?.scrollToEnd();
+            } else {
               setContentLoaded(true);
             }
           }}
           ref={scrollViewRef}>
-          <Profile />
+          <Profile navigation={navigation} route={route} image={image} />
         </ScrollView>
-        <CommonButton title="저장하기" func={()=>navigation.goBack()} paddingNumber={20}/>
+        <CommonButton title="저장하기" func={submitUserInfo} paddingNumber={20} />
       </View>
     </SafeAreaView>
   );
@@ -42,6 +92,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#030303',
     marginBottom: 100,
     height: windowHeight,
-    paddingBottom: 60
+    paddingBottom: 60,
   },
 });
