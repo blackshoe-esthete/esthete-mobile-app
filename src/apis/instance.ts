@@ -35,7 +35,9 @@ const createAxiosInstance = (baseURL: string) => {
 const apiInstances = {
   filterInstance: createAxiosInstance(`${FILTER_BASE_URL}/filters`),
   exhibitionInstance: createAxiosInstance(`${EXHIBITION_BASE_URL}/api/v1/exhibitions`),
+  mygalleryInstance: createAxiosInstance(`${EXHIBITION_BASE_URL}/api/v1/mygallery`)
 };
 
 /** 인스턴스를 내보냅니다. */
-export const {filterInstance, exhibitionInstance} = apiInstances;
+
+export const {filterInstance, exhibitionInstance, mygalleryInstance} = apiInstances;

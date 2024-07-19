@@ -1,21 +1,20 @@
 import {CameraRoll, PhotoIdentifier} from '@react-native-camera-roll/camera-roll';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native';
 import RNFS from 'react-native-fs';
 import hasAndroidPermission from '@hooks/CameraRollPermission';
 import nextIcon from '@assets/icons/backspace_white.png';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
-import Carousel from 'react-native-reanimated-carousel';
+import {Routes} from '@screens/Routes';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-// import {useExhibitionCreationStore} from '../../store/ExhibitionCreationStore';
-import { useExhibitionCreationStore } from '@store/exhibitionCreationStore';
-
-import { RootStackParamList } from '@types/navigations';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-
+interface ImageItem {
+  uri: string;
+  identifier: string;
+}
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -23,22 +22,25 @@ interface GalleryItem extends PhotoIdentifier {
   thumbnailUri?: string;
 }
 
-function ExhibitionCreationScreen(): React.JSX.Element {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri} =
-    useExhibitionCreationStore();
+type Props = NativeStackScreenProps<Routes, 'GetPhotoScreen'>;
+
+function GetPhoto({navigation, route}: Props): React.JSX.Element {
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
-  const [multiSelectEnabled, setMultiSelectEnabled] = useState<boolean>(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | undefined>(undefined);
+  const [additionalImageUri, setAdditionalImageUri] = useState<ImageItem | null>(null);
 
   const onPressNext = () => {
-    if (!selectedImageUri && additionalImageUri.length === 0) {
+    if (!selectedImageUri) {
       Alert.alert('이미지를 선택해주세요');
       return;
+    } 
+    if(additionalImageUri){
+      navigation.navigate('Profile', {imageUri: additionalImageUri.uri});
+    }else{
+      navigation.navigate('Profile');
     }
-    navigation.navigate('ExhibitionFilterApplyAll');
   };
 
   const selectImage = async (item: GalleryItem, index: number) => {
@@ -48,17 +50,8 @@ function ExhibitionCreationScreen(): React.JSX.Element {
         : item.node.image.uri;
 
     const identifier = item.node.image.filename || originalUri;
-
-    if (multiSelectEnabled) {
-      if (additionalImageUri.some(image => image.identifier === identifier)) {
-        setAdditionalImageUri(additionalImageUri.filter(image => image.identifier !== identifier));
-      } else {
-        setAdditionalImageUri([...additionalImageUri, {uri: originalUri, identifier}]);
-      }
-    } else {
-      setSelectedImageUri(originalUri);
-      setAdditionalImageUri([{uri: originalUri, identifier}]);
-    }
+    setSelectedImageUri(originalUri);
+    setAdditionalImageUri({uri: originalUri, identifier});
     setSelectedImageIndex(index);
   };
 
@@ -120,7 +113,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
 
   // 추가된 useEffect: 선택된 이미지가 없을 때 첫 번째 이미지 자동 선택
   useEffect(() => {
-    if (galleryList.length > 0 && additionalImageUri.length === 0) {
+    if (galleryList.length > 0) {
       selectImage(galleryList[0], 0);
     }
   }, [galleryList]);
@@ -136,21 +129,12 @@ function ExhibitionCreationScreen(): React.JSX.Element {
           <Image source={nextIcon} style={styles.nextIcon} resizeMode="contain" />
         </TouchableOpacity>
       </View>
-
-      {/* 이미지 Carousel */}
       <View style={styles.carouselContainer}>
-        <Carousel
-          loop={false}
-          width={SCREEN_WIDTH - 40}
-          height={(SCREEN_WIDTH - 40) * 0.75}
-          data={
-            additionalImageUri.length > 0
-              ? additionalImageUri.map(image => image.uri)
-              : [selectedImageUri].filter(Boolean)
-          }
-          scrollAnimationDuration={1000}
-          onSnapToItem={index => setCurrentImageIndex(index)}
-          renderItem={({item}) => <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+        <Image
+          key={additionalImageUri?.identifier}
+          source={{uri: additionalImageUri?.uri}}
+          style={styles.carouselImage}
+          resizeMode="contain"
         />
       </View>
 
@@ -160,9 +144,6 @@ function ExhibitionCreationScreen(): React.JSX.Element {
           <Text style={styles.recentItemsText}>최근 항목</Text>
           <Image source={arrowIcon} style={styles.arrowIcon} resizeMode="contain" />
         </View>
-        <TouchableOpacity onPress={() => setMultiSelectEnabled(!multiSelectEnabled)}>
-          <Text style={styles.multiSelectText}>{multiSelectEnabled ? '단일 선택' : '여러장 선택'}</Text>
-        </TouchableOpacity>
       </View>
 
       {/* 갤러리 이미지 리스트 */}
@@ -185,8 +166,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
         renderItem={({item, index}) => {
           const originalUri = Platform.OS === 'ios' ? item.thumbnailUri || item.node.image.uri : item.node.image.uri;
           const identifier = item.node.image.filename || originalUri;
-          const selectedIndex = additionalImageUri.findIndex(image => image.identifier === identifier);
-          const isSelected = selectedIndex !== -1;
+          const isSelected = additionalImageUri?.identifier === identifier;
 
           return (
             <TouchableOpacity onPress={() => selectImage(item, index)}>
@@ -194,11 +174,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
               {isSelected && (
                 <View style={styles.overlay}>
                   <View style={styles.checkIconContainer}>
-                    {multiSelectEnabled ? (
-                      <Text style={styles.checkIndex}>{selectedIndex + 1}</Text>
-                    ) : (
-                      <Image source={checkIcon} style={{width: 12, height: 12}} resizeMode="contain" />
-                    )}
+                    <Image source={checkIcon} style={{width: 12, height: 12}} resizeMode="contain" />
                   </View>
                 </View>
               )}
@@ -210,7 +186,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
   );
 }
 
-export default ExhibitionCreationScreen;
+export default GetPhoto;
 
 const styles = StyleSheet.create({
   container: {flex: 1, paddingHorizontal: 20},

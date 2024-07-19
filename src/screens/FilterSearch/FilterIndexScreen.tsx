@@ -1,12 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  Dimensions,
-  Text,
-  Keyboard,
-} from 'react-native';
+import {View, StyleSheet, Image, Dimensions, Text, Keyboard, ActivityIndicator} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
 import Keyword from '@components/FilterSearchScreen/KeywordList';
@@ -15,13 +8,12 @@ import ex1 from '@assets/imgs/filter_ex3.png';
 import ex2 from '@assets/imgs/filter_ex2.png';
 import FilterTitle from '@components/FilterSearchScreen/FilterTitle';
 import UsedPicture from '@components/FilterSearchScreen/FilterUsedPicture';
-import {
-  ScrollView,
-  TouchableOpacity,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity, GestureHandlerRootView} from 'react-native-gesture-handler';
 import TabButton from '@components/common/TabButton';
 import CommonModal from '@components/common/CommonModal';
+import {useQuery} from '@tanstack/react-query';
+import {indexFilterDetail} from 'src/apis/filterService';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 type Props = NativeStackScreenProps<Routes, 'FilterIndexScreen'>;
 const windowWidth = Dimensions.get('window').width;
@@ -32,13 +24,37 @@ const maxHeight = windowHeight * 0.5;
 function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
   const [height, setHeight] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [filterIndex, setFilterIndex] = useState('');
+  useEffect(() => {
+    if (route.params?.filterId) {
+      let id: string = route.params?.filterId;
+      setFilterIndex(id);
+    }
+  }, [route.params]);
+
+  const {
+    data: filterIndexData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['filter-single', filterIndex],
+    queryFn: () => indexFilterDetail(filterIndex),
+  });
 
   useEffect(() => {
-    // 로컬 이미지인 경우 Image.resolveAssetSource를 사용
-    const resolvedSource = Image.resolveAssetSource(ex1);
-    const ratio = resolvedSource.height / resolvedSource.width;
-    setHeight(imageWidth * ratio);
-  }, [ex1, imageWidth]);
+    if (filterIndexData?.filter_thumbnail) {
+      Image.getSize(
+        filterIndexData.filter_thumbnail,
+        (originalWidth, originalHeight) => {
+          const aspectRatio = originalWidth / originalHeight;
+          setHeight(imageWidth / aspectRatio);
+        },
+        error => {
+          console.error('Error getting image size:', error);
+        },
+      );
+    }
+  }, [filterIndexData?.filter_thumbnail]);
 
   const modalShown = () => {
     setModalVisible(!modalVisible);
@@ -59,39 +75,50 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
     button: ['구매하기', '닫기'],
   };
 
+  if (isLoading) {
+    // 데이터 로딩 중일 때 로딩 인디케이터 표시
+    return (
+      <SafeAreaView edges={['bottom']} style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  }
+
+  if (isError) {
+    // 에러 발생 시 에러 메시지 표시
+    return (
+      <SafeAreaView edges={['bottom']} style={styles.errorContainer}>
+        <Text>데이터를 불러오는 중에 문제가 발생했습니다.</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <View style={styles.topArea}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={cancel} style={styles.iconSize}/>
+          <Image source={cancel} style={styles.iconSize} />
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <ScrollView style={{marginBottom: 70}}>
         <View style={{paddingHorizontal: 20, alignItems: 'center'}}>
           <Image
-            source={ex1}
-            style={[
-              styles.imageSize,
-              {width: imageWidth, height: height, maxHeight: maxHeight},
-            ]}
+            source={{ uri: filterIndexData.filter_thumbnail }}
+            style={[styles.imageSize, {width: imageWidth, height: height, maxHeight: maxHeight}]}
           />
 
           {/* 필터타이틀 */}
           <View style={{width: '100%'}}>
-            <FilterTitle />
+            <FilterTitle title={filterIndexData?.filter_name} likeCount={filterIndexData?.like_count} isLike={filterIndexData?.is_like} />
           </View>
 
           {/* 키워드리스트 */}
-          <Keyword
-            marginProp={20}
-            marginVertical={20}
-            dummy={['풍경', '여행']}
-          />
+          <Keyword marginProp={20} marginVertical={20} dummy={['풍경', '여행']} />
 
           <View style={styles.detailBox}>
             <Text style={styles.detailText}>
-              여기에는 필터에 대한 설명(필터를 만들게 된 스토리, 필터 사용 팁
-              등) 및 필터를 사용하여 촬영한 사진에 대한 설명이 들어갑니다.
+              여기에는 필터에 대한 설명(필터를 만들게 된 스토리, 필터 사용 팁 등) 및 필터를 사용하여 촬영한 사진에 대한
+              설명이 들어갑니다.
             </Text>
           </View>
 
@@ -127,7 +154,7 @@ const styles = StyleSheet.create({
   },
   iconSize: {
     width: 25,
-    height: 25
+    height: 25,
   },
   imageSize: {
     marginTop: 20,
@@ -159,6 +186,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     flexDirection: 'row',
     backgroundColor: '#030303',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -3,17 +3,23 @@ import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import unlike from '@assets/icons/unlike.png';
 import like from '@assets/icons/like.png';
 
-function FilterTitle() : React.JSX.Element {
-  const [liked, setLiked] = useState(false); // 사용자의 상태 받아오기
+type titleProp = {
+  title?: string;
+  likeCount?: number;
+  isLike?: boolean;
+}
 
-  const changeLike = () => {
-    setLiked(!liked);
-  };
+function FilterTitle({title, likeCount, isLike}: titleProp) : React.JSX.Element {
+  const [liked, setLiked] = useState(isLike); // 사용자의 상태 받아오기
+
+  // const changeLike = () => {
+  //   setLiked(!liked);
+  // };
   return(
     <>
     <View style={styles.titleBox}>
           <View style={styles.textRoundBox}>
-            <Text style={styles.textStyle}>Filter Title</Text>
+            <Text style={styles.textStyle}>{title}</Text>
           </View>
           <View style={styles.likeBox}>
             <TouchableOpacity onPress={()=>setLiked(!liked)}>
@@ -23,7 +29,7 @@ function FilterTitle() : React.JSX.Element {
                 <Image source={unlike} />
               )}
             </TouchableOpacity>
-            <Text style={{color: 'white'}}>12K</Text>
+            <Text style={{color: 'white'}}>{likeCount}</Text>
           </View>
         </View>
     </>

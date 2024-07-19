@@ -5,26 +5,12 @@ import {
   useWindowDimensions,
   StyleSheet,
   Text,
-  ImageProps
 } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
-import ex1 from '@assets/imgs/gallery1.png';
-import ex2 from '@assets/imgs/gallery2.png';
+import { useQuery } from '@tanstack/react-query';
+import { myLikeExhibition, myLikeFilter } from 'src/apis/mygallery';
 
-type galleryProp = {
-  id: string;
-  title: string;
-  src: ImageProps;
-  author?: string;
-  date?: string;
-};
-const DATA: galleryProp[] = [
-  {id:'1', title: "전시회명", src: ex1, author: "작가명"},
-  {id:'2', title: "전시회명", src: ex2, author: "작가명"},
-  {id:'3', title: "전시회명", src: ex1, author: "작가명"},
-  {id:'4', title: "전시회명", src: ex2, author: "작가명"},
-];
 function MyLikeTab(): React.JSX.Element {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -32,10 +18,18 @@ function MyLikeTab(): React.JSX.Element {
     {key: 'first', title: '전시'},
     {key: 'second', title: '필터'},
   ]);
+  const {data: likedData} = useQuery({
+    queryKey: ['liked-gallery'],
+    queryFn: myLikeExhibition
+  });
+  const {data: likedFilter} = useQuery({
+    queryKey: ['liked-filter'],
+    queryFn: myLikeFilter
+  });
 
   const renderScene = SceneMap({
-    first: () => <MyCollections props={DATA} temporary={false}/>,
-    second: MyFilter,
+    first: () => <MyCollections props={likedData} temporary={false}/>,
+    second: () => <MyFilter props={likedFilter} temporary={false} />,
   });
 
   const renderTabBar = (props: any) => (

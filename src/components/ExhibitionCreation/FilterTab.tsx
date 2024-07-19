@@ -4,7 +4,7 @@ import FilterItem from './FilterItem';
 import {useExhibitionCreationStore} from '../../store/exhibitionCreationStore';
 import {getCreatedFilters, getFilterDetails, getPurchasedFilters} from 'src/apis/exhibitionCreate';
 import {filterServiceToken} from 'src/utils/dummy';
-import {useFilterDetailsStore} from '@store/ExhibitionCreationStore';
+import {useFilterDetailsStore} from '@store/exhibitionCreationStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 

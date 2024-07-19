@@ -39,15 +39,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#292929',
     paddingHorizontal: 20,
     display: 'flex',
-    // alignItems: 'flex-start',
-    
     borderRadius: 10,
   },
   inputText: {
     color: '#E9E9E9',
     fontSize: 16,
     fontWeight: '400',
-    letterSpacing: -0.32,
-    // backgroundColor: 'white',
+    letterSpacing: -0.32, 
   },
 });

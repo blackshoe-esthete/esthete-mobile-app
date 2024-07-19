@@ -1,5 +1,5 @@
 import InputText from '@components/LoginScreen/InputText';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
@@ -10,19 +10,52 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 function SignUp1() {
   const navigation = useNavigation();
+  const scrollViewRef = useRef<any>(null);
   const [email, setEmail] = useState('');
+  const [send, setSend] = useState(false);
   const [number, setNumber] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
+  const [contentLoaded, setContentLoaded] = useState(false);
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
-      {/* <ScrollView style={styles.scrollContainer}> */}
+      <ScrollView
+        style={styles.scrollContainer}
+        onContentSizeChange={() => {
+          if (contentLoaded) {
+            scrollViewRef.current?.scrollToEnd();
+          } else {
+            setContentLoaded(true);
+          }
+        }}
+        ref={scrollViewRef}>
         <Text style={styles.header}>ESTHETE</Text>
         <View style={styles.inputLayer}>
-          <InputText type="email-address" placeHolder="이메일을 입력해주세요" value={email} onChange={setEmail} />
+          <View style={styles.numberLayer}>
+            <TextInput
+              style={[styles.numberInput, {backgroundColor: '#292929', fontSize: 16, color: 'white', height: 50}]}
+              keyboardType="email-address"
+              onChangeText={setEmail}
+              placeholder="이메일을 입력해주세요"
+              placeholderTextColor="#E9E9E9"
+            />
+            {!send ? (
+              <SendButton
+                label="인증번호 전송"
+                style={{
+                  backgroundColor: '#FFD600',
+                  color: 'black',
+                }}
+                onPress={() => setSend(true)}
+              />
+            ) : (
+              <SendButton label="전송 완료" pressable={false} />
+            )}
+          </View>
+
           <View style={styles.numberLayer}>
             <TextInput style={styles.numberInput} />
-            <SendButton />
+            <SendButton label="인증번호 확인" pressable={!send} />
           </View>
           <Verification label="인증번호" />
           <InputText
@@ -41,7 +74,7 @@ function SignUp1() {
           />
           <Verification label="비밀번호" />
         </View>
-      {/* </ScrollView> */}
+      </ScrollView>
       <CommonButton
         title="다음"
         background="#292929"
@@ -53,11 +86,20 @@ function SignUp1() {
   );
 }
 
-const SendButton = () => {
+type sendProps = {
+  label?: string;
+  style?: {
+    backgroundColor?: string;
+    color?: string;
+  };
+  pressable?: boolean;
+  onPress?: () => void;
+};
+const SendButton = ({label, style = {}, pressable, onPress}: sendProps) => {
   return (
-    <TouchableOpacity>
-      <View style={styles.buttonBox}>
-        <Text style={styles.buttonText}>인증번호 발송</Text>
+    <TouchableOpacity disabled={pressable || false} onPress={onPress}>
+      <View style={[styles.buttonBox, {backgroundColor: style?.backgroundColor || '#292929'}]}>
+        <Text style={[styles.buttonText, {color: style?.color || 'white'}]}>{label}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -82,9 +124,9 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     // width: '100%',
-    // height: windowHeight,
-    // marginBottom: 100,
-    // paddingBottom: 60,
+    height: windowHeight,
+    marginBottom: 140,
+    paddingBottom: 60,
   },
   inputLayer: {
     marginTop: 75,
@@ -109,7 +151,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   buttonBox: {
-    backgroundColor: '#292929',
+    // backgroundColor: '#292929',
     borderRadius: 8,
     display: 'flex',
     justifyContent: 'center',
