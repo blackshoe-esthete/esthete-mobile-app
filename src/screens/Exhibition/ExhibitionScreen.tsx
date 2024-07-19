@@ -6,12 +6,16 @@ import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPi
 import {RootStackParamList} from '../../types/navigations';
 import Carousel from 'react-native-reanimated-carousel';
 import {interpolate, Extrapolate} from 'react-native-reanimated';
-import {useExhibitionDetails} from '../../hooks/useExhibitionDetails';
 import {useQuery} from '@tanstack/react-query';
 import {searchExhibition} from 'src/apis/mainExhibitionService';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
+
+interface Exhibition {
+  exhibition_id: string;
+  // 필요한 다른 필드들을 여기에 추가합니다.
+}
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -21,43 +25,22 @@ const ExhibitionScreen: React.FC = () => {
   const route = useRoute<ExhibitionScreenRouteProp>();
   const {id} = route.params;
 
-  const exhibitionQuery = useExhibitionDetails(id);
-  const {data, isLoading} = exhibitionQuery;
-
-  const goToExhibitionEntered = (id: string) => {
-    navigation.navigate('ExhibitionEntered', {exhibitionData: data, id});
-  };
-
+  const [isPlaying, setIsPlaying] = useState(false);
   const cubeRef = useRef<any>(null);
 
-  const {data: searchResult} = useQuery({
+  const {data: searchResult, isLoading: isSearchLoading} = useQuery({
     queryKey: ['searchExhibition', ''],
     queryFn: () => searchExhibition(''),
     select: data => data?.content,
   });
 
-  const exhibitionIds = searchResult?.map((exhibition: any) => exhibition.exhibition_id) || [];
-
-  const shuffleArray = (array: string[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  };
-
-  const shuffledExhibitionIds = shuffleArray(exhibitionIds);
-
-  const [isPlaying, setIsPlaying] = useState(false);
-
   const handlePlayPause = () => {
     setIsPlaying(prevState => !prevState);
   };
 
-  const animationStyle: any = useCallback(
+  const animationStyle = useCallback(
     (value: number) => {
       'worklet';
-
       const zIndex = interpolate(value, [-1, 0, 1], [-1200, 0, -1200]);
       const rotateY = `${interpolate(value, [-1, 0, 1], [-90, 0, 90], Extrapolate.CLAMP)}deg`;
       const perspective = 1000;
@@ -69,10 +52,19 @@ const ExhibitionScreen: React.FC = () => {
         zIndex,
       };
     },
-    [SCREEN_WIDTH, SCREEN_HEIGHT],
+    [SCREEN_WIDTH],
   );
 
-  if (isLoading) return <ActivityIndicator size="large" color="#000" />;
+  if (isSearchLoading || !searchResult) {
+    return <ActivityIndicator size="large" color="#000" />;
+  }
+
+  const exhibitionIds: string[] = searchResult?.map((exhibition: Exhibition) => exhibition.exhibition_id) || [];
+  const currentIndex = exhibitionIds.indexOf(id);
+  if (currentIndex > -1) {
+    exhibitionIds.splice(currentIndex, 1);
+    exhibitionIds.unshift(id);
+  }
 
   return (
     <View>
@@ -82,36 +74,41 @@ const ExhibitionScreen: React.FC = () => {
         height={SCREEN_HEIGHT}
         autoPlay={isPlaying}
         autoPlayInterval={3000}
-        data={shuffledExhibitionIds}
+        data={exhibitionIds}
         scrollAnimationDuration={2000}
         customAnimation={animationStyle}
-        renderItem={({item, index}) => (
-          <View key={index} style={styles.container}>
-            <View style={styles.contentContainer}>
-              <View style={styles.mainPicture}>
-                <ExhibitionMainPicture
-                  exhibitionData={data}
-                  entered={false}
-                  handlePlayPause={handlePlayPause}
-                  isPlaying={isPlaying}
-                  currentExhibitionIndex={item} // 현재 아이템을 전달
+        renderItem={({item}) => {
+          const currentExhibitionData = searchResult.find(
+            (exhibition: Exhibition) => exhibition.exhibition_id === item,
+          );
+
+          return (
+            <View key={item} style={styles.container}>
+              <View style={styles.contentContainer}>
+                <View style={styles.mainPicture}>
+                  <ExhibitionMainPicture
+                    exhibitionData={currentExhibitionData}
+                    entered={false}
+                    handlePlayPause={handlePlayPause}
+                    isPlaying={isPlaying}
+                    currentExhibitionIndex={item}
+                  />
+                  <ExhibitionPictureList isVisited={false} exhibitionData={currentExhibitionData} id={item} />
+                </View>
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  title="Visit"
+                  color="#000"
+                  onPress={() => {
+                    setIsPlaying(false);
+                    navigation.navigate('ExhibitionEntered', {exhibitionData: currentExhibitionData, id: item});
+                  }}
                 />
-                <ExhibitionPictureList isVisited={false} exhibitionData={data} id={item} />{' '}
-                {/* id를 현재 아이템으로 변경 */}
               </View>
             </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Visit"
-                color="#000"
-                onPress={() => {
-                  setIsPlaying(false);
-                  goToExhibitionEntered(item); // 현재 아이템을 전달
-                }}
-              />
-            </View>
-          </View>
-        )}
+          );
+        }}
       />
     </View>
   );
@@ -153,7 +150,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.5,
     shadowRadius: 10,
-    elevation: 5, // Android
+    elevation: 5,
     fontSize: 18,
   },
 });
