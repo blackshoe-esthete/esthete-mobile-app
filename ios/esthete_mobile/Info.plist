@@ -73,5 +73,7 @@
 	<string>${EXHIBITION_BASE_URL}</string>
 	<key>FILTER_BASE_URL</key>
 	<string>${FILTER_BASE_URL}</string>
+	<key>USER_BASE_URL</key>
+	<string>${USER_BASE_URL}</string>
 </dict>
 </plist>

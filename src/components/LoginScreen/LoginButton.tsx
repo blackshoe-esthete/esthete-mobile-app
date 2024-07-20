@@ -4,14 +4,21 @@ import {Dimensions, StyleSheet, Text, TouchableOpacity, View} from 'react-native
 type buttonProp = {
   color: string;
   title: string;
-  navigation: () => void;
+  navigation?: () => void;
+  onPress?: () => void;
 };
 
 const windowWidth = Dimensions.get('window').width;
 
 function LoginButton(props: buttonProp): React.JSX.Element {
   return (
-    <TouchableOpacity onPress={() => props.navigation && props.navigation()}>
+    <TouchableOpacity onPress={() => {
+      if(props.navigation){
+        return props.navigation();
+      }else if(props.onPress){
+        return props.onPress();
+      }
+    }}>
       <View style={[styles.button, {backgroundColor: props.color}]}>
         <Text style={styles.buttonTitle}>{props.title}</Text>
       </View>

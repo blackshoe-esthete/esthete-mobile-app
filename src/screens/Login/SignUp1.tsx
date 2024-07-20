@@ -1,15 +1,19 @@
 import InputText from '@components/LoginScreen/InputText';
 import {useEffect, useRef, useState} from 'react';
-import {Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
 import {useNavigation} from '@react-navigation/native';
 import Verification from '@components/LoginScreen/Verification';
+import {useMutation} from '@tanstack/react-query';
+import {emailValidation, emailVerification, signUpNext} from 'src/apis/userInfo';
+import { NativeStackScreenProps } from 'react-native-screens/lib/typescript/native-stack/types';
+import { Routes } from '@screens/Routes';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-function SignUp1() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<Routes, 'SignUp1'>;
+function SignUp1({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
   const [email, setEmail] = useState('');
   const [send, setSend] = useState(false);
@@ -17,6 +21,48 @@ function SignUp1() {
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
   const [contentLoaded, setContentLoaded] = useState(false);
+  const [verifiedNum, setVerifiedNum] = useState(false);
+  const [samePwd, setSamePwd] = useState(false);
+  const mutationValidation = useMutation({
+    mutationFn: () => emailValidation(email),
+    onSuccess(data) {
+      console.log(data);
+    },
+    onError(data) {
+      console.log(data);
+      // Alert.alert('이메일 형식이 정확하지 않습니다.');
+    },
+  });
+  const mutationVerification = useMutation({
+    mutationFn: () => emailVerification({email, number}),
+    onSuccess(data) {
+      console.log(data);
+      setVerifiedNum(true);
+    },
+    onError(data) {
+      console.log(data);
+    },
+  });
+  const mutationSignUp = useMutation({
+    mutationFn: () => signUpNext({email, password: rePassword}),
+    onSuccess(data) {
+      console.log(data);
+      // navigation.navigate('/SignUp2');
+    },
+    onError(data) {
+      console.log(data);
+      navigation.navigate('SignUp2');
+    },
+  });
+
+  useEffect(() => {
+    if (password === rePassword && password != '') {
+      setSamePwd(true);
+    } else {
+      setSamePwd(false);
+    }
+  }, [password, rePassword]);
+
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
       <ScrollView
@@ -46,7 +92,10 @@ function SignUp1() {
                   backgroundColor: '#FFD600',
                   color: 'black',
                 }}
-                onPress={() => setSend(true)}
+                onPress={() => {
+                  setSend(true);
+                  mutationValidation.mutate();
+                }}
               />
             ) : (
               <SendButton label="전송 완료" pressable={false} />
@@ -54,10 +103,10 @@ function SignUp1() {
           </View>
 
           <View style={styles.numberLayer}>
-            <TextInput style={styles.numberInput} />
-            <SendButton label="인증번호 확인" pressable={!send} />
+            <TextInput style={styles.numberInput} onChangeText={setNumber} />
+            <SendButton label="인증번호 확인" pressable={!send} onPress={() => mutationVerification.mutate()} />
           </View>
-          <Verification label="인증번호" />
+          <Verification label="인증번호" state={verifiedNum} />
           <InputText
             security={true}
             placeHolder="비밀번호를 입력해주세요"
@@ -72,7 +121,7 @@ function SignUp1() {
             onChange={setRePassword}
             margin={20}
           />
-          <Verification label="비밀번호" />
+          <Verification label="비밀번호" state={samePwd} />
         </View>
       </ScrollView>
       <CommonButton
@@ -80,7 +129,7 @@ function SignUp1() {
         background="#292929"
         color="white"
         paddingNumber={0}
-        func={() => navigation.navigate('SignUp2')}
+        func={() => mutationSignUp.mutate()}
       />
     </SafeAreaView>
   );

@@ -19,12 +19,15 @@ import {useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import GenderButton from '@components/LoginScreen/GenderButton';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Routes } from '@screens/Routes';
 
 const windowHeight = Dimensions.get('window').height;
+type Props = NativeStackScreenProps<Routes, 'SignUp2'>;
 
-function SignUp2() {
-  const navigation = useNavigation();
+function SignUp2({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
+  const [nickname, setNickname] = useState('');
   const [gender, setGender] = useState('');
   const [date, setDate] = useState(new Date());
   const [birthDate, setBirthDate] = useState('');
@@ -75,8 +78,8 @@ function SignUp2() {
         ref={scrollViewRef}>
         <Text style={styles.header}>ESTHETE</Text>
         <View style={styles.inputLayer}>
-          <InputText placeHolder="닉네임을 입력해주세요" />
-          <Verification />
+          <InputText placeHolder="닉네임을 입력해주세요" value={nickname} onChange={setNickname} />
+          {/* <Verification /> */}
           <View style={styles.genderLayer}>
             <Text style={styles.genderText}>성별</Text>
             <View style={styles.genderButtonLayer}>

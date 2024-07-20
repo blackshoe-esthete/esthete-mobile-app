@@ -28,4 +28,7 @@ export type Routes = {
   GetPhotoScreen: undefined;
   Friends: undefined;
   ProfileEdit: {imageUri?: string, currentImage?: string} | undefined;
+  LoginPage: undefined;
+  SignUp1: undefined;
+  SignUp2: undefined;
 };

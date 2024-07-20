@@ -1,6 +1,67 @@
 import axios, {AxiosError} from 'axios';
-import {mygalleryInstance} from './instance';
+import {mygalleryInstance, userInstance} from './instance';
 import {exhibitionServiceToken} from '@utils/dummy';
+
+type loginProp = {
+  id: string;
+  pwd: string;
+}
+
+// 로그인
+export const login = async ({id, pwd}: loginProp) => {
+  try{
+    const response = await userInstance.post(`/login`, {
+      username: id,
+      password: pwd
+    });
+    if(response.status == 200){
+      console.log("성공적으로 로그인이 됐습니다.");
+    }
+
+    return response.data;
+  }catch(error) {
+    console.log('로그인 실패 데이터: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//이메일 인증번호 전송
+export const emailValidation = async (email: string) => {
+  try{
+    const response = await userInstance.post(`/signup/email/validation`, {
+      email: email
+    });
+    if(response.status == 200){
+      console.log("인증번호가 성공적으로 전달되었습니다.");
+    }
+    
+    return response.data;
+  }catch(error) {
+    console.log('이메일 검증 실패 데이터: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+type verifyProp = {
+  email: string;
+  number: string;
+}
+//인증번호 검사
+export const emailVerification = async ({email, number}: verifyProp) => {
+  try{
+    const response = await userInstance.post(`/signup/email/verification`, {
+      email: email,
+      auth_num: number
+    });
+    if(response.status == 200){
+      console.log('인증번호 확인이 되었습니다.');
+    }
+    return response.data;
+  }catch(error) {
+    console.log('이메일 인증 전송 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
 
 export const getMyFollowing = async () => {
   try {
@@ -19,6 +80,27 @@ export const getMyFollowing = async () => {
     throw error;
   }
 };
+
+type signupProp = {
+  email: string;
+  password: string;
+}
+// 사용자 이메일, 비밀번호 회원가입
+export const signUpNext = async ({email, password}: signupProp) => {
+  try{
+    const response = await userInstance.post(`/signup/next`, {
+      email: email,
+      password: password
+    });
+    if(response.status == 200){
+      console.log('회원가입 절차가 무사히 진행되었습니다.');
+    }
+    return response.data.payload;
+  }catch (error) {
+    console.log('회원가입1 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
 
 export const getMyFollower = async () => {
   try {
