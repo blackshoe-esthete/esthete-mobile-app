@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import TopTab from '@components/FilterCreation/TopTab';
@@ -97,6 +98,23 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
   // 필터 제작 - 임시저장일 경우 (url: '/temporary_filter')
   const onPressSave = async (url: '' | '/temporary_filter', temp = false) => {
+    if (!temp && filterName === '') {
+      Alert.alert('필터명을 작성해주세요!');
+      return;
+    }
+    if (!temp && filterDescription === '') {
+      Alert.alert('필터 설명을 작성해주세요!');
+      return;
+    }
+    if (!temp && filterTags.length === 0) {
+      Alert.alert('태그를 선택해주세요!');
+      return;
+    }
+    if (additionalImageUri.length === 0) {
+      Alert.alert('필터를 사용할 사진을 선택해주세요!');
+      return;
+    }
+
     closeModals(temp);
 
     const {gray_scale, ...filter_attribute} = filterValue;

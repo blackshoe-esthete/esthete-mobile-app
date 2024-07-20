@@ -65,6 +65,7 @@ export const createFilter = async ({
   } catch (error) {
     console.log('실패', (error as AxiosError)?.response?.data);
     console.log('실패 데이터', (error as AxiosError)?.config?.data._parts);
+    // 에러코드에 따라 분기처리
     throw error;
   }
 };
