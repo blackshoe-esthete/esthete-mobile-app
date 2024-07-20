@@ -22,6 +22,7 @@ import {useExhibitionComments} from '@hooks/useExhibitionDetails';
 import {ExhibitionData, IComment} from '@types/mainExhibitionService.type';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
+import {useProfileStore} from '@store/profileEditStore';
 
 const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: ExhibitionData; id: string}}}) => {
   const {exhibitionData} = route.params;
@@ -45,6 +46,8 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
   const fillLikesIcon = require('../../assets/icons/push-likes-big.png');
   const commentsIcon = require('../../assets/icons/comments.png');
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const currentUserName = useProfileStore(state => state.nickname); // 현재 사용자 닉네임 가져오기
 
   const panResponder = useRef(
     PanResponder.create({
@@ -112,7 +115,9 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
             <ExhibitionPictureList isVisited={true} exhibitionData={exhibitionData} id={id} />
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>{exhibitionData?.description}</Text>
+            <Text style={styles.infoText}>
+              {exhibitionData?.description ? exhibitionData?.description : '전시 설명이 없습니다.'}
+            </Text>
           </View>
           <Text style={styles.title}>위치 정보</Text>
           <TouchableOpacity
@@ -152,9 +157,15 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
               commentText={comment.content}
               isLiked={comment.is_like}
               setModalVisible={setModalVisible}
+              exhibitionAuthorName={exhibitionData.photographer_name} // 전시회 작성자의 닉네임 전달
+              currentUserName={currentUserName}
             />
           ))}
-          <CommentInputBox exhibitionId={id} />
+          <CommentInputBox
+            exhibitionId={id}
+            authorName={exhibitionData.photographer_name}
+            currentUserName={currentUserName}
+          />
         </Animated.View>
       </Modal>
     </View>
