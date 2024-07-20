@@ -7,7 +7,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import naver from '@assets/imgs/naverlogin.png';
 import kakao from '@assets/imgs/kakaologin.png';
 import google from '@assets/imgs/googlelogin.png';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import Config from 'react-native-config';
 
 /** Fill your keys */
@@ -20,21 +20,15 @@ const serviceUrlScheme = 'naverlogin';
 
 function LoginScreen() {
   const navigation = useNavigation();
-
-  // useEffect(() => {
-  //   NaverLogin.initialize({
-  //     appName,
-  //     consumerKey,
-  //     consumerSecret,
-  //   });
-  // }, []);
+  const [id, setId] = useState('');
+  const [pwd, setPwd] = useState('');
 
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
       <View style={styles.container}>
         <Text style={styles.title}>ESTHETE</Text>
-        <InputText placeHolder="아이디를 입력해주세요" margin={20} />
-        <InputText placeHolder="비밀번호를 입력해주세요" margin={20} security={true} />
+        <InputText placeHolder="아이디를 입력해주세요" margin={20} value={id} onChange={setId} />
+        <InputText placeHolder="비밀번호를 입력해주세요" margin={20} security={true} value={pwd} onChange={setPwd} />
         <View style={styles.buttonLayer}>
           <LoginButton color="#292929" title="로그인" navigation={() => navigation.goBack()} />
           <LoginButton color="#424242" title="회원가입" navigation={() => navigation.navigate('SignUp1')} />
