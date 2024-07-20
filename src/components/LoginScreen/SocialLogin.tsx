@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import naver from '@assets/imgs/naverlogin.png';
+import {
+  KakaoOAuthToken,
+  login,
+  logout,
+  unlink,
+  getProfile as getKakaoProfile,
+  KakaoProfile
+} from '@react-native-seoul/kakao-login';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 type socialProp = {
@@ -9,6 +19,7 @@ type socialProp = {
   label?: string;
 };
 function SocialLogin(props: socialProp): React.JSX.Element {
+  const navigation = useNavigation();
   // const login = () => {
   //   KakaoLogin.login()
   //     .then(result => {
@@ -49,11 +60,33 @@ function SocialLogin(props: socialProp): React.JSX.Element {
   //       console.log(`GetProfile Fail(code:${error.code})`, error.message);
   //     });
   // };
+  const [result, setResult] = useState<string>('');
+
+  const signInWithKakao = async (): Promise<void> => {
+    try {
+      const token: KakaoOAuthToken = await login();
+      setResult(JSON.stringify(token));
+      console.log('카카오 로그인 성공');
+      getProfile();
+      navigation.navigate('SignUp2');
+    } catch (err) {
+      console.error('login err', err);
+    }
+  };
+  const getProfile = async (): Promise<void> => {
+    try {
+      const profile = await getKakaoProfile();
+      await AsyncStorage.setItem('profile', JSON.stringify(profile));
+    } catch (err) {
+      console.error("signOut error", err);
+    }
+  };
   return (
     <TouchableOpacity
       onPress={() => {
         if (props.label == 'kakao') {
           // getKakaoIdToken();
+          signInWithKakao();
         } else if (props.label == 'naver') {
           // getNaverLogin();
         }

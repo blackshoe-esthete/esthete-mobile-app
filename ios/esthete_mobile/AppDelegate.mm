@@ -2,6 +2,7 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import <RNKakaoLogins.h>
 
 @implementation AppDelegate
 
@@ -15,6 +16,22 @@
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+  
+  if ([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [RNKakaoLogins handleOpenUrl:url];
+      });
+    });
+    return YES;
+  }
+
+  return NO;
+}
+
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
