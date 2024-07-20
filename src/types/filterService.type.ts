@@ -144,4 +144,6 @@ export interface TemporaryFilter {
   representation_img_list: RepresentationImgList;
   filter_tag_list: FilterTagList;
   updated_at: string;
+  filter_name: string;
+  description: string;
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -15,20 +15,31 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import TopTab from '@components/FilterCreation/TopTab';
 import plusIcon from '@assets/icons/cancel.png';
 import {useFilterCreationStore} from '@store/filterCreationStore';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
 import CommonModal from '@components/common/CommonModal';
-import {UseMutationResult, useMutation} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {createFilter} from 'src/apis/filterService';
 import {filterServiceToken} from '@utils/dummy';
-import {CreateFilterParams, CreateFilterResponse, FilterTagType, RequestDto} from '@types/filterService.type';
-import {filterNameToId, filterTagsData} from '@utils/filter';
+import {
+  CreateFilterParams,
+  CreateFilterResponse,
+  FilterTagType,
+  RequestDto,
+  TemporaryFilter,
+} from '@types/filterService.type';
+import {filterIdToName, filterNameToId, filterTagsData} from '@utils/filter';
 import {AxiosError, AxiosResponse} from 'axios';
 import cancelIcon from '@assets/icons/cancel_gray.png';
 
 function FilterCreationDescScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute();
+  const tempFilterRef = useRef(route.params as TemporaryFilter);
+  const tempFilter = tempFilterRef.current;
+
+  console.log('tempFilter: ', tempFilter);
 
   const {top} = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
@@ -43,9 +54,11 @@ function FilterCreationDescScreen(): React.JSX.Element {
     setFilterValueInitial,
   } = useFilterCreationStore();
 
-  const [filterName, setFilterName] = useState<string>('');
-  const [filterDescription, setFilterDescription] = useState<string>('');
-  const [filterTags, setFilterTags] = useState<FilterTagType[]>([]);
+  const [filterName, setFilterName] = useState<string>(tempFilter?.filter_name);
+  const [filterDescription, setFilterDescription] = useState<string>(tempFilter?.description);
+  const [filterTags, setFilterTags] = useState<FilterTagType[]>(
+    tempFilter?.filter_tag_list.filter_tag_list.map(tag => filterIdToName(tag)) || [],
+  );
 
   const [tempModalVisible, setTempModalVisible] = useState<boolean>(false);
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
@@ -74,7 +87,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
   // 필터 제작 - 임시저장일 경우 (url: '/temporary_filter')
   const onPressSave = async (url: '' | '/temporary_filter') => {
-    const {grayscale, ...filter_attribute} = filterValue;
+    const {gray_scale, ...filter_attribute} = filterValue;
 
     const thumbnail = {
       uri: filteredImageUri as string,
@@ -90,7 +103,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
     const requestDto: RequestDto = {
       filter_attribute,
-      gray_scale: grayscale as number,
+      gray_scale: gray_scale as number,
       filter_information: {
         name: filterName,
         description: filterDescription,
@@ -188,7 +201,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
             data={filterTagsData}
             renderItem={({item, index}) => (
               <TouchableOpacity
-                key={index}
+                key={item.id}
                 onPress={() => onPressAddTag(item.name)}
                 style={[
                   styles.keyword,
@@ -203,7 +216,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
           />
         </View>
         {/* 선택한 태그가 없을 경우, 빈 화면을 표시합니다. */}
-        {filterTags.length > 0 && (
+        {filterTags?.length > 0 && (
           <>
             <View style={{paddingHorizontal: 20, paddingTop: 15}}>
               <Text style={{color: '#FFF', fontSize: 13, fontWeight: '500'}}>내가 선택한 태그</Text>
@@ -216,7 +229,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
                 data={filterTags}
                 renderItem={({item, index}) => (
                   <View
-                    key={index}
+                    key={item}
                     style={[
                       styles.selectedKeyword,
                       {

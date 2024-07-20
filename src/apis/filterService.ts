@@ -18,7 +18,7 @@ export const getThumbnail = async (filterId: string, token: string) => {
   }
 };
 
-// 필터 제작 (multipart/form-data)
+// 필터 제작 및 임시저장 (multipart/form-data)
 export const createFilter = async ({
   url,
   token,
@@ -65,6 +65,22 @@ export const createFilter = async ({
   } catch (error) {
     console.log('실패', (error as AxiosError)?.response?.data);
     console.log('실패 데이터', (error as AxiosError)?.config?.data._parts);
+    throw error;
+  }
+};
+
+// 임시 필터 리스트 조회
+export const getTemporaryFilterList = async (token: string) => {
+  try {
+    const response = await filterInstance.get('/temporary', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.content;
+  } catch (error) {
+    console.log('실패');
     throw error;
   }
 };
