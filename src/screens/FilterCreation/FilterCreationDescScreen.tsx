@@ -39,12 +39,11 @@ function FilterCreationDescScreen(): React.JSX.Element {
   const tempFilterRef = useRef(route.params as TemporaryFilter);
   const tempFilter = tempFilterRef.current;
 
-  console.log('tempFilter: ', tempFilter);
-
   const {top} = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
   const [height, setImageHeight] = useState<number>(0);
   const {
+    selectedImageUri,
     setSelectedImageUri,
     filteredImageUri,
     setFilteredImageUri,
@@ -90,7 +89,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
     const {gray_scale, ...filter_attribute} = filterValue;
 
     const thumbnail = {
-      uri: filteredImageUri as string,
+      uri: selectedImageUri as string,
       name: `thumbnail${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
       type: 'image/jpg',
     };
