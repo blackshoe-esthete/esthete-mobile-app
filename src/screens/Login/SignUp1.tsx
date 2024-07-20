@@ -6,9 +6,10 @@ import CommonButton from '@components/SettingScreen/CommonButton';
 import {useNavigation} from '@react-navigation/native';
 import Verification from '@components/LoginScreen/Verification';
 import {useMutation} from '@tanstack/react-query';
-import {emailValidation, emailVerification, signUpNext} from 'src/apis/userInfo';
-import { NativeStackScreenProps } from 'react-native-screens/lib/typescript/native-stack/types';
-import { Routes } from '@screens/Routes';
+import {emailValidation, emailVerification, signUpNext, userCheck} from 'src/apis/userInfo';
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
+import {Routes} from '@screens/Routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -22,6 +23,7 @@ function SignUp1({navigation, route}: Props) {
   const [rePassword, setRePassword] = useState('');
   const [contentLoaded, setContentLoaded] = useState(false);
   const [verifiedNum, setVerifiedNum] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [samePwd, setSamePwd] = useState(false);
   const mutationValidation = useMutation({
     mutationFn: () => emailValidation(email),
@@ -45,15 +47,30 @@ function SignUp1({navigation, route}: Props) {
   });
   const mutationSignUp = useMutation({
     mutationFn: () => signUpNext({email, password: rePassword}),
-    onSuccess(data) {
+    onSuccess: async(data) => {
       console.log(data);
-      // navigation.navigate('/SignUp2');
+      try{
+        await AsyncStorage.setItem('userId', data.user_id);
+        navigation.navigate('SignUp2');
+      }catch(error){
+        console.log(error);
+      }
     },
     onError(data) {
       console.log(data);
       navigation.navigate('SignUp2');
     },
   });
+  const mutationIdCheck = useMutation({
+    mutationFn: () => userCheck(email),
+    onSuccess(data){
+      Alert.alert('이미 존재하는 사용자입니다.')
+    },
+    onError(data){
+      console.log(data);
+      mutationSignUp.mutate();
+    }
+  })
 
   useEffect(() => {
     if (password === rePassword && password != '') {
@@ -106,14 +123,21 @@ function SignUp1({navigation, route}: Props) {
             <TextInput style={styles.numberInput} onChangeText={setNumber} />
             <SendButton label="인증번호 확인" pressable={!send} onPress={() => mutationVerification.mutate()} />
           </View>
-          <Verification label="인증번호" state={verifiedNum} />
+          <Verification label="인증번호가" state={verifiedNum} />
           <InputText
             security={true}
             placeHolder="비밀번호를 입력해주세요"
+            type="visible-password"
             value={password}
             onChange={setPassword}
             margin={21}
+            onValidityChange={setIsPasswordValid}
           />
+          {!isPasswordValid && password.length > 0 && (
+            <Text style={styles.errorText}>
+              비밀번호는 8자리 이상 20자리 이하이며, 특수문자 최소 한개 ($,@,!,%,*,#,?,&) 포함해야 합니다.
+            </Text>
+          )}
           <InputText
             security={true}
             placeHolder="비밀번호를 다시 입력해주세요"
@@ -121,7 +145,7 @@ function SignUp1({navigation, route}: Props) {
             onChange={setRePassword}
             margin={20}
           />
-          <Verification label="비밀번호" state={samePwd} />
+          <Verification label="비밀번호가" state={samePwd} />
         </View>
       </ScrollView>
       <CommonButton
@@ -214,4 +238,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: -0.32,
   },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    letterSpacing: -0.24,
+    fontFamily: 'Gothic A1',
+  }
 });

@@ -13,12 +13,12 @@ function Verification(props: verifyProp): React.JSX.Element {
       {props.state ? (
         <>
           <Image source={verified} style={styles.alertIcon} />
-          <Text style={styles.alertText}>인증번호가 일치합니다.</Text>
+          <Text style={styles.alertText}>{props.label} 일치합니다.</Text>
         </>
       ) : (
         <>
           <Image source={unverified} style={styles.alertIcon} />
-          <Text style={styles.alertText}>인증번호가 불일치합니다.</Text>
+          <Text style={styles.alertText}>{props.label} 불일치합니다.</Text>
         </>
       )}
     </View>

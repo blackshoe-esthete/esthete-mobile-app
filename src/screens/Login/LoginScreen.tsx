@@ -31,6 +31,8 @@ function LoginScreen({navigation, route}: Props) {
     mutationFn: () => login({id: id, pwd: pwd}),
     onSuccess(data){
       console.log(data);
+      setId('');
+      setPwd('');
       navigation.goBack();
     },
     onError(data){

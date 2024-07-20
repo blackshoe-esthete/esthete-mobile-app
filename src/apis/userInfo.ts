@@ -102,6 +102,45 @@ export const signUpNext = async ({email, password}: signupProp) => {
   }
 }
 
+//이미 존재하는 사용자인지 확인
+export const userCheck = async (email: string) => {
+  try{
+    const response = await userInstance.put(`/id/check`, {
+      email
+    });
+    return response.data;
+  }catch (error) {
+    console.log('이미 존재하는 사용자인지 조회하기 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+type completeProp = {
+  user_id: string;
+  nickname: string;
+  gender: string;
+  birthday: string;
+};
+
+//회원가입 마무리
+export const signupCompletion = async ({user_id, nickname, gender, birthday}: completeProp) => {
+  try{
+    const response = await userInstance.post(`/signup/completion`, {
+      user_id,
+      nickname,
+      gender,
+      birthday
+    });
+    if(response.status == 200){
+      console.log("정상적으로 회원가입이 되었습니다.");
+    }
+    return response.data.payload;
+  }catch (error) {
+    console.log('회원가입 마무리 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
 export const getMyFollower = async () => {
   try {
     const response = await mygalleryInstance.get(`/followers`, {

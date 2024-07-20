@@ -22,9 +22,12 @@ type inputProp = {
   security?: boolean;
   value?: string;
   onChange?: (text: string) => void;
+  onValidityChange?: (isValid: boolean) => void; 
 };
 function InputText(props: inputProp): React.JSX.Element {
   const [text, setText] = useState(props.value || '');
+  const [isValid, setIsValid] = useState(false);
+  const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/;
 
   useEffect(() => {
     setText(props.value || '');
@@ -36,7 +39,15 @@ function InputText(props: inputProp): React.JSX.Element {
     if (props.onChange) {
       props.onChange(newText);
     }
+    if(props.type==='visible-password'){
+      setIsValid(passwordRegex.test(newText));
+    }
   };
+  useEffect(() => {
+    if (props.onValidityChange) {
+      props.onValidityChange(isValid);
+    }
+  }, [isValid]);
   
   return (
     <TextInput
