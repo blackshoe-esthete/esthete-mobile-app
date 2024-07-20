@@ -38,7 +38,7 @@ function SearchBar({iconSource, to, back, placeHolder}: SearchBarProps): React.J
         onChangeText={setKeyword}
         placeholder={placeHolder ? placeHolder : '전시회, 작가 검색'}
         placeholderTextColor="#DADADA"
-        style={[styles.text, {fontWeight: '400'}, back && {width: '85%'}]}
+        style={[styles.text, {fontWeight: '400'}, back && {width: '80%', }]}
         onSubmitEditing={onPressSearch}
       />
       <TouchableOpacity onPress={onPressSearch}>
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 30,
-    width: '100%',
+    width: '90%',
     paddingHorizontal: 20,
   },
   textInput: {

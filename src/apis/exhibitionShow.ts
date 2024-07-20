@@ -2,7 +2,7 @@ import {AxiosError, AxiosResponse} from 'axios';
 import {exhibitionInstance} from './instance';
 import Config from 'react-native-config';
 
-//const apiToken = Config.API_TOKEN;
+const apiToken = Config.API_TOKEN;
 
 export const getExhibitionDetails = async (id: string) => {
   const response = await exhibitionInstance.get(`/details/${id}`);
@@ -28,12 +28,9 @@ export const postExhibitionComment = async ({
     content,
   };
 
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIyM2U3YjJiNC1jMWFjLTQ1OTEtYmI3Zi1jNjcwNmRhZjIyYWEiLCJleHAiOjE3MjEwMzg1MDl9.tnRBqIdMlutauMAdSgoutnacHNVTk8qIA3RPftp4D1I';
-
   const headers = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${apiToken}`,
   };
 
   const response = await exhibitionInstance.post(`/comments`, data, {headers});
@@ -46,16 +43,13 @@ interface PostCommentLikeParams {
 }
 
 export const postExhibitionCommentLike = async ({commentId}: PostCommentLikeParams): Promise<AxiosResponse<any>> => {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIyM2U3YjJiNC1jMWFjLTQ1OTEtYmI3Zi1jNjcwNmRhZjIyYWEiLCJleHAiOjE3MjEwMzg1MDl9.tnRBqIdMlutauMAdSgoutnacHNVTk8qIA3RPftp4D1I';
-
   const response = await exhibitionInstance.post(
     `/comments/like/${commentId}`,
     {},
     {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${apiToken}`,
       },
     },
   );
@@ -63,13 +57,10 @@ export const postExhibitionCommentLike = async ({commentId}: PostCommentLikePara
 };
 
 export const postExhibitionCommentDislike = async ({commentId}: PostCommentLikeParams): Promise<AxiosResponse<any>> => {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIyM2U3YjJiNC1jMWFjLTQ1OTEtYmI3Zi1jNjcwNmRhZjIyYWEiLCJleHAiOjE3MjEwMzg1MDl9.tnRBqIdMlutauMAdSgoutnacHNVTk8qIA3RPftp4D1I';
-
   const response = await exhibitionInstance.delete(`/comments/like/${commentId}`, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${apiToken}`,
     },
   });
   return response.data.payload;

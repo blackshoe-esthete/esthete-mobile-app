@@ -1,20 +1,35 @@
 import InputText from '@components/LoginScreen/InputText';
-import {Button, Image, StyleSheet, Text, View, Pressable, TextInput, Platform, TouchableOpacity} from 'react-native';
+import {
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  Platform,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import unverified from '@assets/icons/unverified.png';
 import CommonButton from '@components/SettingScreen/CommonButton';
 import {useNavigation} from '@react-navigation/native';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import GenderButton from '@components/LoginScreen/GenderButton';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+
+const windowHeight = Dimensions.get('window').height;
 
 function SignUp2() {
   const navigation = useNavigation();
+  const scrollViewRef = useRef<any>(null);
   const [gender, setGender] = useState('');
   const [date, setDate] = useState(new Date());
   const [birthDate, setBirthDate] = useState('');
   const [show, setShow] = useState(false);
+  const [contentLoaded, setContentLoaded] = useState(false);
   const toggleDatePicker = () => {
     setShow(!show);
   };
@@ -40,68 +55,78 @@ function SignUp2() {
     let date = new Date(rawDate);
     let year = date.getFullYear();
     let month = (date.getMonth() + 1).toString();
-    let day = (date.getDate()).toString();
+    let day = date.getDate().toString();
     month = month.length < 2 ? `0${month}` : month;
     day = day.length < 2 ? `0${day}` : day;
     return `${year}년 ${month}월 ${day}일`;
-  }
+  };
 
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
-      <Text style={styles.header}>ESTHETE</Text>
-      <View style={styles.inputLayer}>
-        <InputText placeHolder="닉네임을 입력해주세요" />
-        <Verification />
-        <View style={styles.genderLayer}>
-          <Text style={styles.genderText}>성별</Text>
-          <View style={styles.genderButtonLayer}>
-            <GenderButton title="여성" onPress={() => setGender('female')} value={gender == 'female'} />
-            <GenderButton title="남성" onPress={() => setGender('male')} value={gender == 'male'} />
+      <ScrollView
+        style={styles.scrollContainer}
+        onContentSizeChange={() => {
+          if (contentLoaded) {
+            scrollViewRef.current?.scrollToEnd();
+          } else {
+            setContentLoaded(true);
+          }
+        }}
+        ref={scrollViewRef}>
+        <Text style={styles.header}>ESTHETE</Text>
+        <View style={styles.inputLayer}>
+          <InputText placeHolder="닉네임을 입력해주세요" />
+          <Verification />
+          <View style={styles.genderLayer}>
+            <Text style={styles.genderText}>성별</Text>
+            <View style={styles.genderButtonLayer}>
+              <GenderButton title="여성" onPress={() => setGender('female')} value={gender == 'female'} />
+              <GenderButton title="남성" onPress={() => setGender('male')} value={gender == 'male'} />
+            </View>
+          </View>
+          <View style={styles.birthLayer}>
+            <Text style={styles.genderText}>생년월일</Text>
+            {show && (
+              <RNDateTimePicker
+                mode="date"
+                display="spinner"
+                value={date}
+                onChange={onChange}
+                textColor="white"
+                locale="ko-KR"
+                style={styles.datePicker} //reduce height and margin at the top
+              />
+            )}
+            {show && Platform.OS == 'ios' && (
+              <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                <TouchableOpacity onPress={toggleDatePicker}>
+                  <View style={[styles.buttonBox, {backgroundColor: '#E9E9E9'}]}>
+                    <Text style={styles.buttonText}>취소</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={confirmOnIos}>
+                  <View style={[styles.buttonBox, {backgroundColor: '#FFD600'}]}>
+                    <Text style={styles.buttonText}>확인</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
+            {!show && (
+              <Pressable onPress={toggleDatePicker}>
+                <TextInput
+                  style={styles.input}
+                  value={birthDate}
+                  onChangeText={setBirthDate}
+                  placeholderTextColor="white"
+                  placeholder="2024년 06월 22일"
+                  editable={false}
+                  onPressIn={toggleDatePicker}
+                />
+              </Pressable>
+            )}
           </View>
         </View>
-        <View style={styles.birthLayer}>
-          <Text style={styles.genderText}>생년월일</Text>
-          {show && (
-            <RNDateTimePicker
-              mode="date"
-              display="spinner"
-              value={date}
-              onChange={onChange}
-              maximumDate={new Date()}
-              locale="ko-KR"
-              style={styles.datePicker} //reduce height and margin at the top
-            />
-          )}
-          {show && Platform.OS == 'ios' && (
-            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-              <TouchableOpacity
-                style={[styles.button, styles.pickerButton, {backgroundColor: '#11182711'}]}
-                onPress={toggleDatePicker}>
-                <Text style={[styles.buttonText, styles.pickerButton, {backgroundColor: '#075985'}]}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.pickerButton]}
-                onPress={confirmOnIos}>
-                <Text style={[styles.buttonText]}>확인</Text>
-              </TouchableOpacity>
-            </View>
-          )} 
-
-          {!show && (
-            <Pressable onPress={toggleDatePicker}>
-              <TextInput
-                style={styles.input}
-                value={birthDate}
-                onChangeText={setBirthDate}
-                placeholderTextColor="white"
-                placeholder="2024년 06월 22일"
-                editable={false}
-                onPressIn={toggleDatePicker}
-              />
-            </Pressable>
-          )}
-        </View>
-      </View>
+      </ScrollView>
 
       <CommonButton
         title="다음"
@@ -131,6 +156,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     alignItems: 'center',
+  },
+  scrollContainer: {
+    height: windowHeight,
+    marginBottom: 150,
+    paddingBottom: 60,    
   },
   header: {
     color: 'white',
@@ -197,27 +227,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'white',
     marginTop: 10,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   datePicker: {
     height: 120,
     marginTop: -10,
   },
-  button: {
-    height: 50,
+  buttonBox: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 50,
-    marginTop: 10,
-    marginBottom: 15,
-    backgroundColor: '#075985',
+    borderRadius: 6,
+    width: 150,
+    padding: 14,
+    height: 50
   },
   buttonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: 'white',
-  },
-  pickerButton: {
-    paddingHorizontal: 20,
   },
 });

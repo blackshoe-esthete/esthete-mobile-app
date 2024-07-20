@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginTop: 12,
+    height: 20,
     gap: 5,
   },
   alertIcon: {

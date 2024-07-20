@@ -9,6 +9,8 @@ import MyCollections from '@screens/MyGallery/MyCollections';
 import MyFilter from '@screens/MyGallery/MyFilter';
 import ex1 from '@assets/imgs/gallery1.png';
 import ex2 from '@assets/imgs/gallery2.png';
+import { useQuery } from '@tanstack/react-query';
+import { myTempExhibition, myTempFilter } from 'src/apis/mygallery';
 
 type Props = NativeStackScreenProps<Routes, 'Temporary'>;
 type galleryProp = {
@@ -18,12 +20,6 @@ type galleryProp = {
   author?: string;
   date?: string;
 };
-const DATA: galleryProp[] = [
-  {id:'1', title: "전시회명", src: ex1, author: "작가명", date: "2024.03.29"},
-  {id:'2', title: "전시회명", src: ex2, author: "작가명", date: "2024.03.29"},
-  {id:'3', title: "전시회명", src: ex1, author: "작가명", date: "2024.03.29"},
-  {id:'4', title: "전시회명", src: ex2, author: "작가명", date: "2024.03.29"},
-];
 
 function Temporary({navigation, route}: Props) {
   const layout = useWindowDimensions();
@@ -32,10 +28,19 @@ function Temporary({navigation, route}: Props) {
     {key: 'first', title: '전시'},
     {key: 'second', title: '필터'},
   ]);
+  const {data: myTempGallery} = useQuery({
+    queryKey: ['temp-gallery'],
+    queryFn: myTempExhibition
+  })
+
+  const {data: myTempoFilter} = useQuery({
+    queryKey: ['temp-filter'],
+    queryFn: myTempFilter
+  });
 
   const renderScene = SceneMap({
-    first: () => <MyCollections props={DATA} temporary={true}/>,
-    second: () => <MyFilter props={DATA} temporary={true}/>,
+    first: () => <MyCollections props={myTempGallery} temporary={true}/>,
+    second: () => <MyFilter props={myTempoFilter} temporary={true}/>,
   });
 
   const renderTabBar = (props: any) => (

@@ -1,7 +1,7 @@
 import {useDislikeComment, useLikeComment} from '@hooks/useExhibitionDetails';
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 
 type CommentProps = {
   commentId: string;
@@ -11,9 +11,21 @@ type CommentProps = {
   commentText: string;
   isLiked: boolean;
   setModalVisible: (arg0: boolean) => void;
+  exhibitionAuthorName?: string;
+  currentUserName?: string;
 };
 
-const Comment = ({commentId, userImg, userName, commentDate, commentText, setModalVisible, isLiked}: CommentProps) => {
+const Comment = ({
+  commentId,
+  userImg,
+  userName,
+  commentDate,
+  commentText,
+  setModalVisible,
+  isLiked,
+  exhibitionAuthorName,
+  currentUserName,
+}: CommentProps) => {
   const navigation = useNavigation();
   const [onLike, setOnLike] = useState(isLiked);
 
@@ -21,6 +33,11 @@ const Comment = ({commentId, userImg, userName, commentDate, commentText, setMod
   const {mutate: dislikeComment} = useDislikeComment();
 
   const onLikePress = () => {
+    if (currentUserName === userName) {
+      Alert.alert('본인이 작성한 댓글에는 좋아요를 누를 수 없습니다.');
+      return;
+    }
+
     if (onLike) {
       dislikeComment(
         {commentId},
@@ -55,7 +72,7 @@ const Comment = ({commentId, userImg, userName, commentDate, commentText, setMod
 
   return (
     <View style={styles.container}>
-      <Image source={userImg ? userImg : require('src/assets/imgs/anonymous.png')} style={styles.profileIcon} />
+      <Image source={userImg ? {uri: userImg} : require('src/assets/imgs/anonymous.png')} style={styles.profileIcon} />
       <View style={styles.commentSection}>
         <View style={styles.commentFlex}>
           <Text style={styles.userName}>{userName}</Text>
@@ -68,9 +85,11 @@ const Comment = ({commentId, userImg, userName, commentDate, commentText, setMod
           source={onLike ? require('src/assets/icons/push-likes.png') : require('src/assets/icons/comment_like.png')}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={onReportPress} style={styles.touchArea}>
-        <Image source={require('src/assets/icons/siren.png')} />
-      </TouchableOpacity>
+      {currentUserName === exhibitionAuthorName && (
+        <TouchableOpacity onPress={onReportPress} style={styles.touchArea}>
+          <Image source={require('src/assets/icons/siren.png')} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

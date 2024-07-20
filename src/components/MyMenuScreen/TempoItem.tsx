@@ -5,23 +5,23 @@ import {TemporaryFilter} from '@types/filterService.type';
 import {RootStackParamList} from '@types/navigations';
 import {formatDate} from '@utils/format';
 import React, {useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
-  Dimensions,
-  ImageProps,
-  TouchableOpacity,
-  useWindowDimensions,
-} from 'react-native';
+import {View, StyleSheet, Image, Text, Dimensions, TouchableOpacity} from 'react-native';
 
-type galleryProp = TemporaryFilter & {
+type galleryProp = {
+  temporary_exhibition_id: string;
+  title?: string;
+  thumbnail_url: string;
+  author?: string;
+  date?: string;
   label?: string;
 };
+type filterProp = TemporaryFilter & {
+  label?: string;
+};
+
 const {width} = Dimensions.get('window');
 
-function TempoItem(props: galleryProp): React.JSX.Element {
+function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const deleteModalShow = () => {
@@ -44,17 +44,33 @@ function TempoItem(props: galleryProp): React.JSX.Element {
     if (title == 'collection') {
       navigation.navigate('ExhibitionCreation');
     } else {
-      navigation.navigate('FilterCreation', props);
+      navigation.navigate('FilterCreation', props as filterProp);
     }
+  };
+
+  const thumbnailImage = () => {
+    if (props.label == 'collection') {
+      return <Image src={(props as galleryProp).thumbnail_url} style={styles.photoIcon} />;
+    } else if (props.label == 'filter') {
+      return <Image src={(props as filterProp).filter_thumbnail} style={styles.photoIcon} />;
+    }
+    return null;
+  };
+
+  const resume = () => {
+    if (props.label == 'collection') {
+      return <Text style={styles.textStyle}>{formatDate((props as galleryProp).date!)} 임시저장</Text>;
+    } else if (props.label == 'filter') {
+      return <Text style={styles.textStyle}>{formatDate((props as filterProp).updated_at)} 임시저장</Text>;
+    }
+    return null;
   };
 
   return (
     <View style={{flex: 1}}>
       <View style={styles.photoBox}>
-        <Image source={props.label === 'filter' ? {uri: props.filter_thumbnail} : {uri: ''}} style={styles.photoIcon} />
-        <View style={styles.titleBox}>
-          <Text style={styles.textStyle}>{formatDate(props.updated_at)} 임시저장</Text>
-        </View>
+        {thumbnailImage()}
+        <View style={styles.titleBox}>{resume()}</View>
       </View>
       <View style={styles.buttonLayer}>
         <TouchableOpacity style={styles.buttonLeftBox} onPress={deleteModalShow}>
