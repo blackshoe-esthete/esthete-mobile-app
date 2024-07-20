@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import {Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import MapView, {Details, MapPressEvent, Marker, PROVIDER_GOOGLE, Region} from 'react-native-maps';
-import {useNavigation} from '@react-navigation/native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Details, MapPressEvent, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // import Geolocation from '@react-native-community/geolocation';
 import backspaceLogo from '@assets/icons/backspace.png';
 import locationIcon from '@assets/icons/location_icon.png';
-import {useQueries, useQuery} from '@tanstack/react-query';
-import {getExhibitionCluster, getExhibitionList, getGeocode} from 'src/apis/mapService';
-import {Cluster} from '@types/mapService.type';
+import { useQueries, useQuery } from '@tanstack/react-query';
+import { getExhibitionCluster, getExhibitionList, getGeocode } from 'src/apis/mapService';
+import { Cluster } from '#types/mapService.type';
 import useMyLocation from '@hooks/useMyLocation';
-import {useExhibitionCluster, useNearbyExhibitions} from '@hooks/useNearbyExhibitions';
+import { useExhibitionCluster, useNearbyExhibitions } from '@hooks/useNearbyExhibitions';
 
 function MapScreen(): React.JSX.Element {
   const [isClicked, setIsClicked] = useState(false);
-  const [clickedLocation, setClickedLocation] = useState<{latitude: number; longitude: number} | null>(null); // 클릭한 위치의 좌표 상태 추가
+  const [clickedLocation, setClickedLocation] = useState<{ latitude: number; longitude: number } | null>(null); // 클릭한 위치의 좌표 상태 추가
   const [clickedCluster, setClickedCluster] = useState<Cluster | null>(null);
   const [region, setRegion] = useState<Region | undefined>({
     latitude: 37.55703563268905,
@@ -25,7 +25,7 @@ function MapScreen(): React.JSX.Element {
   const myRegion = useMyLocation();
 
   const navigation = useNavigation();
-  const {top} = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
 
   const group = region?.latitudeDelta! < 0.381 ? 'town' : region?.latitudeDelta! < 4.3 ? 'city' : 'state';
 
@@ -38,7 +38,7 @@ function MapScreen(): React.JSX.Element {
 
   const radius = calculateRadius(region?.latitudeDelta || 0.015, region?.longitudeDelta || 0.0121);
 
-  const {data: clusterData} = useExhibitionCluster(region?.latitude!, region?.longitude!, radius, group);
+  const { data: clusterData } = useExhibitionCluster(region?.latitude!, region?.longitude!, radius, group);
 
   const geocodeQueries = useQueries({
     queries: (clusterData?.content || []).map((cluster: Cluster) => ({
@@ -56,7 +56,7 @@ function MapScreen(): React.JSX.Element {
 
   // console.log('geocodedClusters:', clusterData);
 
-  const {data: clickedClusterExhibitionList} = useNearbyExhibitions(clickedCluster);
+  const { data: clickedClusterExhibitionList } = useNearbyExhibitions(clickedCluster);
 
   const handleMarkerPress = (cluster: Cluster) => {
     setClickedCluster(cluster);
@@ -67,8 +67,8 @@ function MapScreen(): React.JSX.Element {
     if (isClicked) {
       setIsClicked(false);
     }
-    const {latitude, longitude} = event.nativeEvent.coordinate;
-    setClickedLocation({latitude, longitude});
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setClickedLocation({ latitude, longitude });
     // console.log(`Clicked location: ${latitude}, ${longitude}`);
   };
 
@@ -84,8 +84,8 @@ function MapScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.topInset, {height: top}]} />
-      <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.wrapper, {top: top + 21}]}>
+      <View style={[styles.topInset, { height: top }]} />
+      <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.wrapper, { top: top + 21 }]}>
         <Image source={backspaceLogo} style={styles.icon} />
       </TouchableOpacity>
 
@@ -93,16 +93,17 @@ function MapScreen(): React.JSX.Element {
         <FlatList
           horizontal={true}
           data={clickedClusterExhibitionList?.content}
-          keyExtractor={item => item.exhibition_id.toString()}
-          renderItem={({item, index}) => (
+          keyExtractor={(item) => item.exhibition_id.toString()}
+          renderItem={({ item, index }) => (
             <View
               key={item.exhibition_id}
               style={[
                 styles.detailImageContainer,
-                {marginRight: index === clickedClusterExhibitionList?.content.length - 1 ? 25 : 0},
-                {marginLeft: index === 0 ? 25 : 0},
-              ]}>
-              <Image source={{uri: item.thumbnail_url}} style={styles.detailImage} resizeMode="cover" />
+                { marginRight: index === clickedClusterExhibitionList?.content.length - 1 ? 25 : 0 },
+                { marginLeft: index === 0 ? 25 : 0 },
+              ]}
+            >
+              <Image source={{ uri: item.thumbnail_url }} style={styles.detailImage} resizeMode="cover" />
             </View>
           )}
           showsHorizontalScrollIndicator={false}
@@ -112,7 +113,7 @@ function MapScreen(): React.JSX.Element {
             left: 0,
             zIndex: 100,
           }}
-          contentContainerStyle={{gap: 17}}
+          contentContainerStyle={{ gap: 17 }}
         />
       )}
 
@@ -127,7 +128,8 @@ function MapScreen(): React.JSX.Element {
             setRegion(region);
           }
         }}
-        showsMyLocationButton>
+        showsMyLocationButton
+      >
         {geocodedClusters.map((cluster: Cluster, index: number) => (
           <Marker
             key={`${cluster.state}-${cluster.city}-${cluster.town}-${index}`}
@@ -135,10 +137,11 @@ function MapScreen(): React.JSX.Element {
               latitude: cluster.location?.lat!,
               longitude: cluster.location?.lng!,
             }}
-            onPress={() => handleMarkerPress(cluster)}>
+            onPress={() => handleMarkerPress(cluster)}
+          >
             <View style={styles.markerContainer}>
               <Image source={locationIcon} style={styles.markerIcon} resizeMode="contain" />
-              <Image source={{uri: cluster.thumbnail}} style={styles.markerImage} resizeMode="cover" />
+              <Image source={{ uri: cluster.thumbnail }} style={styles.markerImage} resizeMode="cover" />
               <View style={styles.numberContainer}>
                 {/* <Text style={styles.number}>{group === 'town' ? cluster.count : clusterData.content.length}</Text> */}
                 <Text style={styles.number}>{cluster.count}</Text>

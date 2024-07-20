@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Slider} from '@miblanchard/react-native-slider';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Slider } from '@miblanchard/react-native-slider';
 import photoIcon from '@assets/icons/photo.png';
 import TopTab from '@components/FilterCreation/TopTab';
 import {
@@ -25,12 +25,12 @@ import {
   temperature,
   grayscale,
 } from 'react-native-image-filter-kit';
-import {brightness, filters} from '@utils/filter';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {useFilterCreationStore} from '@store/filterCreationStore';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {type RootStackParamList} from '../../types/navigations';
-import {FilterType, FilterValue, TemporaryFilter} from '@types/filterService.type';
+import { brightness, filters } from '@utils/filter';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFilterCreationStore } from '@store/filterCreationStore';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { type RootStackParamList } from '../../types/navigations';
+import { FilterType, FilterValue, TemporaryFilter } from '#types/filterService.type';
 
 function FilterCreationScreen(): React.JSX.Element {
   // route에서 tempFilterId 받아오기
@@ -52,14 +52,14 @@ function FilterCreationScreen(): React.JSX.Element {
   const [sliderValue, setSliderValue] = useState<FilterValue>(filterValue);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const {top} = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
 
   const handleSliderChange = (value: number, type: string) => {
-    setSliderValue(prevState => ({...prevState, [type]: value}));
+    setSliderValue((prevState) => ({ ...prevState, [type]: value }));
   };
 
   const onPressBack = () => {
-    setFilterValue(filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}));
+    setFilterValue(filters.reduce((acc, filter) => ({ ...acc, [filter.type]: filter.default }), {}));
     setSelectedImageUri('');
     navigation.goBack();
   };
@@ -92,12 +92,12 @@ function FilterCreationScreen(): React.JSX.Element {
       const gap = 0.01;
       // 슬라이더 값을 임시로 변경
       const tempValue = (sliderValue.sharpness as number) + gap;
-      setSliderValue(prevState => ({...prevState, sharpness: tempValue}));
+      setSliderValue((prevState) => ({ ...prevState, sharpness: tempValue }));
       setIsLoading(true);
 
       // 원래 값으로 복구
       setTimeout(() => {
-        setSliderValue(prevState => ({...prevState, sharpness: tempValue - gap}));
+        setSliderValue((prevState) => ({ ...prevState, sharpness: tempValue - gap }));
         setIsLoading(false);
       }, 500);
     };
@@ -108,8 +108,8 @@ function FilterCreationScreen(): React.JSX.Element {
   }, [selectedImageUri]);
 
   return (
-    <SafeAreaView edges={['bottom']} style={{flex: 1}}>
-      <View style={[styles.topInset, {paddingTop: top}]} />
+    <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+      <View style={[styles.topInset, { paddingTop: top }]} />
 
       {/* 로딩 중일 때 보여줄 0.5 투명도의 배경 */}
       {isLoading && (
@@ -120,7 +120,8 @@ function FilterCreationScreen(): React.JSX.Element {
             alignItems: 'center',
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
             zIndex: 1,
-          }}>
+          }}
+        >
           <ActivityIndicator size="large" color="#FFFFFF" />
         </View>
       )}
@@ -135,7 +136,8 @@ function FilterCreationScreen(): React.JSX.Element {
             alignItems: 'center',
             alignSelf: 'stretch',
             backgroundColor: selectedImageUri ? '#171717' : '#D9D9D9',
-          }}>
+          }}
+        >
           {/* 이미지 및 필터 적용 */}
           {selectedImageUri ? (
             <Sharpen
@@ -151,16 +153,16 @@ function FilterCreationScreen(): React.JSX.Element {
                     grayscale(sliderValue.gray_scale),
                   ])}
                   style={styles.image}
-                  image={<Image source={{uri: selectedImageUri}} style={styles.image} resizeMode="contain" />}
+                  image={<Image source={{ uri: selectedImageUri }} style={styles.image} resizeMode="contain" />}
                 />
               }
               style={styles.image}
               amount={sliderValue.sharpness}
-              onExtractImage={({nativeEvent}) => setFilteredImageUri(nativeEvent.uri)}
+              onExtractImage={({ nativeEvent }) => setFilteredImageUri(nativeEvent.uri)}
               extractImageEnabled={true}
             />
           ) : (
-            <Text style={{fontSize: 16, fontWeight: '700'}}>선택한 사진이 보여집니다.</Text>
+            <Text style={{ fontSize: 16, fontWeight: '700' }}>선택한 사진이 보여집니다.</Text>
           )}
         </View>
 
@@ -171,11 +173,11 @@ function FilterCreationScreen(): React.JSX.Element {
               <Text style={styles.sliderValueText}>{Math.round((sliderValue[filterType] as number) * 100)}</Text>
             </View>
             <Slider
-              step={filters.find(f => f.type === filterType)?.step}
-              minimumValue={filters.find(f => f.type === filterType)?.min}
-              maximumValue={filters.find(f => f.type === filterType)?.max}
+              step={filters.find((f) => f.type === filterType)?.step}
+              minimumValue={filters.find((f) => f.type === filterType)?.min}
+              maximumValue={filters.find((f) => f.type === filterType)?.max}
               value={sliderValue[filterType]}
-              onValueChange={value => handleSliderChange(value[0], filterType)}
+              onValueChange={(value) => handleSliderChange(value[0], filterType)}
               minimumTrackTintColor="#FFFFFF"
               maximumTrackTintColor="#FFFFFF"
               containerStyle={styles.slider}
@@ -183,7 +185,7 @@ function FilterCreationScreen(): React.JSX.Element {
               disabled={!selectedImageUri}
             />
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery', {type: 'main'})}>
+          <TouchableOpacity onPress={() => navigation.navigate('FilterCreationGallery', { type: 'main' })}>
             <Image source={photoIcon} style={styles.photoIcon} />
           </TouchableOpacity>
         </View>
@@ -191,11 +193,12 @@ function FilterCreationScreen(): React.JSX.Element {
 
       {/* 필터 선택 */}
       <ScrollView contentContainerStyle={styles.filterContainer} horizontal showsHorizontalScrollIndicator={false}>
-        {filters.map(filter => (
+        {filters.map((filter) => (
           <TouchableOpacity
             key={filter.type}
             style={[styles.filterWrapper, filter?.marginHorizontal]}
-            onPress={() => setFilterType(filter.type)}>
+            onPress={() => setFilterType(filter.type)}
+          >
             <View style={styles.circle} />
             <Text style={styles.text}>{filter.label}</Text>
           </TouchableOpacity>
@@ -211,13 +214,13 @@ const styles = StyleSheet.create({
   topInset: {
     backgroundColor: '#030303',
   },
-  container: {flex: 11, paddingHorizontal: 20},
+  container: { flex: 11, paddingHorizontal: 20 },
   topTab: {
     flexDirection: 'row',
     paddingVertical: 20,
     justifyContent: 'space-between',
   },
-  backspaceIcon: {width: 20, height: 30},
+  backspaceIcon: { width: 20, height: 30 },
   image: {
     width: '100%',
     height: '100%',
@@ -255,7 +258,7 @@ const styles = StyleSheet.create({
     // marginTop: 15,
     // backgroundColor: 'red',
   },
-  filterWrapper: {justifyContent: 'center', alignItems: 'center', gap: 15},
+  filterWrapper: { justifyContent: 'center', alignItems: 'center', gap: 15 },
   circle: {
     width: 30,
     height: 30,

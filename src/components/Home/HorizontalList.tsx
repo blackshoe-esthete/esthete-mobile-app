@@ -1,9 +1,9 @@
 import React from 'react';
-import {FlatList, Image, ImageStyle, StyleProp, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@types/navigations';
-import {ImageSourcePropType} from 'react-native';
+import { FlatList, Image, ImageStyle, StyleProp, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '#types/navigations';
+import { ImageSourcePropType } from 'react-native';
 
 type HorizontalListProps = {
   imgStyles: StyleProp<ImageStyle>;
@@ -29,7 +29,7 @@ function HorizontalList({
   const handlePress = (id: string) => {
     // idKey에 따라 다르게 동작할 수 있도록 여기서 분기할 수 있어
     if (idKey === 'exhibition_id') {
-      navigation.navigate('Exhibition', {id});
+      navigation.navigate('Exhibition', { id });
     } else if (idKey === 'user_id') {
       // 유저 갤러리 디자인이 완성되면 할 예정
       // navigation.navigate('스크린이름', {id});
@@ -45,22 +45,31 @@ function HorizontalList({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gap10}
           data={data}
-          renderItem={({item, index}: {item: any; index: number}) => (
+          renderItem={({ item, index }: { item: any; index: number }) => (
             <TouchableOpacity
               onPress={() => handlePress(item[idKey])}
               style={{
                 flexDirection: 'row',
                 gap: 10,
                 alignItems: 'center',
-              }}>
+              }}
+            >
               {item[urlKey] ? (
                 <Image
-                  style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
-                  source={{uri: item[urlKey]}}
+                  style={[
+                    imgStyles,
+                    index === 0 && { marginLeft: 20 },
+                    index === data.length - 1 && { marginRight: 20 },
+                  ]}
+                  source={{ uri: item[urlKey] }}
                 />
               ) : (
                 <Image
-                  style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
+                  style={[
+                    imgStyles,
+                    index === 0 && { marginLeft: 20 },
+                    index === data.length - 1 && { marginRight: 20 },
+                  ]}
                   source={imgSource}
                 />
               )}

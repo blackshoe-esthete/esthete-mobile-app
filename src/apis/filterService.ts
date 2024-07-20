@@ -1,6 +1,6 @@
-import {AxiosError, AxiosResponse} from 'axios';
-import {filterInstance} from './instance';
-import {CreateFilterParams, CreateFilterResponse} from '@types/filterService.type';
+import { AxiosError, AxiosResponse } from 'axios';
+import { filterInstance } from './instance';
+import { CreateFilterParams, CreateFilterResponse } from '#types/filterService.type';
 import { exhibitionServiceToken } from '@utils/dummy';
 
 // 썸네일 불러오기 (GET 테스트 해보려고)
@@ -89,39 +89,39 @@ export const getTemporaryFilterList = async (token: string) => {
 
 //필터조회
 export const filterSearch = async () => {
-  try{
+  try {
     const response = await filterInstance.get(`/searching`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`
-      }
+        Authorization: `Bearer ${exhibitionServiceToken}`,
+      },
     });
-    if(response.status == 200){
-      console.log("필터 searching 조회에 성공했습니다.");
+    if (response.status == 200) {
+      console.log('필터 searching 조회에 성공했습니다.');
     }
 
     return response.data.content;
-  }catch (error) {
+  } catch (error) {
     console.log('필터조회실패', (error as AxiosError)?.response?.data);
     throw error;
   }
-}
+};
 
 // 필터 id 세부 디테일 조회
 export const indexFilterDetail = async (filterId: string) => {
-  console.log("이 필터아이디는" + filterId);
-  try{
+  console.log('이 필터아이디는' + filterId);
+  try {
     const response = await filterInstance.get(`/${filterId}/details`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`
-      }
+        Authorization: `Bearer ${exhibitionServiceToken}`,
+      },
     });
-    if(response.status == 200){
+    if (response.status == 200) {
       console.log('개별 필터 상세조회에 성공했습니다.');
     }
 
     return response.data.payload;
-  }catch (error) {
+  } catch (error) {
     console.log('개별 필터 상세조회 실패', (error as AxiosError)?.response?.data);
     throw error;
   }
-}  
+};

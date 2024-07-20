@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Dimensions, TouchableOpacity, Text, ActivityIndicator} from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import MasonryList from 'reanimated-masonry-list';
 import RenderImage from '../common/RenderImage';
 import ImageModal from '@components/common/ImageModal';
-import {useNavigation} from '@react-navigation/native';
-import {ExhibitionData, Photo} from '@types/mainExhibitionService.type';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@types/navigations';
-import {useExhibitionDetails} from '@hooks/useExhibitionDetails';
+import { useNavigation } from '@react-navigation/native';
+import { ExhibitionData, Photo } from '#types/mainExhibitionService.type';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '#types/navigations';
+import { useExhibitionDetails } from '@hooks/useExhibitionDetails';
 
 interface ExhibitionPictureListProps {
   isVisited: boolean;
@@ -15,14 +15,14 @@ interface ExhibitionPictureListProps {
   id: string;
 }
 
-const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited, exhibitionData, id}) => {
+const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({ isVisited, exhibitionData, id }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const exhibitionQuery = useExhibitionDetails(exhibitionData?.exhibition_id);
-  const {data, isLoading, error} = exhibitionQuery;
+  const { data, isLoading, error } = exhibitionQuery;
 
   const openModal = (item: string) => {
     if (isVisited) {
@@ -52,10 +52,10 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
       {data?.photos && data.photos.length > 0 && (
         <MasonryList
           data={data.photos}
-          keyExtractor={item => item.photo_id}
+          keyExtractor={(item) => item.photo_id}
           numColumns={2}
-          contentContainerStyle={{paddingBottom: 60}}
-          renderItem={({item}) => (
+          contentContainerStyle={{ paddingBottom: 60 }}
+          renderItem={({ item }) => (
             <TouchableOpacity onPress={() => openModal((item as Photo).photo_url)}>
               <RenderImage item={(item as Photo).photo_url} />
             </TouchableOpacity>
@@ -68,14 +68,14 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
         onClose={() => setModalVisible(false)}
         onReport={() => {
           setModalVisible(false);
-          navigation.navigate('ExhibitionReport', {id});
+          navigation.navigate('ExhibitionReport', { id });
         }}
       />
     </View>
   );
 };
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

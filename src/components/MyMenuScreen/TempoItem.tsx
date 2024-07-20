@@ -1,11 +1,11 @@
 import CommonModal from '@components/common/CommonModal';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {TemporaryFilter} from '@types/filterService.type';
-import {RootStackParamList} from '@types/navigations';
-import {formatDate} from '@utils/format';
-import React, {useState} from 'react';
-import {View, StyleSheet, Image, Text, Dimensions, TouchableOpacity} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { TemporaryFilter } from '#types/filterService.type';
+import { RootStackParamList } from '#types/navigations';
+import { formatDate } from '@utils/format';
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, Text, Dimensions, TouchableOpacity } from 'react-native';
 import {
   Sharpen,
   ColorMatrix,
@@ -17,7 +17,7 @@ import {
   temperature,
   grayscale,
 } from 'react-native-image-filter-kit';
-import {brightness, filters} from '@utils/filter';
+import { brightness, filters } from '@utils/filter';
 
 type galleryProp = {
   temporary_exhibition_id: string;
@@ -31,7 +31,7 @@ type filterProp = TemporaryFilter & {
   label?: string;
 };
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -100,7 +100,7 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View style={styles.photoBox}>
         {thumbnailImage()}
         <View style={styles.titleBox}>{resume()}</View>
