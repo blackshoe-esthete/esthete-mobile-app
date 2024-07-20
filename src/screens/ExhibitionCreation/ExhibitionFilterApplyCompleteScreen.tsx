@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -19,6 +19,17 @@ import CommonModal from '@components/common/CommonModal';
 import {finalizeExhibition, saveOrUpdateExhibition} from '../../apis/exhibitionCreate';
 import Config from 'react-native-config';
 import cancleIcon from '@assets/icons/cancel_gray.png';
+import {
+  Sharpen,
+  ColorMatrix,
+  concatColorMatrices,
+  hueRotate,
+  saturate,
+  brightness,
+  contrast,
+  temperature,
+  grayscale,
+} from 'react-native-image-filter-kit';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -28,7 +39,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
   const navigation = useNavigation();
   const {details, setDetails, resetDetails} = useExhibitionDetailsStore(); // 스토어 사용
   //선택한 이미지
-  const {selectedImageUri, additionalImageUri, resetImages} = useExhibitionCreationStore();
+  const {selectedImageUri, additionalImageUri, resetImages, currentFilterAttributes} = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   //모달
   const [tempModalVisible, setTempModalVisible] = useState(false);
@@ -173,7 +184,22 @@ const ExhibitionFilterApplyCompleteScreen = () => {
             onSnapToItem={index => setCurrentImageIndex(index)}
             renderItem={({item}) => (
               <TouchableOpacity>
-                <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+                <Sharpen
+                  image={
+                    <ColorMatrix
+                      matrix={concatColorMatrices([
+                        brightness(currentFilterAttributes?.brightness),
+                        contrast(currentFilterAttributes?.contrast),
+                        saturate(currentFilterAttributes?.saturation),
+                        hueRotate(currentFilterAttributes?.hue),
+                        temperature(currentFilterAttributes?.temperature),
+                        grayscale(currentFilterAttributes?.grayScale),
+                      ])}
+                      image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                    />
+                  }
+                  amount={currentFilterAttributes?.sharpness}
+                />
               </TouchableOpacity>
             )}
           />
