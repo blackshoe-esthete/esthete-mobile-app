@@ -12,7 +12,11 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import {useExhibitionCreationStore, useExhibitionDetailsStore} from '../../store/exhibitionCreationStore';
+import {
+  useExhibitionCreationStore,
+  useExhibitionDetailsStore,
+  useFilterDetailsStore,
+} from '../../store/exhibitionCreationStore';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import CommonModal from '@components/common/CommonModal';
@@ -39,7 +43,9 @@ const ExhibitionFilterApplyCompleteScreen = () => {
   const navigation = useNavigation();
   const {details, setDetails, resetDetails} = useExhibitionDetailsStore(); // 스토어 사용
   //선택한 이미지
-  const {selectedImageUri, additionalImageUri, resetImages, currentFilterAttributes} = useExhibitionCreationStore();
+  const {selectedImageUri, additionalImageUri, resetImages} = useExhibitionCreationStore();
+  const {currentFilterAttributes} = useFilterDetailsStore();
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   //모달
   const [tempModalVisible, setTempModalVisible] = useState(false);

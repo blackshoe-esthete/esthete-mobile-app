@@ -23,8 +23,14 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
-  const {selectedFilterId, setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes} =
-    useFilterDetailsStore();
+  const {
+    selectedFilterId,
+    setSelectedFilterId,
+    setSelectedFilterAttributes,
+    selectedFilterAttributes,
+    setCurrentFilterAttributes,
+    currentFilterAttributes,
+  } = useFilterDetailsStore();
   const {
     selectedImageUri,
     additionalImageUri,
@@ -35,19 +41,10 @@ const ExhibitionFilterApplyAllScreen = () => {
   } = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>('');
-  const [currentFilterAttributes, setCurrentFilterAttributes] = useState<FilterAttributes>({
-    brightness: 1,
-    sharpness: 0,
-    exposure: 0,
-    contrast: 1,
-    saturation: 1,
-    hue: 0,
-    temperature: 0,
-    grayScale: 0,
-  });
 
   useEffect(() => {
     setSelectedFilterId('0');
+    setSliderValue(50);
   }, []);
 
   // 슬라이더 값 변경
@@ -72,6 +69,7 @@ const ExhibitionFilterApplyAllScreen = () => {
     setCurrentFilterId(id);
     setCurrentFilterIdForAll(id);
     setSelectedFilterId(id);
+    setSliderValue(50);
     try {
       const filterDetails = await getFilterDetails(id, filterServiceToken);
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
@@ -157,11 +155,14 @@ const ExhibitionFilterApplyAllScreen = () => {
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
-              <Text style={styles.sliderValueText}>{Math.round(sliderValue * 100)}</Text>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValue)}</Text>
             </View>
             <Slider
               value={sliderValue}
               onValueChange={value => handleSliderChange(value[0])}
+              minimumValue={0}
+              maximumValue={100} // 슬라이더의 최대값을 100으로 설정
+              step={1}
               thumbTintColor="#FFFFFF"
               minimumTrackTintColor="#FFFFFF"
               maximumTrackTintColor="#FFFFFF"

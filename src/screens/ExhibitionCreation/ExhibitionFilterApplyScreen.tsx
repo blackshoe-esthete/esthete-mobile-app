@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
 import {Slider} from '@miblanchard/react-native-slider';
-import {FilterAttributes, useExhibitionCreationStore, useFilterDetailsStore} from '../../store/exhibitionCreationStore';
+import {useExhibitionCreationStore, useFilterDetailsStore} from '../../store/exhibitionCreationStore';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
@@ -36,34 +36,18 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
     currentFilterId,
     setCurrentFilterId,
   } = useExhibitionCreationStore();
-  const {selectedFilterId, setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes} =
-    useFilterDetailsStore();
+  const {
+    selectedFilterId,
+    setSelectedFilterId,
+    setSelectedFilterAttributes,
+    selectedFilterAttributes,
+    setCurrentFilterAttributes,
+    currentFilterAttributes,
+  } = useFilterDetailsStore();
   const navigation = useNavigation();
   const route = useRoute();
   const {index} = route.params as RouteParams;
   const [selectedFilter, setSelectedFilter] = useState<string>(currentFilterId);
-  const [currentFilterAttributes, setCurrentFilterAttributes] = useState<FilterAttributes>({
-    brightness: 1,
-    sharpness: 0,
-    exposure: 0,
-    contrast: 1,
-    saturation: 1,
-    hue: 0,
-    temperature: 0,
-    grayScale: 0,
-  });
-
-  useEffect(() => {
-    if (currentFilterId) {
-      applyFilterAttributes(currentFilterId);
-    }
-  }, [currentFilterId]);
-
-  useEffect(() => {
-    if (selectedFilterId) {
-      applyFilterAttributes(selectedFilterId);
-    }
-  }, [selectedFilterId]);
 
   useEffect(() => {
     applyAdjustedAttributes(sliderValue);
@@ -114,6 +98,7 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
     setCurrentFilterId(id);
     setSelectedFilterId(id);
     applyFilterAttributes(id);
+    setSliderValue(50);
   };
 
   return (
@@ -159,11 +144,14 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
-              <Text style={styles.sliderValueText}>{Math.round(sliderValue * 100)}</Text>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValue)}</Text>
             </View>
             <Slider
               value={sliderValue}
               onValueChange={value => handleSliderChange(value[0])}
+              minimumValue={0}
+              maximumValue={100} // 슬라이더의 최대값을 100으로 설정
+              step={1}
               thumbTintColor="#FFFFFF"
               minimumTrackTintColor="#FFFFFF"
               maximumTrackTintColor="#FFFFFF"
