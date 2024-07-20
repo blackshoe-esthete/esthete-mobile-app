@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#030303',
-    paddingTop: 120,
+    paddingVertical: 140,
   },
   noPhotosText: {
     color: 'white',

@@ -131,6 +131,9 @@ const styles = StyleSheet.create({
   },
   mainPicture: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 40,
   },
   pictures: {
     marginTop: 10,

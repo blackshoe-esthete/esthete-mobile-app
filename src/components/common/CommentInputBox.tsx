@@ -4,13 +4,20 @@ import {View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, Text, Touch
 
 interface CommentInputBoxProps {
   exhibitionId: string;
+  authorName?: string;
+  currentUserName: string;
 }
 
-const CommentInputBox = ({exhibitionId}: CommentInputBoxProps) => {
+const CommentInputBox = ({exhibitionId, authorName, currentUserName}: CommentInputBoxProps) => {
   const [commentText, setCommentText] = useState('');
   const {mutate: postComment} = usePostComment();
 
   const handlePostComment = () => {
+    if (authorName === currentUserName) {
+      Alert.alert('본인 게시물에는 감상평을 달 수 없습니다.');
+      setCommentText('');
+      return;
+    }
     if (commentText.trim().length > 0) {
       postComment(
         {exhibitionId, content: commentText},
@@ -39,7 +46,7 @@ const CommentInputBox = ({exhibitionId}: CommentInputBoxProps) => {
         <TextInput
           value={commentText}
           onChangeText={setCommentText}
-          placeholder="(전시회명)에 대한 리뷰 남기기"
+          placeholder="전시회에 대한 리뷰 남기기"
           style={styles.input}
         />
         <TouchableOpacity onPress={handlePostComment} style={styles.sendButton}>
