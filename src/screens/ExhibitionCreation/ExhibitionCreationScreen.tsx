@@ -11,11 +11,10 @@ import checkIcon from '@assets/icons/check.png';
 import Carousel from 'react-native-reanimated-carousel';
 
 // import {useExhibitionCreationStore} from '../../store/ExhibitionCreationStore';
-import { useExhibitionCreationStore } from '@store/exhibitionCreationStore';
+import {useExhibitionCreationStore} from '@store/exhibitionCreationStore';
 
-import { RootStackParamList } from '@types/navigations';
+import {RootStackParamList} from '@types/navigations';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 

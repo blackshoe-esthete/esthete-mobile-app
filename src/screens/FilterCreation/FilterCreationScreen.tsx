@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
   Dimensions,
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,17 +26,29 @@ import {
   grayscale,
 } from 'react-native-image-filter-kit';
 import {brightness, filters} from '@utils/filter';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useFilterCreationStore} from '@store/filterCreationStore';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {type RootStackParamList} from '../../types/navigations';
-import {FilterType, FilterValue} from '@types/filterService.type';
+import {FilterType, FilterValue, TemporaryFilter} from '@types/filterService.type';
 
 function FilterCreationScreen(): React.JSX.Element {
+  // route에서 tempFilterId 받아오기
+  const route = useRoute();
+  const tempFilterRef = useRef(route.params as TemporaryFilter);
+  const tempFilter = tempFilterRef.current;
+
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [filterType, setFilterType] = useState<FilterType>('sharpeness');
-  const {selectedImageUri, setFilteredImageUri, setSelectedImageUri, filterValue, setFilterValue} =
-    useFilterCreationStore();
+
+  const [filterType, setFilterType] = useState<FilterType>('sharpness');
+  const {
+    selectedImageUri,
+    setFilteredImageUri,
+    setSelectedImageUri,
+    setAdditionalImageUri,
+    filterValue,
+    setFilterValue,
+  } = useFilterCreationStore();
   const [sliderValue, setSliderValue] = useState<FilterValue>(filterValue);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -45,10 +56,10 @@ function FilterCreationScreen(): React.JSX.Element {
 
   const handleSliderChange = (value: number, type: string) => {
     setSliderValue(prevState => ({...prevState, [type]: value}));
-    // console.log(value);
   };
 
   const onPressBack = () => {
+    setFilterValue(filters.reduce((acc, filter) => ({...acc, [filter.type]: filter.default}), {}));
     setSelectedImageUri('');
     navigation.goBack();
   };
@@ -56,27 +67,37 @@ function FilterCreationScreen(): React.JSX.Element {
   const onPressNext = () => {
     if (selectedImageUri) {
       setFilterValue(sliderValue);
-      navigation.navigate('FilterCreationDesc');
+      navigation.navigate('FilterCreationDesc', tempFilter);
     } else {
       // 선택된 이미지가 없는 경우 처리할 로직 추가
       Alert.alert('이미지를 선택해주세요.');
     }
   };
 
+  // tempFilter가 있을 경우, filterValue와 selectedImageUri 초기화
+  useEffect(() => {
+    if (tempFilter) {
+      setFilterValue(tempFilter.filter_attributes);
+      setSliderValue(tempFilter.filter_attributes);
+      setSelectedImageUri(tempFilter.filter_thumbnail);
+      tempFilter?.representation_img_list?.representation_img_list?.forEach((uri, index) => {
+        setAdditionalImageUri(uri, index);
+      });
+    }
+  }, [tempFilter]);
+
   // 이미지 변경 시 onExtractImage를 트리거하기 위한 로직
   useEffect(() => {
     const handleImageChange = () => {
       const gap = 0.01;
       // 슬라이더 값을 임시로 변경
-      const tempValue = (sliderValue.sharpeness as number) + gap;
-      setSliderValue(prevState => ({...prevState, sharpeness: tempValue}));
-      // console.log('임시로 변경');
+      const tempValue = (sliderValue.sharpness as number) + gap;
+      setSliderValue(prevState => ({...prevState, sharpness: tempValue}));
       setIsLoading(true);
 
       // 원래 값으로 복구
       setTimeout(() => {
-        setSliderValue(prevState => ({...prevState, sharpeness: tempValue - gap}));
-        // console.log('원래대로 돌려놓음');
+        setSliderValue(prevState => ({...prevState, sharpness: tempValue - gap}));
         setIsLoading(false);
       }, 500);
     };
@@ -105,7 +126,6 @@ function FilterCreationScreen(): React.JSX.Element {
       )}
 
       <View style={styles.container}>
-        {/* TODO: 선택된 이미지가 없는 경우 넘어갈 수 없도록 설정 */}
         <TopTab text={'다음 단계'} to={'FilterCreationDesc'} onPressBack={onPressBack} onPressNext={onPressNext} />
 
         <View
@@ -128,14 +148,14 @@ function FilterCreationScreen(): React.JSX.Element {
                     saturate(sliderValue.saturation),
                     hueRotate(sliderValue.hue),
                     temperature(sliderValue.temperature),
-                    grayscale(sliderValue.grayscale),
+                    grayscale(sliderValue.gray_scale),
                   ])}
                   style={styles.image}
                   image={<Image source={{uri: selectedImageUri}} style={styles.image} resizeMode="contain" />}
                 />
               }
               style={styles.image}
-              amount={sliderValue.sharpeness}
+              amount={sliderValue.sharpness}
               onExtractImage={({nativeEvent}) => setFilteredImageUri(nativeEvent.uri)}
               extractImageEnabled={true}
             />

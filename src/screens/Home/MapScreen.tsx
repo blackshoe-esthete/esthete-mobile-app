@@ -1,25 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import MapView, {Details, MapPressEvent, Marker, PROVIDER_GOOGLE, Region} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 // import Geolocation from '@react-native-community/geolocation';
 import backspaceLogo from '@assets/icons/backspace.png';
 import locationIcon from '@assets/icons/location_icon.png';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useQueries, useQuery} from '@tanstack/react-query';
 import {getExhibitionCluster, getExhibitionList, getGeocode} from 'src/apis/mapService';
 import {Cluster} from '@types/mapService.type';
+import useMyLocation from '@hooks/useMyLocation';
+import {useExhibitionCluster, useNearbyExhibitions} from '@hooks/useNearbyExhibitions';
 
 function MapScreen(): React.JSX.Element {
   const [isClicked, setIsClicked] = useState(false);
@@ -31,9 +22,12 @@ function MapScreen(): React.JSX.Element {
     latitudeDelta: 0.0000001,
     longitudeDelta: 0.0000001,
   });
+  const myRegion = useMyLocation();
 
   const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
+
+  const group = region?.latitudeDelta! < 0.381 ? 'town' : region?.latitudeDelta! < 4.3 ? 'city' : 'state';
 
   const calculateRadius = (latitudeDelta: number, longitudeDelta: number): number => {
     // Approximate calculation of radius based on latitudeDelta and longitudeDelta
@@ -43,12 +37,8 @@ function MapScreen(): React.JSX.Element {
   };
 
   const radius = calculateRadius(region?.latitudeDelta || 0.015, region?.longitudeDelta || 0.0121);
-  const group = region?.latitudeDelta! < 0.381 ? 'town' : region?.latitudeDelta! < 4.3 ? 'city' : 'state';
 
-  const {data: clusterData} = useQuery({
-    queryKey: ['exhibitionCluster', {latitude: region?.latitude, longitude: region?.longitude, radius, group}],
-    queryFn: () => getExhibitionCluster({latitude: region?.latitude, longitude: region?.longitude, radius, group}),
-  });
+  const {data: clusterData} = useExhibitionCluster(region?.latitude!, region?.longitude!, radius, group);
 
   const geocodeQueries = useQueries({
     queries: (clusterData?.content || []).map((cluster: Cluster) => ({
@@ -64,29 +54,9 @@ function MapScreen(): React.JSX.Element {
       location: geocodeQueries[index]?.data,
     })) || [];
 
-  const {data: clickedClusterExhibitionList} = useQuery({
-    queryKey: [
-      'clickedClusterExhibitionList',
-      {
-        state: clickedCluster?.state || '',
-        city: clickedCluster?.city || '',
-        town: clickedCluster?.town || '',
-        page: 0,
-        size: 10,
-        sort: 'trending',
-      },
-    ],
-    queryFn: () =>
-      getExhibitionList({
-        state: clickedCluster?.state || '',
-        city: clickedCluster?.city || '',
-        town: clickedCluster?.town || '',
-        page: 0,
-        size: 10,
-        sort: 'trending',
-      }),
-    enabled: !!clickedCluster,
-  });
+  // console.log('geocodedClusters:', clusterData);
+
+  const {data: clickedClusterExhibitionList} = useNearbyExhibitions(clickedCluster);
 
   const handleMarkerPress = (cluster: Cluster) => {
     setClickedCluster(cluster);
@@ -99,64 +69,14 @@ function MapScreen(): React.JSX.Element {
     }
     const {latitude, longitude} = event.nativeEvent.coordinate;
     setClickedLocation({latitude, longitude});
-    console.log(`Clicked location: ${latitude}, ${longitude}`);
+    // console.log(`Clicked location: ${latitude}, ${longitude}`);
   };
 
   useEffect(() => {
-    const loadCachedLocation = async () => {
-      try {
-        const cachedLocation = await AsyncStorage.getItem('userLocation');
-        if (cachedLocation) {
-          const {latitude, longitude} = JSON.parse(cachedLocation);
-          setRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          });
-        }
-      } catch (error) {
-        console.log('Failed to load cached location', error);
-      }
-    };
-
-    const requestLocationPermission = async () => {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
-          title: '위치 정보 사용 권한 요청',
-          message: '위치 정보를 사용하려면 권한이 필요합니다.',
-          buttonNeutral: '나중에 물어보기',
-          buttonNegative: '취소',
-          buttonPositive: '확인',
-        });
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Location permission denied');
-          return;
-        }
-      }
-
-      // Geolocation.getCurrentPosition(
-      //   position => {
-      //     const {latitude, longitude} = position.coords;
-      //     setRegion({
-      //       latitude,
-      //       longitude,
-      //       latitudeDelta: 0.015,
-      //       longitudeDelta: 0.0121,
-      //     });
-      //     AsyncStorage.setItem('userLocation', JSON.stringify({latitude, longitude}));
-      //   },
-      //   error => {
-      //     console.log(error);
-      //   },
-      //   {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
-      // );
-    };
-
-    // AsyncStorage.removeItem('userLocation');
-    loadCachedLocation();
-    requestLocationPermission();
-  }, []);
+    if (myRegion) {
+      setRegion(myRegion);
+    }
+  }, [myRegion]);
 
   useEffect(() => {
     console.log('Region changed:', region);

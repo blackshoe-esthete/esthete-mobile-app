@@ -1,3 +1,4 @@
+import {TemporaryFilter} from './filterService.type';
 import {ExhibitionData} from './mainExhibitionService.type';
 
 export type RootStackParamList = {
@@ -10,8 +11,8 @@ export type RootStackParamList = {
   ExhibitionReport: {id: string};
   ExhibitionCreation: undefined;
   ExhibitionFilterApply: undefined;
-  FilterCreation: undefined;
-  FilterCreationDesc: undefined;
+  FilterCreation: TemporaryFilter;
+  FilterCreationDesc: TemporaryFilter;
   FilterCreationGallery: {type: 'main' | 'sub'; index?: number};
   CameraPage: undefined;
   ExhibitionFilterApplyAll: undefined;
