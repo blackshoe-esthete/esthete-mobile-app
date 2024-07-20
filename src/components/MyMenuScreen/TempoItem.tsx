@@ -6,6 +6,18 @@ import {RootStackParamList} from '@types/navigations';
 import {formatDate} from '@utils/format';
 import React, {useState} from 'react';
 import {View, StyleSheet, Image, Text, Dimensions, TouchableOpacity} from 'react-native';
+import {
+  Sharpen,
+  ColorMatrix,
+  concatColorMatrices,
+  brightness as exposure,
+  contrast,
+  saturate,
+  hueRotate,
+  temperature,
+  grayscale,
+} from 'react-native-image-filter-kit';
+import {brightness, filters} from '@utils/filter';
 
 type galleryProp = {
   temporary_exhibition_id: string;
@@ -52,7 +64,28 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
     if (props.label == 'collection') {
       return <Image src={(props as galleryProp).thumbnail_url} style={styles.photoIcon} />;
     } else if (props.label == 'filter') {
-      return <Image src={(props as filterProp).filter_thumbnail} style={styles.photoIcon} />;
+      return (
+        <Sharpen
+          image={
+            <ColorMatrix
+              matrix={concatColorMatrices([
+                exposure((props as filterProp).filter_attributes.exposure),
+                brightness((props as filterProp).filter_attributes.brightness),
+                contrast((props as filterProp).filter_attributes.contrast),
+                saturate((props as filterProp).filter_attributes.saturation),
+                hueRotate((props as filterProp).filter_attributes.hue),
+                temperature((props as filterProp).filter_attributes.temperature),
+                grayscale((props as filterProp).filter_attributes.gray_scale),
+              ])}
+              style={styles.photoIcon}
+              image={<Image src={(props as filterProp).filter_thumbnail} style={styles.photoIcon} />}
+            />
+          }
+          style={styles.photoIcon}
+          amount={(props as filterProp).filter_attributes.sharpness}
+          extractImageEnabled={true}
+        />
+      );
     }
     return null;
   };
