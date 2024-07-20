@@ -32,6 +32,7 @@ import {
 import {filterIdToName, filterNameToId, filterTagsData} from '@utils/filter';
 import {AxiosError, AxiosResponse} from 'axios';
 import cancelIcon from '@assets/icons/cancel_gray.png';
+import {LoadingIndicator} from '@components/common/LoadingIndicator';
 
 function FilterCreationDescScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -62,16 +63,18 @@ function FilterCreationDescScreen(): React.JSX.Element {
   const [tempModalVisible, setTempModalVisible] = useState<boolean>(false);
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
 
-  const saveMutation = useMutation<CreateFilterResponse, AxiosError, CreateFilterParams>({
+  const {mutate, isPending} = useMutation<CreateFilterResponse, AxiosError, CreateFilterParams>({
     mutationFn: createFilter,
     onSuccess: () => onSaveSuccess(tempModalVisible),
   });
 
-  function onSaveSuccess(temp = false) {
+  const onSaveSuccess = (temp = false) => {
     setAdditionalImageUriEmpty(); // 추가 이미지 초기화
     setFilterValueInitial(); // 필터 값 초기화
     setSelectedImageUri(''); // 선택 이미지 초기화
     setFilteredImageUri(''); // 필터 이미지 초기화
+
+    closeModals(temp);
 
     if (temp) {
       setTempModalVisible(!tempModalVisible);
@@ -82,10 +85,20 @@ function FilterCreationDescScreen(): React.JSX.Element {
       navigation.navigate('Exhibitions');
       console.log('필터 제작 성공');
     }
-  }
+  };
+
+  const closeModals = (temp = false) => {
+    if (temp) {
+      setTempModalVisible(!tempModalVisible);
+    } else {
+      setCreateModalVisible(!createModalVisible);
+    }
+  };
 
   // 필터 제작 - 임시저장일 경우 (url: '/temporary_filter')
-  const onPressSave = async (url: '' | '/temporary_filter') => {
+  const onPressSave = async (url: '' | '/temporary_filter', temp = false) => {
+    closeModals(temp);
+
     const {gray_scale, ...filter_attribute} = filterValue;
 
     const thumbnail = {
@@ -112,7 +125,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
     };
 
     try {
-      await saveMutation.mutate({
+      await mutate({
         url,
         token: filterServiceToken,
         thumbnail,
@@ -151,6 +164,8 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
   return (
     <SafeAreaView edges={['bottom']} style={StyleSheet.absoluteFill}>
+      {isPending && <LoadingIndicator />}
+
       <View style={[styles.topInset, {paddingTop: top}]} />
       <View style={{paddingHorizontal: 20}}>
         <TopTab text={'임시 저장'} to={'CameraPage'} onPressBack={onPressBack} onPressNext={onPressNext} />
@@ -278,7 +293,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
         나중에 다시 수정해주세요!`}
         button={['확인', '닫기']}
         visible={tempModalVisible}
-        onConfirm={() => onPressSave('/temporary_filter')}
+        onConfirm={() => onPressSave('/temporary_filter', true)}
         onClose={() => setTempModalVisible(!tempModalVisible)}
       />
 
@@ -290,7 +305,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
         제작 완료는 신중하게 해주세요!`}
         button={['확인', '닫기']}
         visible={createModalVisible}
-        onConfirm={() => onPressSave('')}
+        onConfirm={() => onPressSave('', false)}
         onClose={() => setCreateModalVisible(!createModalVisible)}
       />
     </SafeAreaView>
