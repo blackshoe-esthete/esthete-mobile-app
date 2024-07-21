@@ -66,7 +66,6 @@ function FilterPreferred({data, fetch, updateFetch, label}: propData) {
     },
     onSuccess: (data) => {
       console.log(data);
-      queryClient.invalidateQueries({ queryKey: ['filter-tag'] });
     },
     onError: (error) => {
       console.log(error);
@@ -79,7 +78,6 @@ function FilterPreferred({data, fetch, updateFetch, label}: propData) {
     },
     onSuccess: (data) => {
       console.log(data);
-      queryClient.invalidateQueries({ queryKey: ['filter-tag'] });
     },
     onError: (error) => {
       console.log(error);

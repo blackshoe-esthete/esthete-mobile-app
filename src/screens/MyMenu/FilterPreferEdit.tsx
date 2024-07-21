@@ -4,9 +4,9 @@ import React, {useRef, useState} from 'react';
 import {ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
-import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
-import { myFilterPreferTag } from 'src/apis/mygallery';
+import {useNavigation} from '@react-navigation/native';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {myFilterPreferTag} from 'src/apis/mygallery';
 import FilterPreferred from '@components/SettingScreen/FilterPreferred';
 
 const height = Dimensions.get('window').height;
@@ -15,10 +15,15 @@ function FilterPreferEdit() {
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
   const [fetch, setFetch] = useState(false);
+  const queryClient = useQueryClient();
 
-  const {data: preferred, isLoading, isError} = useQuery({
+  const {
+    data: preferred,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['filter-tag'],
-    queryFn: myFilterPreferTag
+    queryFn: myFilterPreferTag,
   });
   if (isLoading) return <ActivityIndicator size="large" color="#000" />;
   if (isError) {
@@ -38,16 +43,23 @@ function FilterPreferEdit() {
           showsVerticalScrollIndicator={false}
           style={styles.scrollContainer}
           onContentSizeChange={() => {
-            if(contentLoaded) {
+            if (contentLoaded) {
               scrollViewRef.current?.scrollToEnd();
-            }else{
+            } else {
               setContentLoaded(true);
             }
           }}
           ref={scrollViewRef}>
-          <FilterPreferred data={preferred} fetch={fetch} updateFetch={setFetch} label='filter' />
+          <FilterPreferred data={preferred} fetch={fetch} updateFetch={setFetch} label="filter" />
         </ScrollView>
-        <CommonButton title="저장하기" func={()=>navigation.goBack()} paddingNumber={20}/>
+        <CommonButton
+          title="저장하기"
+          func={() => {
+            queryClient.invalidateQueries({queryKey: ['filter-tag']});
+            navigation.goBack();
+          }}
+          paddingNumber={20}
+        />
       </View>
     </SafeAreaView>
   );
