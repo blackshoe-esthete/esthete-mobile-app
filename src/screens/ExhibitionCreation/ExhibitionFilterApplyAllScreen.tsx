@@ -80,21 +80,37 @@ const ExhibitionFilterApplyAllScreen = () => {
   };
 
   const applyAdjustedAttributes = (scale: number) => {
-    // Converts the slider value to a scale factor (e.g., 0 to 1 slider value maps to 0.5 to 1.5 scale factor)
-    const scaleToFactor = (value, factorRange) => 1 + (value - 0.5) * factorRange;
-
     if (selectedFilterAttributes) {
-      const adjustedAttributes = {
-        brightness: (selectedFilterAttributes.brightness || 0) * scale, // Allows 50% decrease to 50% increase
-        contrast: (selectedFilterAttributes.contrast || 0) * scale, // Similar to brightness
-        saturation: (selectedFilterAttributes.saturation || 0) * scale, // Keeping the saturation adjustments reasonable
-        hue: (selectedFilterAttributes.hue || 0) * scale, // Hue might be a straightforward scaling
-        temperature: (selectedFilterAttributes.temperature || 0) * scale, // Direct scaling for temperature
-        grayscale: scale < 0.5 ? scale * 2 : 1, // Grayscale increases more quickly
-        sharpness: (selectedFilterAttributes.sharpness || 0) * scale, // Direct scaling for sharpness
+      // scale을 0부터 100까지의 값으로 가정
+      const scaleFactor = scale / 50; // 50일 때 1, 0일 때 0, 100일 때 2가 됩니다.
+
+      const adjustedAttributes: FilterAttributes = {
+        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor),
+        sharpness: adjustAttribute(selectedFilterAttributes.sharpness, scaleFactor),
+        exposure: adjustAttribute(selectedFilterAttributes.exposure, scaleFactor),
+        contrast: adjustAttribute(selectedFilterAttributes.contrast, scaleFactor),
+        saturation: adjustAttribute(selectedFilterAttributes.saturation, scaleFactor),
+        hue: adjustAttribute(selectedFilterAttributes.hue, scaleFactor),
+        temperature: adjustAttribute(selectedFilterAttributes.temperature, scaleFactor),
+        grayScale: adjustAttribute(selectedFilterAttributes.grayScale, scaleFactor, true),
       };
 
       setCurrentFilterAttributes(adjustedAttributes);
+    }
+  };
+
+  const adjustAttribute = (
+    value: number | undefined,
+    scaleFactor: number,
+    isInverse: boolean = false,
+  ): number | undefined => {
+    if (value === undefined) return undefined;
+
+    if (isInverse) {
+      // gray_scale의 경우 반대로 작동
+      return Math.max(0, Math.min(100, value * (2 - scaleFactor)));
+    } else {
+      return Math.max(0, value * scaleFactor);
     }
   };
 
