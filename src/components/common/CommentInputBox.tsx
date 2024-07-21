@@ -6,9 +6,10 @@ interface CommentInputBoxProps {
   exhibitionId: string;
   authorName?: string;
   currentUserName: string;
+  onNewComment?: () => void;
 }
 
-const CommentInputBox = ({exhibitionId, authorName, currentUserName}: CommentInputBoxProps) => {
+const CommentInputBox = ({exhibitionId, authorName, currentUserName, onNewComment}: CommentInputBoxProps) => {
   const [commentText, setCommentText] = useState('');
   const {mutate: postComment} = usePostComment();
 
@@ -24,7 +25,7 @@ const CommentInputBox = ({exhibitionId, authorName, currentUserName}: CommentInp
         {
           onSuccess: () => {
             setCommentText('');
-            Alert.alert('댓글이 등록되었습니다.');
+            onNewComment && onNewComment();
           },
           onError: error => {
             console.error('댓글 등록 실패:', error);
