@@ -139,7 +139,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
         description: filterDescription,
         tag_list: { tags: filterTags.map((tag) => filterNameToId(tag)) },
       },
-      tmp_filter_id: '', // 추후 수정
+      tmp_filter_id: tempFilter?.temporary_filter_id || '',
     };
 
     try {
