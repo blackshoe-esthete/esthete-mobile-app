@@ -67,6 +67,7 @@ function SocialLogin(props: socialProp): React.JSX.Element {
       const token: KakaoOAuthToken = await login();
       setResult(JSON.stringify(token));
       console.log('카카오 로그인 성공');
+      const response = await 
       getProfile();
       navigation.navigate('SignUp2');
     } catch (err) {

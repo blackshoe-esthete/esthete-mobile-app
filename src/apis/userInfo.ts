@@ -1,6 +1,7 @@
 import axios, {AxiosError} from 'axios';
 import {mygalleryInstance, userInstance} from './instance';
 import {exhibitionServiceToken} from '@utils/dummy';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type loginProp = {
   id: string;
@@ -18,9 +19,42 @@ export const login = async ({id, pwd}: loginProp) => {
       console.log("성공적으로 로그인이 됐습니다.");
     }
 
-    return response.data;
+    const authorizationHeader = response.headers['authorization'];
+    if (authorizationHeader) {
+      const token = authorizationHeader.split(' ')[1];
+      await AsyncStorage.setItem('token', token);
+      console.log('Token:', token);
+    } else {
+      console.log('Authorization 헤더가 없습니다.');
+    };
   }catch(error) {
     console.log('로그인 실패 데이터: ', (error as AxiosError).config);
+    if ((error as AxiosError).response?.status === 401) {
+      await refreshToken();
+    } else {
+      throw error;
+    }
+  }
+}
+
+//refresh 토큰 재발급
+export const refreshToken = async () => {
+  try{
+    const response = await userInstance.post(`/reissue`, {});
+    if(response.status == 200){
+      console.log("refresh token이 재발급됐습니다.");
+    }
+
+    const authorizationHeader = response.headers['authorization'];
+    if (authorizationHeader) {
+      const token = authorizationHeader.split(' ')[1];
+      await AsyncStorage.setItem('token', token);
+      console.log('Token:', token);
+    } else {
+      console.log('Authorization 헤더가 없습니다.');
+    };
+  }catch(error) {
+    console.log('리프레시 토큰 재발급 실패: ', (error as AxiosError).config);
     throw error;
   }
 }
@@ -148,9 +182,9 @@ export const getMyFollower = async () => {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
     });
-    // if(response.data.code == 200){
-    //   console.log(response.data.message);
-    // }
+    if(response.data.code == 200){
+      console.log(response.data.message);
+    }
 
     return response.data.payload;
   } catch (error) {
@@ -220,3 +254,29 @@ export const putMyAdditional = async (info: profileInfo) => {
     throw error;
   }
 };
+
+type socialLoginProp = {
+  provider: string;
+  nickname?: string;
+  email?: string;
+  gender?: string;
+  birthday?: string;
+}
+
+//소셜로그인
+export const socialLogin = async (socialBody: socialLoginProp) => {
+  try{
+    const response = await userInstance.post(`/social-login`, {
+      socialBody
+    });
+
+    if(response.status == 200){
+      console.log('유저 id를 받아옵니다.');
+    }
+
+    return response.data.payload;
+  }catch (error) {
+    console.log('소셜로그인 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
