@@ -95,7 +95,6 @@ const ExhibitionFilterApplyAllScreen = () => {
         grayScale: adjustAttribute(selectedFilterAttributes.grayScale, scaleFactor, true),
       };
 
-      console.log('ads', adjustedAttributes);
       setCurrentFilterAttributes(adjustedAttributes);
     }
   };
