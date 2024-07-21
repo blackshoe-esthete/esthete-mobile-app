@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Dimensions, TouchableOpacity, Text, ActivityIndicator} from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import MasonryList from 'reanimated-masonry-list';
 import RenderImage from '../common/RenderImage';
 import ImageModal from '@components/common/ImageModal';
-import {useNavigation} from '@react-navigation/native';
-import {ExhibitionData, Photo} from '@types/mainExhibitionService.type';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@types/navigations';
-import {useExhibitionDetails} from '@hooks/useExhibitionDetails';
+import { useNavigation } from '@react-navigation/native';
+import { ExhibitionData, Photo } from '#types/mainExhibitionService.type';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '#types/navigations';
+import { useExhibitionDetails } from '@hooks/useExhibitionDetails';
 
 interface ExhibitionPictureListProps {
   isVisited: boolean;
@@ -15,13 +15,16 @@ interface ExhibitionPictureListProps {
 }
 
 const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited, id}) => {
+
   const [modalVisible, setModalVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState<{url: string; id: string} | null>(null);
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+
   const exhibitionQuery = useExhibitionDetails(id);
   const {data, isLoading, error} = exhibitionQuery;
+
 
   const openModal = (item: Photo) => {
     if (isVisited) {
@@ -51,7 +54,7 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
       {data?.photos && data.photos.length > 0 && (
         <MasonryList
           data={data.photos}
-          keyExtractor={item => item.photo_id}
+          keyExtractor={(item) => item.photo_id}
           numColumns={2}
           contentContainerStyle={{paddingBottom: 60}}
           renderItem={({item}) => (
@@ -75,7 +78,7 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
   );
 };
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

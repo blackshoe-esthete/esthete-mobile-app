@@ -1,5 +1,7 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-const path = require('path');
+import { getDefaultConfig, mergeConfig } from '@react-native/metro-config';
+import { resolve as _resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 /**
  * Metro configuration
@@ -7,21 +9,24 @@ const path = require('path');
  *
  * @type {import('metro-config').MetroConfig}
  */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const config = {
   resolve: {
     extraNodeModules: {
-      '@components': path.resolve(__dirname, 'src/components/'),
-      '@screens': path.resolve(__dirname, 'src/screens/'),
-      '@assets': path.resolve(__dirname, 'src/assets/'),
-      '@utils': path.resolve(__dirname, 'src/utils/'),
-      '@constants': path.resolve(__dirname, 'src/constants/'),
-      '@hooks': path.resolve(__dirname, 'src/hooks/'),
-      '@navigations': path.resolve(__dirname, 'src/navigations/'),
-      '@types': path.resolve(__dirname, 'src/types/'),
-      '@apis': path.resolve(__dirname, 'src/apis/'),
-      '@store': path.resolve(__dirname, 'src/store/'),
+      '@components': _resolve(__dirname, 'src/components/'),
+      '@screens': _resolve(__dirname, 'src/screens/'),
+      '@assets': _resolve(__dirname, 'src/assets/'),
+      '@utils': _resolve(__dirname, 'src/utils/'),
+      '@constants': _resolve(__dirname, 'src/constants/'),
+      '@hooks': _resolve(__dirname, 'src/hooks/'),
+      '@navigations': _resolve(__dirname, 'src/navigations/'),
+      '#types': _resolve(__dirname, 'src/types/'),
+      '@apis': _resolve(__dirname, 'src/apis/'),
+      '@store': _resolve(__dirname, 'src/store/'),
     },
   },
 };
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+export default mergeConfig(getDefaultConfig(__dirname), config);

@@ -1,24 +1,39 @@
 import React from 'react';
-import {FlatList, Image, ImageStyle, StyleProp, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@types/navigations';
-
-import {ImageSourcePropType} from 'react-native';
+import { FlatList, Image, ImageStyle, StyleProp, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '#types/navigations';
+import { ImageSourcePropType } from 'react-native';
 
 type HorizontalListProps = {
   imgStyles: StyleProp<ImageStyle>;
   title: string;
   data: any[];
+  idKey: 'exhibition_id' | 'user_id';
+  urlKey: 'thumbnail_url' | 'profile_url';
   imgSource?: ImageSourcePropType;
   children?: React.ReactNode;
 };
 
-function HorizontalList({imgStyles, title, data, imgSource, children}: HorizontalListProps): React.JSX.Element {
+function HorizontalList({
+  imgStyles,
+  title,
+  data,
+  idKey,
+  urlKey,
+  imgSource,
+  children,
+}: HorizontalListProps): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const goToExhibition = (id: string) => {
-    navigation.navigate('Exhibition', {id});
+  const handlePress = (id: string) => {
+    // idKey에 따라 다르게 동작할 수 있도록 여기서 분기할 수 있어
+    if (idKey === 'exhibition_id') {
+      navigation.navigate('Exhibition', { id });
+    } else if (idKey === 'user_id') {
+      // 유저 갤러리 디자인이 완성되면 할 예정
+      // navigation.navigate('스크린이름', {id});
+    }
   };
 
   return (
@@ -30,24 +45,32 @@ function HorizontalList({imgStyles, title, data, imgSource, children}: Horizonta
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gap10}
           data={data}
-          renderItem={({item, index}: {item: any; index: number}) => (
+          renderItem={({ item, index }: { item: any; index: number }) => (
             <TouchableOpacity
-              onPress={() => goToExhibition(item.exhibition_id)}
+              onPress={() => handlePress(item[idKey])}
               style={{
                 flexDirection: 'row',
                 gap: 10,
                 alignItems: 'center',
-              }}>
-              {imgSource && (
+              }}
+            >
+              {item[urlKey] ? (
                 <Image
-                  style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
-                  source={imgSource}
+                  style={[
+                    imgStyles,
+                    index === 0 && { marginLeft: 20 },
+                    index === data.length - 1 && { marginRight: 20 },
+                  ]}
+                  source={{ uri: item[urlKey] }}
                 />
-              )}
-              {item.thumbnail_url && (
+              ) : (
                 <Image
-                  style={[imgStyles, index === 0 && {marginLeft: 20}, index === data.length - 1 && {marginRight: 20}]}
-                  source={{uri: item.thumbnail_url}}
+                  style={[
+                    imgStyles,
+                    index === 0 && { marginLeft: 20 },
+                    index === data.length - 1 && { marginRight: 20 },
+                  ]}
+                  source={imgSource}
                 />
               )}
             </TouchableOpacity>

@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import {useNavigation} from '@react-navigation/native';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { useNavigation } from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
 import {useExhibitionComments, useExhibitionDetails} from '@hooks/useExhibitionDetails';
@@ -24,15 +24,16 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
 import {useProfileStore} from '@store/profileEditStore';
 
-const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: ExhibitionData; id: string}}}) => {
-  const {exhibitionData} = route.params;
-  const {id} = route.params;
+const ExhibitionEnteredScreen = ({ route }: { route: { params: { exhibitionData: ExhibitionData; id: string } } }) => {
+  const { exhibitionData } = route.params;
+  const { id } = route.params;
 
   const exhibitionQuery = useExhibitionDetails(id);
   const commentQuery = useExhibitionComments(id);
 
   const {data: exhibibitionDetailData, isLoading} = exhibitionQuery;
   const {data: comments, isLoading: isCommentLoading, refetch} = commentQuery;
+
 
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
@@ -47,7 +48,7 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
   const commentsIcon = require('../../assets/icons/comments.png');
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const currentUserName = useProfileStore(state => state.nickname); // 현재 사용자 닉네임 가져오기
+  const currentUserName = useProfileStore((state) => state.nickname); // 현재 사용자 닉네임 가져오기
 
   const panResponder = useRef(
     PanResponder.create({
@@ -67,7 +68,7 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
           }).start();
         }
       },
-    }),
+    })
   ).current;
 
   const handleNewComment = async () => {
@@ -109,7 +110,7 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
           </View>
           <View style={styles.flexContainer}>
             <TouchableOpacity onPress={() => setOnLike(!onLike)}>
-              <Image style={{width: 30, height: 25.6}} source={onLike ? fillLikesIcon : likesIcon} />
+              <Image style={{ width: 30, height: 25.6 }} source={onLike ? fillLikesIcon : likesIcon} />
             </TouchableOpacity>
             <TouchableOpacity onPress={openModal}>
               <Image source={commentsIcon} />
@@ -130,7 +131,8 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
               flexDirection: 'row',
               gap: 10,
               alignItems: 'center',
-            }}>
+            }}
+          >
             <MapView
               style={styles.map}
               provider={PROVIDER_GOOGLE}
@@ -147,8 +149,9 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
       <Modal animationType="none" transparent={true} visible={isModalVisible} onRequestClose={closeModal}>
         <View style={styles.modalOverlay} />
         <Animated.View
-          style={[styles.modalContainer, {height: modalHeight, transform: [{translateY: animatedHeight}]}]}
-          {...panResponder.panHandlers}>
+          style={[styles.modalContainer, { height: modalHeight, transform: [{ translateY: animatedHeight }] }]}
+          {...panResponder.panHandlers}
+        >
           <View style={styles.commentModalHeader}></View>
           <Text style={styles.commentTitle}>전시회 방명록</Text>
           {comments.map((comment: IComment, index: number) => (
@@ -251,7 +254,7 @@ const styles = StyleSheet.create({
   commentModalHeader: {
     marginTop: 15,
     marginLeft: '50%',
-    transform: [{translateX: -20}],
+    transform: [{ translateX: -20 }],
     justifyContent: 'center',
     width: 40,
     height: 5,
@@ -260,7 +263,7 @@ const styles = StyleSheet.create({
   },
   commentTitle: {
     marginLeft: '50%',
-    transform: [{translateX: -38}],
+    transform: [{ translateX: -38 }],
     marginTop: 24,
     color: '#fff',
     fontSize: 14,

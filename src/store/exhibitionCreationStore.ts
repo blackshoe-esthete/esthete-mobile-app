@@ -156,15 +156,14 @@ interface Filter {
   filter_name: string;
   attributes: FilterAttributes;
 }
+
 interface FilterDetailsStore {
   filters: Filter[];
   selectedFilterId: string | null; // 선택된 필터의 ID
   selectedFilterAttributes: FilterAttributes | null; // 선택된 필터의 속성
-  currentFilterAttributes: FilterAttributes; // 현재 필터 속성
   setFilters: (filters: Filter[]) => void;
   setSelectedFilterId: (id: string | null) => void; // 선택된 필터 ID 설정
   setSelectedFilterAttributes: (attributes: FilterAttributes | null) => void; // 선택된 필터의 속성 설정
-  setCurrentFilterAttributes: (attributes: FilterAttributes) => void; // 현재 필터 속성 설정
   updateFilterAttributes: (id: string, attributes: Partial<FilterAttributes>) => void;
   resetFilters: () => void; // 필터 초기화
 }
@@ -173,17 +172,6 @@ export const useFilterDetailsStore = create<FilterDetailsStore>((set, get) => ({
   filters: [],
   selectedFilterId: null,
   selectedFilterAttributes: null,
-  currentAdjustedFilterAttributes: null,
-  currentFilterAttributes: {
-    brightness: 1,
-    sharpness: 0,
-    exposure: 0,
-    contrast: 1,
-    saturation: 1,
-    hue: 0,
-    temperature: 0,
-    grayScale: 0,
-  },
 
   setFilters: filters => set({filters}),
   setSelectedFilterId: id => {
@@ -194,7 +182,6 @@ export const useFilterDetailsStore = create<FilterDetailsStore>((set, get) => ({
     });
   },
   setSelectedFilterAttributes: attributes => set({selectedFilterAttributes: attributes}),
-  setCurrentFilterAttributes: attributes => set({currentFilterAttributes: attributes}),
   updateFilterAttributes: (id, attributes) =>
     set(state => {
       const updatedFilters = state.filters.map(filter =>
@@ -215,15 +202,5 @@ export const useFilterDetailsStore = create<FilterDetailsStore>((set, get) => ({
       filters: [],
       selectedFilterId: null,
       selectedFilterAttributes: null,
-      currentFilterAttributes: {
-        brightness: 1,
-        sharpness: 0,
-        exposure: 0,
-        contrast: 1,
-        saturation: 1,
-        hue: 0,
-        temperature: 0,
-        grayScale: 0,
-      },
     }),
 }));

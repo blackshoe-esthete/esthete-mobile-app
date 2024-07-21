@@ -16,10 +16,36 @@ export const getMainExhibitionList = async () => {
   }
 };
 
+// 개인 추천 전시회 조회 (태그 포함)
+export const getMainExhibitionListWithTag = async (tags: string[]) => {
+  try {
+    const response = await exhibitionInstance.get(`/recommend/${tags}`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`,
+      },
+    });
+    return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', error);
+    throw error;
+  }
+};
+
 // 고립된 전시 리스트 반환
 export const getIsolatedExhibitionList = async () => {
   try {
     const response = await exhibitionInstance.get(`/isolation`);
+    return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', error);
+    throw error;
+  }
+};
+
+// 소외 전시회 조회 (태그 포함)
+export const getIsolatedExhibitionListWithTag = async (tags: string[]) => {
+  try {
+    const response = await exhibitionInstance.get(`/isolation/${tags}`);
     return response.data.payload;
   } catch (error) {
     console.log('실패 데이터: ', error);
@@ -53,6 +79,20 @@ export const searchAuthor = async (keyword: string) => {
 export const getTagExhibitionList = async (tag: string) => {
   try {
     const response = await exhibitionInstance.get(`/${tag}`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`,
+      },
+    });
+    return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', error);
+    throw error;
+  }
+};
+// 개인 선호 작가 조회
+export const getPreferAuthorList = async () => {
+  try {
+    const response = await exhibitionInstance.get(`/authors`, {
       headers: {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },

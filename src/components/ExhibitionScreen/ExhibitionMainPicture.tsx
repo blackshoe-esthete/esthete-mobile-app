@@ -1,8 +1,8 @@
-import {useExhibitionDetails} from '@hooks/useExhibitionDetails';
-import {useNavigation} from '@react-navigation/native';
-import {ExhibitionData} from '@types/mainExhibitionService.type';
+import { useExhibitionDetails } from '@hooks/useExhibitionDetails';
+import { useNavigation } from '@react-navigation/native';
+import { ExhibitionData } from '#types/mainExhibitionService.type';
 import React from 'react';
-import {Image, Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
+import { Image, Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 
 interface ExhibitionMainPictureProps {
   exhibitionData: ExhibitionData;
@@ -31,11 +31,11 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
   const navigation = useNavigation();
 
   const exhibitionQuery = useExhibitionDetails(exhibitionData?.exhibition_id);
-  const {data, isLoading} = exhibitionQuery;
+  const { data, isLoading } = exhibitionQuery;
 
   return (
     <View style={styles.container}>
-      <Image source={{uri: data?.thumbnail_url}} style={{width: width, height: 431}} resizeMode="cover" />
+      <Image source={{ uri: data?.thumbnail_url }} style={{ width: width, height: 431 }} resizeMode="cover" />
       <View style={styles.overlayContainer}>
         <View style={styles.overlayFlex}>
           <TouchableOpacity
@@ -44,7 +44,8 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
               flexDirection: 'row',
               padding: 10,
               alignItems: 'center',
-            }}>
+            }}
+          >
             <Image source={backIcon} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePlayPause}>
@@ -60,7 +61,7 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
 
           <View style={styles.overlayProfileWrap}>
             {data?.author_profile_url ? (
-              <Image source={{uri: data?.author_profile_url}} style={styles.profileImage} />
+              <Image source={{ uri: data?.author_profile_url }} style={styles.profileImage} />
             ) : (
               <Image source={profileImage} style={styles.profileImage} />
             )}
@@ -72,7 +73,7 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
   );
 };
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     width: width,

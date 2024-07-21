@@ -1,17 +1,17 @@
-import {CameraRoll, PhotoIdentifier} from '@react-native-camera-roll/camera-roll';
-import React, {useEffect, useState} from 'react';
-import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { CameraRoll, PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import hasAndroidPermission from '@hooks/CameraRollPermission';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import RNFS from 'react-native-fs';
-import {useFilterCreationStore} from '@store/filterCreationStore';
+import { useFilterCreationStore } from '@store/filterCreationStore';
 
 import nextIcon from '@assets/icons/backspace_white.png';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import arrowIcon from '@assets/icons/arrow.png';
 import checkIcon from '@assets/icons/check.png';
-import {RootStackParamList} from '@types/navigations';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { RootStackParamList } from '#types/navigations';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -22,15 +22,15 @@ interface GalleryItem extends PhotoIdentifier {
 // `GalleryScreenProps`를 `RootStackParamList`의 'FilterCreationGallery' 타입을 사용하여 정의합니다.
 type GalleryScreenProps = NativeStackScreenProps<RootStackParamList, 'FilterCreationGallery'>;
 
-function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
-  const {type, index} = route.params;
+function GalleryScreen({ route }: GalleryScreenProps): React.JSX.Element {
+  const { type, index } = route.params;
 
   const navigation = useNavigation();
   //스크롤 될 때마다 사진을 불러올 경우 현재의 갤러리를 어디까지 불러왔는지에 대한 저장 값
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
   const [currentImageUri, setCurrentImageUri] = useState<string | null>(null);
-  const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri} = useFilterCreationStore();
+  const { selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri } = useFilterCreationStore();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const onPressNext = () => {
@@ -70,12 +70,12 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
     const params = {
       //이미지를 불러올 개수 (최신순으로)
       first: 16,
-      ...(galleryCursor && {after: galleryCursor}),
+      ...(galleryCursor && { after: galleryCursor }),
     };
 
     try {
       //사진을 불러옵니다. edges는 gallery photo에 대한 정보
-      const {edges, page_info} = await CameraRoll.getPhotos(params);
+      const { edges, page_info } = await CameraRoll.getPhotos(params);
 
       if (page_info.has_next_page) {
         setGalleryCursor(page_info.end_cursor);
@@ -91,7 +91,7 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
       if (Platform.OS === 'ios') {
         for await (const item of edges) {
           const thumbnailUri = await phPathToFilePath(item.node.image.uri, 300, 300);
-          newGalleryList.push({...item, thumbnailUri});
+          newGalleryList.push({ ...item, thumbnailUri });
         }
       } else {
         newGalleryList.push(...edges);
@@ -129,7 +129,7 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
   }, []);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       {/* 상단 탭 */}
       <View style={styles.topTab}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -148,11 +148,12 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
             {
               backgroundColor: currentImageUri || selectedImageUri ? '#171717' : '#D9D9D9',
             },
-          ]}>
+          ]}
+        >
           {(currentImageUri || selectedImageUri) && (
             <Image
-              source={{uri: currentImageUri || selectedImageUri}}
-              style={{width: '100%', height: '100%'}}
+              source={{ uri: currentImageUri || selectedImageUri }}
+              style={{ width: '100%', height: '100%' }}
               resizeMode="contain"
             />
           )}
@@ -164,11 +165,12 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
             {
               backgroundColor: currentImageUri || additionalImageUri[index as number] ? '#171717' : '#D9D9D9',
             },
-          ]}>
+          ]}
+        >
           {(currentImageUri || additionalImageUri[index as number]) && (
             <Image
-              source={{uri: currentImageUri || additionalImageUri[index as number]}}
-              style={{width: '100%', height: '100%'}}
+              source={{ uri: currentImageUri || additionalImageUri[index as number] }}
+              style={{ width: '100%', height: '100%' }}
               resizeMode="contain"
             />
           )}
@@ -176,9 +178,9 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
       )}
 
       {/* 최근 항목 텍스트 */}
-      <View style={{flexDirection: 'row', alignItems: 'center', paddingLeft: 20, gap: 12, height: 70}}>
-        <Text style={{color: 'white', fontSize: 16, fontWeight: '700'}}>최근 항목</Text>
-        <Image source={arrowIcon} style={{width: 6.5, transform: [{rotate: '90deg'}]}} resizeMode="contain" />
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20, gap: 12, height: 70 }}>
+        <Text style={{ color: 'white', fontSize: 16, fontWeight: '700' }}>최근 항목</Text>
+        <Image source={arrowIcon} style={{ width: 6.5, transform: [{ rotate: '90deg' }] }} resizeMode="contain" />
       </View>
 
       {/* 갤러리 이미지 리스트 */}
@@ -190,7 +192,7 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
           width: SCREEN_WIDTH,
           gap: 5,
         }}
-        columnWrapperStyle={{gap: 5}}
+        columnWrapperStyle={{ gap: 5 }}
         getItemLayout={(data, index) => ({
           length: SCREEN_WIDTH / 4,
           offset: (SCREEN_WIDTH / 4) * (index + 3),
@@ -202,13 +204,13 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
           //화면의 맨 끝에 도달했을 때 getPhotos 함수 호출
           if (galleryCursor) getGalleryPhotos();
         }}
-        renderItem={({item, index}) => {
+        renderItem={({ item, index }) => {
           const isSelected = index === selectedImageIndex;
 
           return (
             <TouchableOpacity onPress={() => selectImage(item, index)}>
               <Image
-                source={{uri: item.thumbnailUri || item.node.image.uri}}
+                source={{ uri: item.thumbnailUri || item.node.image.uri }}
                 style={{
                   width: (SCREEN_WIDTH - 15) / 4,
                   height: (SCREEN_WIDTH - 15) / 4,
@@ -223,7 +225,8 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
                     right: 0,
                     bottom: 0,
                     backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       position: 'absolute',
@@ -235,8 +238,9 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
                       alignItems: 'center',
                       backgroundColor: '#FFD600',
                       borderRadius: 10,
-                    }}>
-                    <Image source={checkIcon} style={{width: 12, height: 12}} resizeMode="contain" />
+                    }}
+                  >
+                    <Image source={checkIcon} style={{ width: 12, height: 12 }} resizeMode="contain" />
                   </View>
                 </View>
               )}
@@ -251,7 +255,7 @@ function GalleryScreen({route}: GalleryScreenProps): React.JSX.Element {
 export default GalleryScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, paddingHorizontal: 20},
+  container: { flex: 1, paddingHorizontal: 20 },
   topTab: {
     flexDirection: 'row',
     paddingVertical: 13,
@@ -260,8 +264,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  nextIcon: {width: 20, height: 30, transform: [{scaleX: -1}]},
-  cancelIcon: {width: 30, height: 30},
+  nextIcon: { width: 20, height: 30, transform: [{ scaleX: -1 }] },
+  cancelIcon: { width: 30, height: 30 },
   imageBackground: {
     width: SCREEN_WIDTH - 40,
     height: SCREEN_WIDTH - 40,

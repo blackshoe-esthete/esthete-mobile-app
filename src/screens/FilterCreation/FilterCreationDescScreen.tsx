@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  Button,
   Dimensions,
   FlatList,
   Image,
@@ -10,30 +9,43 @@ import {
   Text,
   TextInput,
   View,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import TopTab from '@components/FilterCreation/TopTab';
 import plusIcon from '@assets/icons/cancel.png';
-import {useFilterCreationStore} from '@store/filterCreationStore';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@types/navigations';
+import { useFilterCreationStore } from '@store/filterCreationStore';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '#types/navigations';
 import CommonModal from '@components/common/CommonModal';
-import {UseMutationResult, useMutation} from '@tanstack/react-query';
-import {createFilter} from 'src/apis/filterService';
-import {filterServiceToken} from '@utils/dummy';
-import {CreateFilterParams, CreateFilterResponse, FilterTagType, RequestDto} from '@types/filterService.type';
-import {filterNameToId, filterTagsData} from '@utils/filter';
-import {AxiosError, AxiosResponse} from 'axios';
+import { useMutation } from '@tanstack/react-query';
+import { createFilter } from 'src/apis/filterService';
+import { filterServiceToken } from '@utils/dummy';
+import {
+  CreateFilterParams,
+  CreateFilterResponse,
+  FilterTagType,
+  RequestDto,
+  TemporaryFilter,
+} from '#types/filterService.type';
+import { filterIdToName, filterNameToId, filterTagsData } from '@utils/filter';
+import { AxiosError, AxiosResponse } from 'axios';
 import cancelIcon from '@assets/icons/cancel_gray.png';
+import { LoadingIndicator } from '@components/common/LoadingIndicator';
 
 function FilterCreationDescScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute();
+  const tempFilterRef = useRef(route.params as TemporaryFilter);
+  const tempFilter = tempFilterRef.current;
 
-  const {top} = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
   const width = Dimensions.get('window').width - 40;
   const [height, setImageHeight] = useState<number>(0);
   const {
+    selectedImageUri,
     setSelectedImageUri,
     filteredImageUri,
     setFilteredImageUri,
@@ -43,23 +55,27 @@ function FilterCreationDescScreen(): React.JSX.Element {
     setFilterValueInitial,
   } = useFilterCreationStore();
 
-  const [filterName, setFilterName] = useState<string>('');
-  const [filterDescription, setFilterDescription] = useState<string>('');
-  const [filterTags, setFilterTags] = useState<FilterTagType[]>([]);
+  const [filterName, setFilterName] = useState<string>(tempFilter?.filter_name);
+  const [filterDescription, setFilterDescription] = useState<string>(tempFilter?.description);
+  const [filterTags, setFilterTags] = useState<FilterTagType[]>(
+    tempFilter?.filter_tag_list.filter_tag_list.map((tag) => filterIdToName(tag)) || []
+  );
 
   const [tempModalVisible, setTempModalVisible] = useState<boolean>(false);
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
 
-  const saveMutation = useMutation<CreateFilterResponse, AxiosError, CreateFilterParams>({
+  const { mutate, isPending } = useMutation<CreateFilterResponse, AxiosError, CreateFilterParams>({
     mutationFn: createFilter,
     onSuccess: () => onSaveSuccess(tempModalVisible),
   });
 
-  function onSaveSuccess(temp = false) {
+  const onSaveSuccess = (temp = false) => {
     setAdditionalImageUriEmpty(); // 추가 이미지 초기화
     setFilterValueInitial(); // 필터 값 초기화
     setSelectedImageUri(''); // 선택 이미지 초기화
     setFilteredImageUri(''); // 필터 이미지 초기화
+
+    closeModals(temp);
 
     if (temp) {
       setTempModalVisible(!tempModalVisible);
@@ -70,14 +86,41 @@ function FilterCreationDescScreen(): React.JSX.Element {
       navigation.navigate('Exhibitions');
       console.log('필터 제작 성공');
     }
-  }
+  };
+
+  const closeModals = (temp = false) => {
+    if (temp) {
+      setTempModalVisible(!tempModalVisible);
+    } else {
+      setCreateModalVisible(!createModalVisible);
+    }
+  };
 
   // 필터 제작 - 임시저장일 경우 (url: '/temporary_filter')
-  const onPressSave = async (url: '' | '/temporary_filter') => {
-    const {grayscale, ...filter_attribute} = filterValue;
+  const onPressSave = async (url: '' | '/temporary_filter', temp = false) => {
+    if (!temp && filterName === '') {
+      Alert.alert('필터명을 작성해주세요!');
+      return;
+    }
+    if (!temp && filterDescription === '') {
+      Alert.alert('필터 설명을 작성해주세요!');
+      return;
+    }
+    if (!temp && filterTags.length === 0) {
+      Alert.alert('태그를 선택해주세요!');
+      return;
+    }
+    if (additionalImageUri.length === 0) {
+      Alert.alert('필터를 사용할 사진을 선택해주세요!');
+      return;
+    }
+
+    closeModals(temp);
+
+    const { gray_scale, ...filter_attribute } = filterValue;
 
     const thumbnail = {
-      uri: filteredImageUri as string,
+      uri: selectedImageUri as string,
       name: `thumbnail${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
       type: 'image/jpg',
     };
@@ -90,17 +133,17 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
     const requestDto: RequestDto = {
       filter_attribute,
-      gray_scale: grayscale as number,
+      gray_scale: gray_scale as number,
       filter_information: {
         name: filterName,
         description: filterDescription,
-        tag_list: {tags: filterTags.map(tag => filterNameToId(tag))},
+        tag_list: { tags: filterTags.map((tag) => filterNameToId(tag)) },
       },
       tmp_filter_id: '', // 추후 수정
     };
 
     try {
-      await saveMutation.mutate({
+      await mutate({
         url,
         token: filterServiceToken,
         thumbnail,
@@ -139,14 +182,16 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
   return (
     <SafeAreaView edges={['bottom']} style={StyleSheet.absoluteFill}>
-      <View style={[styles.topInset, {paddingTop: top}]} />
-      <View style={{paddingHorizontal: 20}}>
+      {isPending && <LoadingIndicator />}
+
+      <View style={[styles.topInset, { paddingTop: top }]} />
+      <View style={{ paddingHorizontal: 20 }}>
         <TopTab text={'임시 저장'} to={'CameraPage'} onPressBack={onPressBack} onPressNext={onPressNext} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{alignItems: 'center', maxHeight: Dimensions.get('window').height * 0.7}}>
+        <View style={{ alignItems: 'center', maxHeight: Dimensions.get('window').height * 0.7 }}>
           <Image
-            source={{uri: filteredImageUri}}
+            source={{ uri: filteredImageUri }}
             style={[
               styles.image,
               {
@@ -157,7 +202,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
             resizeMode="contain"
           />
         </View>
-        <View style={{gap: 20, marginVertical: 30, paddingHorizontal: 20}}>
+        <View style={{ gap: 20, marginVertical: 30, paddingHorizontal: 20 }}>
           <View style={styles.textInput}>
             <TextInput
               style={styles.text}
@@ -177,18 +222,18 @@ function FilterCreationDescScreen(): React.JSX.Element {
             />
           </View>
         </View>
-        <View style={{gap: 10}}>
-          <View style={{paddingHorizontal: 20}}>
-            <Text style={{color: '#FFF', fontSize: 14}}>어떤 느낌의 필터인가요?</Text>
+        <View style={{ gap: 10 }}>
+          <View style={{ paddingHorizontal: 20 }}>
+            <Text style={{ color: '#FFF', fontSize: 14 }}>어떤 느낌의 필터인가요?</Text>
           </View>
           <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{gap: 10}}
+            contentContainerStyle={{ gap: 10 }}
             data={filterTagsData}
-            renderItem={({item, index}) => (
-              <Pressable
-                key={index}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                key={item.id}
                 onPress={() => onPressAddTag(item.name)}
                 style={[
                   styles.keyword,
@@ -196,37 +241,39 @@ function FilterCreationDescScreen(): React.JSX.Element {
                     marginLeft: index === 0 ? 20 : 0,
                     marginRight: index === filterTagsData.length - 1 ? 20 : 0,
                   },
-                ]}>
+                ]}
+              >
                 <Text style={styles.keywordText}>{item.name}</Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
           />
         </View>
         {/* 선택한 태그가 없을 경우, 빈 화면을 표시합니다. */}
-        {filterTags.length > 0 && (
+        {filterTags?.length > 0 && (
           <>
-            <View style={{paddingHorizontal: 20, paddingTop: 15}}>
-              <Text style={{color: '#FFF', fontSize: 13, fontWeight: '500'}}>내가 선택한 태그</Text>
+            <View style={{ paddingHorizontal: 20, paddingTop: 15 }}>
+              <Text style={{ color: '#FFF', fontSize: 13, fontWeight: '500' }}>내가 선택한 태그</Text>
             </View>
-            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10}}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
               <FlatList
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{gap: 10}}
+                contentContainerStyle={{ gap: 10 }}
                 data={filterTags}
-                renderItem={({item, index}) => (
+                renderItem={({ item, index }) => (
                   <View
-                    key={index}
+                    key={item}
                     style={[
                       styles.selectedKeyword,
                       {
                         marginLeft: index === 0 ? 20 : 0,
-                        marginRight: index === filterTagsData.length - 1 ? 20 : 0,
+                        marginRight: index === filterTags.length - 1 ? 20 : 0,
                       },
-                    ]}>
+                    ]}
+                  >
                     <Text style={styles.selectedKeywordText}>{item}</Text>
-                    <Pressable onPress={() => setFilterTags(filterTags.filter(tag => tag !== item))}>
-                      <Image source={cancelIcon} style={{width: 17, height: 17}} resizeMode="contain" />
+                    <Pressable onPress={() => setFilterTags(filterTags.filter((tag) => tag !== item))}>
+                      <Image source={cancelIcon} style={{ width: 17, height: 17 }} resizeMode="contain" />
                     </Pressable>
                   </View>
                 )}
@@ -234,18 +281,19 @@ function FilterCreationDescScreen(): React.JSX.Element {
             </View>
           </>
         )}
-        <View style={{gap: 10, marginVertical: 30, paddingHorizontal: 20}}>
-          <Text style={{color: '#FFF', fontSize: 14}}>필터를 사용할 사진을 선택해주세요!</Text>
-          <View style={{flexDirection: 'row', gap: 10}}>
-            {[0, 1, 2].map(index => (
+        <View style={{ gap: 10, marginVertical: 30, paddingHorizontal: 20 }}>
+          <Text style={{ color: '#FFF', fontSize: 14 }}>필터를 사용할 사진을 선택해주세요!</Text>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {[0, 1, 2].map((index) => (
               <Pressable
                 key={index}
                 style={styles.imgBox}
-                onPress={() => navigation.navigate('FilterCreationGallery', {type: 'sub', index})}>
+                onPress={() => navigation.navigate('FilterCreationGallery', { type: 'sub', index })}
+              >
                 {additionalImageUri[index] ? (
                   <Image
-                    source={{uri: additionalImageUri[index]}}
-                    style={{width: '100%', height: '100%'}}
+                    source={{ uri: additionalImageUri[index] }}
+                    style={{ width: '100%', height: '100%' }}
                     resizeMode="cover"
                   />
                 ) : (
@@ -266,7 +314,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
         나중에 다시 수정해주세요!`}
         button={['확인', '닫기']}
         visible={tempModalVisible}
-        onConfirm={() => onPressSave('/temporary_filter')}
+        onConfirm={() => onPressSave('/temporary_filter', true)}
         onClose={() => setTempModalVisible(!tempModalVisible)}
       />
 
@@ -278,7 +326,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
         제작 완료는 신중하게 해주세요!`}
         button={['확인', '닫기']}
         visible={createModalVisible}
-        onConfirm={() => onPressSave('')}
+        onConfirm={() => onPressSave('', false)}
         onClose={() => setCreateModalVisible(!createModalVisible)}
       />
     </SafeAreaView>
@@ -342,7 +390,7 @@ const styles = StyleSheet.create({
   plusIcon: {
     width: 25,
     height: 25,
-    transform: [{rotate: '45deg'}],
+    transform: [{ rotate: '45deg' }],
   },
   save: {
     height: 60,
