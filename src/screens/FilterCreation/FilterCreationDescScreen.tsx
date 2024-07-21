@@ -80,11 +80,11 @@ function FilterCreationDescScreen(): React.JSX.Element {
     if (temp) {
       setTempModalVisible(!tempModalVisible);
       navigation.navigate('CameraPage');
-      console.log('임시 저장 성공');
+      Alert.alert('필터 제작이 임시저장되었습니다.');
     } else {
       setCreateModalVisible(!createModalVisible);
       navigation.navigate('Exhibitions');
-      console.log('필터 제작 성공');
+      Alert.alert('필터 제작이 완료되었습니다.');
     }
   };
 
