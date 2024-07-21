@@ -2,9 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
 import cancel from '@assets/icons/cancel_gray.png';
 import {exhibitionTags, preferTags} from '@utils/tags';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {putMyExhibitionPreferTag} from 'src/apis/mygallery';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 type tagForm = {
   id: number;
@@ -71,16 +70,6 @@ function Preferred({data, fetch, updateFetch, label}: propData) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (data && label == 'filter') {
-      const initialStatus = [...status];
-      data.forEach((item: string) => {
-        const index = preferTags.findIndex(tag => tag.tag_id === item);
-        if (index !== -1) {
-          initialStatus[index] = true;
-        }
-      });
-      setStatus(initialStatus);
-    }
     if (data && label == 'exhibition') {
       const initialStatus = [...status];
       data.forEach((item: string) => {
@@ -94,10 +83,6 @@ function Preferred({data, fetch, updateFetch, label}: propData) {
   }, [data]);
 
   useEffect(() => {
-    if (label == 'filter') {
-      const newFilteredTags = preferTags.filter(item => status[item.id] === true);
-      setFilter(newFilteredTags);
-    }
     if (label == 'exhibition') {
       const newFilteredTags = exhibitionTags.filter(item => status[item.id] === true);
       setFilter(newFilteredTags);
@@ -133,15 +118,7 @@ function Preferred({data, fetch, updateFetch, label}: propData) {
   }, [fetch]);
 
   const initialData = () => {
-    if (label == 'filter') {
-      return (
-        <>
-          {preferTags.map((item, index) => (
-            <TagItem key={index} item={item} status={status} setStatus={setStatus} />
-          ))}
-        </>
-      );
-    }else if(label == 'exhibition'){
+    if (label == 'exhibition') {
       return (
         <>
           {exhibitionTags.map((item, index) => (
@@ -155,9 +132,7 @@ function Preferred({data, fetch, updateFetch, label}: propData) {
   return (
     <View style={styles.container}>
       <Text style={styles.intro}>선호하는 태그를 10개 선택해주세요 (최대 10개)</Text>
-      <View style={styles.tagContainer}>
-        {initialData()}
-      </View>
+      <View style={styles.tagContainer}>{initialData()}</View>
       <Text style={[styles.intro, {marginTop: 50}]}>내가 선택한 태그</Text>
       <View style={styles.tagContainer}>
         {filter &&
