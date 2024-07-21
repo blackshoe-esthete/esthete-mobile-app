@@ -9,6 +9,7 @@ import {interpolate, Extrapolate} from 'react-native-reanimated';
 import {useQuery} from '@tanstack/react-query';
 import {searchExhibition} from 'src/apis/mainExhibitionService';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {shuffleArray} from 'src/utils/random';
 
 type ExhibitionScreenRouteProp = RouteProp<RootStackParamList, 'Exhibition'>;
 
@@ -59,7 +60,9 @@ const ExhibitionScreen: React.FC = () => {
     return <ActivityIndicator size="large" color="#000" />;
   }
 
-  const exhibitionIds: string[] = searchResult?.map((exhibition: Exhibition) => exhibition.exhibition_id) || [];
+  let exhibitionIds: string[] = searchResult?.map((exhibition: Exhibition) => exhibition.exhibition_id) || [];
+  exhibitionIds = shuffleArray(exhibitionIds);
+
   const currentIndex = exhibitionIds.indexOf(id);
   if (currentIndex > -1) {
     exhibitionIds.splice(currentIndex, 1);
