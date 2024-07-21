@@ -128,3 +128,46 @@ export const myPurchasedFilter = async() => {
     throw error;
   }
 }
+
+//사용자 전시회 선호 태그 조회
+export const myExhibitionFilterPreferTag = async () => {
+  try{ 
+    const response = await mygalleryInstance.get(`/edit/user/tags`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log("사용자 선호태그가 조회되었습니다.");
+    }
+
+    return response.data.payload.tag_list;
+  }catch(error){
+    console.log('사용자 선호 필터태그 조회 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//사용자 전시회 선호 태그 넣기
+export const putMyExhibitionPreferTag = async (tag_list: string[]) => {
+  try{
+    console.log(tag_list);
+    const response = await mygalleryInstance.put(`/edit/user/tags`, {
+      tag_list
+    }, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자 선호 태그가 정상적으로 선택됐습니다.');
+    }
+
+    return response.data.payload.tag_list;
+  }catch(error){
+    console.log('사용자 선호태그 넣기 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//사용자 

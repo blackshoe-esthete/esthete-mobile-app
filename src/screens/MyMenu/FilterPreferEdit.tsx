@@ -5,12 +5,16 @@ import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
 import { useNavigation } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 
 const height = Dimensions.get('window').height;
 function FilterPreferEdit() {
   const navigation = useNavigation();
   const scrollViewRef = useRef<any>(null);
   const [contentLoaded, setContentLoaded] = useState(false);
+
+  
+
   return (
     <SafeAreaView edges={['top']} style={{flex: 1}}>
       <View style={{position: 'relative', flex: 1}}>
@@ -26,7 +30,7 @@ function FilterPreferEdit() {
             }
           }}
           ref={scrollViewRef}>
-          <Preferred />
+          {/* <Preferred /> */}
         </ScrollView>
         <CommonButton title="저장하기" func={()=>navigation.goBack()} paddingNumber={20}/>
       </View>

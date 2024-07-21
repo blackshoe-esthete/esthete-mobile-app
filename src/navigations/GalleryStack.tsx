@@ -13,7 +13,7 @@ import SubScribe from '@screens/MyMenu/SubscribeScreen';
 import Settings from '@screens/MyMenu/SettingScreen';
 import Information from '@screens/MyMenu/InformationScreen';
 import Logout from '@screens/MyMenu/LogoutScreen';
-import PreferEdit from '@screens/MyMenu/PreferEdit';
+import ExhibitionPreferEdit from '@screens/MyMenu/ExhibitionPreferEdit';
 import ProfileEdit from '@screens/MyMenu/ProfileEdit';
 import GoOut from '@screens/MyMenu/GoOut';
 import Certification from '@screens/MyMenu/Certification';
@@ -71,7 +71,7 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
             {(props: any) => <Settings {...props} />}
           </Stack.Screen>
           <Stack.Screen name="ExhibitionPrefer">
-            {(props: any) => <PreferEdit {...props} />}
+            {(props: any) => <ExhibitionPreferEdit {...props} />}
           </Stack.Screen>
           <Stack.Screen name="FilterPrefer">
             {(props: any) => <FilterPreferEdit {...props} />}
