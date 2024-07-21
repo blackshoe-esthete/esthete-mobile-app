@@ -23,7 +23,7 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
 import { useMutation } from '@tanstack/react-query';
-import { signupCompletion } from 'src/apis/userInfo';
+import { signupCompletion } from 'src/apis/login';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowHeight = Dimensions.get('window').height;

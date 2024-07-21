@@ -6,7 +6,7 @@ import CommonButton from '@components/SettingScreen/CommonButton';
 import {useNavigation} from '@react-navigation/native';
 import Verification from '@components/LoginScreen/Verification';
 import {useMutation} from '@tanstack/react-query';
-import {emailValidation, emailVerification, signUpNext, userCheck} from 'src/apis/userInfo';
+import {emailValidation, emailVerification, signUpNext, userCheck} from 'src/apis/login';
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
 import {Routes} from '@screens/Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';

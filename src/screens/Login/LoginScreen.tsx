@@ -10,7 +10,7 @@ import google from '@assets/imgs/googlelogin.png';
 import {useEffect, useState} from 'react';
 import Config from 'react-native-config';
 import { useMutation } from '@tanstack/react-query';
-import { login } from 'src/apis/userInfo';
+import { login } from 'src/apis/login';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
 
