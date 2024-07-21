@@ -11,22 +11,21 @@ import {useExhibitionDetails} from '@hooks/useExhibitionDetails';
 
 interface ExhibitionPictureListProps {
   isVisited: boolean;
-  exhibitionData: ExhibitionData;
   id: string;
 }
 
-const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited, exhibitionData, id}) => {
+const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited, id}) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [currentImage, setCurrentImage] = useState<{url: string; id: string} | null>(null);
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const exhibitionQuery = useExhibitionDetails(exhibitionData?.exhibition_id);
+  const exhibitionQuery = useExhibitionDetails(id);
   const {data, isLoading, error} = exhibitionQuery;
 
-  const openModal = (item: string) => {
+  const openModal = (item: Photo) => {
     if (isVisited) {
-      setCurrentImage(item);
+      setCurrentImage({url: item.photo_url, id: item.photo_id});
       setModalVisible(true);
     }
   };
@@ -56,7 +55,7 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
           numColumns={2}
           contentContainerStyle={{paddingBottom: 60}}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={() => openModal((item as Photo).photo_url)}>
+            <TouchableOpacity onPress={() => openModal(item as Photo)}>
               <RenderImage item={(item as Photo).photo_url} />
             </TouchableOpacity>
           )}
@@ -64,11 +63,12 @@ const ExhibitionPictureList: React.FC<ExhibitionPictureListProps> = ({isVisited,
       )}
       <ImageModal
         visible={modalVisible}
-        image={currentImage}
+        image={currentImage?.url}
+        photoId={currentImage?.id}
         onClose={() => setModalVisible(false)}
         onReport={() => {
           setModalVisible(false);
-          navigation.navigate('ExhibitionReport', {id});
+          navigation.navigate('ExhibitionReport', {reportType: '사진', photoId: currentImage?.id});
         }}
       />
     </View>

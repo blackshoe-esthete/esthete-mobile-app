@@ -18,7 +18,7 @@ import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useNavigation} from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
-import {useExhibitionComments} from '@hooks/useExhibitionDetails';
+import {useExhibitionComments, useExhibitionDetails} from '@hooks/useExhibitionDetails';
 import {ExhibitionData, IComment} from '@types/mainExhibitionService.type';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
@@ -28,11 +28,11 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
   const {exhibitionData} = route.params;
   const {id} = route.params;
 
-  // const exhibitionQuery = useExhibitionDetails(id);
+  const exhibitionQuery = useExhibitionDetails(id);
   const commentQuery = useExhibitionComments(id);
 
-  // const {data, isLoading} = exhibitionQuery;
-  const {data: comments, isLoading: isCommentLoading} = commentQuery;
+  const {data: exhibibitionDetailData, isLoading} = exhibitionQuery;
+  const {data: comments, isLoading: isCommentLoading, refetch} = commentQuery;
 
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
@@ -69,6 +69,10 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
       },
     }),
   ).current;
+
+  const handleNewComment = async () => {
+    await refetch(); // 새 댓글이 추가되면 댓글 데이터를 다시 가져옴
+  };
 
   const openModal = () => {
     setModalVisible(true);
@@ -112,11 +116,11 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
             </TouchableOpacity>
           </View>
           <View style={styles.pictures}>
-            <ExhibitionPictureList isVisited={true} exhibitionData={exhibitionData} id={id} />
+            <ExhibitionPictureList isVisited={true} id={id} />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoText}>
-              {exhibitionData?.description ? exhibitionData?.description : '전시 설명이 없습니다.'}
+              {exhibibitionDetailData?.description ? exhibibitionDetailData?.description : '전시 설명이 없습니다.'}
             </Text>
           </View>
           <Text style={styles.title}>위치 정보</Text>
@@ -131,8 +135,8 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
               style={styles.map}
               provider={PROVIDER_GOOGLE}
               initialRegion={{
-                latitude: 37.541,
-                longitude: 126.986,
+                latitude: exhibibitionDetailData?.location.latitude,
+                longitude: exhibibitionDetailData?.location.longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
@@ -165,6 +169,7 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
             exhibitionId={id}
             authorName={exhibitionData.photographer_name}
             currentUserName={currentUserName}
+            onNewComment={handleNewComment}
           />
         </Animated.View>
       </Modal>
