@@ -7,7 +7,7 @@ import {RootStackParamList} from '../../types/navigations';
 import Carousel from 'react-native-reanimated-carousel';
 import {interpolate, Extrapolate} from 'react-native-reanimated';
 import {useQuery} from '@tanstack/react-query';
-import {searchExhibition} from 'src/apis/mainExhibitionService';
+import {getAllExhibition} from 'src/apis/exhibitionShow';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {shuffleArray} from 'src/utils/random';
 
@@ -30,8 +30,8 @@ const ExhibitionScreen: React.FC = () => {
   const cubeRef = useRef<any>(null);
 
   const {data: searchResult, isLoading: isSearchLoading} = useQuery({
-    queryKey: ['searchExhibition', ''],
-    queryFn: () => searchExhibition(''),
+    queryKey: ['getAllExhibition', ''],
+    queryFn: () => getAllExhibition(''),
     select: data => data?.content,
   });
 

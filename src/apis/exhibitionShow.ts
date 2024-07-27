@@ -146,3 +146,14 @@ export const postExhibitionCommentDislike = async ({commentId}: PostCommentLikeP
   });
   return response.data.payload;
 };
+
+// 모든 전시 불러오기
+export const getAllExhibition = async (keyword: string) => {
+  try {
+    const response = await exhibitionInstance.get(`/searching/title?exhibitionKeyword=${keyword}&page=0&size=100`);
+    return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', error);
+    throw error;
+  }
+};
