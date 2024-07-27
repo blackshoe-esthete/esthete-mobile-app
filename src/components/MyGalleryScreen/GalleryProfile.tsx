@@ -3,9 +3,8 @@ import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import profile from '@assets/imgs/profile-img.png';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {getMyFollower, getMyFollowing, getMyInfo} from 'src/apis/userInfo';
-import { NativeStackScreenProps} from '@react-navigation/native-stack';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
-import Profile from '@components/SettingScreen/Profile';
 
 type Props = NativeStackScreenProps<Routes, 'MyTab'>;
 
@@ -16,7 +15,7 @@ function GalleryProfile({route, navigation}: Props): React.JSX.Element {
   });
   const {data: follower} = useQuery({
     queryKey: ['follower'],
-    queryFn: getMyFollower
+    queryFn: getMyFollower,
   });
   type info = {
     introduce?: string;
@@ -24,7 +23,7 @@ function GalleryProfile({route, navigation}: Props): React.JSX.Element {
     follower_count: number;
     following_count: number;
     profile_url?: string;
-  }
+  };
 
   const queryClient = useQueryClient();
   const userProfile = queryClient.getQueryData<info>(['my-profile']);
@@ -32,7 +31,7 @@ function GalleryProfile({route, navigation}: Props): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.textBox}>
-        <Text style={styles.titleText}>{userProfile?.introduce}</Text>  
+        <Text style={styles.titleText}>{userProfile?.introduce}</Text>
         <Text style={styles.subText}>{userProfile?.biography}</Text>
         <View style={styles.followBox}>
           <TouchableOpacity style={styles.followLayer} onPress={() => navigation.navigate('Friends', following)}>
@@ -45,13 +44,19 @@ function GalleryProfile({route, navigation}: Props): React.JSX.Element {
           </TouchableOpacity>
         </View>
       </View>
-      {
-        userProfile?.profile_url ? (
-          <Image source={{uri: userProfile.profile_url?.startsWith('http') ? userProfile.profile_url : `https://${userProfile.profile_url}`}} style={styles.icon} resizeMode='cover' />
-        ): (
-          <Image src={profile} style={styles.icon}/>
-        )
-      }
+      {userProfile?.profile_url ? (
+        <Image
+          source={{
+            uri: userProfile.profile_url?.startsWith('http')
+              ? userProfile.profile_url
+              : `https://${userProfile.profile_url}`,
+          }}
+          style={styles.profileCircle}
+          resizeMode="cover"
+        />
+      ) : (
+        <Image source={profile} style={styles.circle} />
+      )}
     </View>
   );
 }
@@ -112,7 +117,7 @@ const styles = StyleSheet.create({
     marginLeft: 11,
   },
   circle: {
-    backgroundColor: '#D9D9D9',
+    // backgroundColor: '#D9D9D9',
     width: '100%',
     height: '100%',
     borderRadius: 100,
@@ -121,6 +126,6 @@ const styles = StyleSheet.create({
     width: 85,
     height: 85,
     borderRadius: 100,
-    backgroundColor: '#D9D9D9'
+    backgroundColor: '#D9D9D9',
   },
 });
