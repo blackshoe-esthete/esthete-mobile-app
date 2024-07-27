@@ -68,6 +68,7 @@ function SignUp1({navigation, route}: Props) {
     },
     onError(data){
       console.log(data);
+      console.log("사용가능한 아이디입니다.");
       mutationSignUp.mutate();
     }
   })
@@ -153,7 +154,7 @@ function SignUp1({navigation, route}: Props) {
         background="#292929"
         color="white"
         paddingNumber={0}
-        func={() => mutationSignUp.mutate()}
+        func={() => mutationIdCheck.mutate()}
       />
     </SafeAreaView>
   );

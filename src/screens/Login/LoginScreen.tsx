@@ -14,14 +14,6 @@ import { login } from 'src/apis/login';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
 
-/** Fill your keys */
-//  const consumerKey = Config.NAVER_CLIENT_ID as string;
-const consumerKey = 'ZfO0ig9DpGws3YIWOrQu';
-//  const consumerSecret = Config.NAVER_SECRET_KEY as string;
-const consumerSecret = 'ZBedwHbyjg';
-const appName = 'com.esthete_mobile';
-const serviceUrlScheme = 'naverlogin';
-
 type Props = NativeStackScreenProps<Routes, 'LoginPage'>;
 function LoginScreen({navigation, route}: Props) {
   const [id, setId] = useState('');
