@@ -6,6 +6,8 @@ import {
   postExhibitionCommentLike,
   postExhibitionComment,
   postExhibitionCommentDislike,
+  postExhibitionLike,
+  postExhibitionDislike,
 } from '../apis/exhibitionShow';
 import {AxiosError, AxiosResponse} from 'axios';
 
@@ -47,5 +49,21 @@ export const useLikeComment = (): UseMutationResult<AxiosResponse<any>, AxiosErr
 export const useDislikeComment = (): UseMutationResult<AxiosResponse<any>, AxiosError, PostCommentLikeParams> => {
   return useMutation<AxiosResponse<any>, AxiosError, PostCommentLikeParams>({
     mutationFn: postExhibitionCommentDislike,
+  });
+};
+
+interface PostExhibitionLikeParams {
+  exhibition_id: string;
+}
+
+export const useLikeExhibition = (): UseMutationResult<AxiosResponse<any>, AxiosError, PostExhibitionLikeParams> => {
+  return useMutation<AxiosResponse<any>, AxiosError, PostExhibitionLikeParams>({
+    mutationFn: postExhibitionLike,
+  });
+};
+
+export const useDislikeExhibition = (): UseMutationResult<AxiosResponse<any>, AxiosError, PostExhibitionLikeParams> => {
+  return useMutation<AxiosResponse<any>, AxiosError, PostExhibitionLikeParams>({
+    mutationFn: postExhibitionDislike,
   });
 };

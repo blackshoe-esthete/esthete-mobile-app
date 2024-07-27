@@ -1,5 +1,5 @@
 import {AxiosError, AxiosResponse} from 'axios';
-import {exhibitionInstance} from './instance';
+import {exhibitionInstance, mygalleryInstance} from './instance';
 import Config from 'react-native-config';
 import {useMutation} from '@tanstack/react-query';
 
@@ -139,6 +139,35 @@ export const postExhibitionCommentLike = async ({commentId}: PostCommentLikePara
 
 export const postExhibitionCommentDislike = async ({commentId}: PostCommentLikeParams): Promise<AxiosResponse<any>> => {
   const response = await exhibitionInstance.delete(`/comments/like/${commentId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiToken}`,
+    },
+  });
+  return response.data.payload;
+};
+
+//전시 좋아요
+interface PostExhibitionLikeParams {
+  exhibition_id: string;
+}
+
+export const postExhibitionLike = async ({exhibition_id}: PostExhibitionLikeParams): Promise<AxiosResponse<any>> => {
+  const response = await mygalleryInstance.post(
+    `/exhibitions/likes/${exhibition_id}`,
+    {},
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiToken}`,
+      },
+    },
+  );
+  return response.data.payload;
+};
+
+export const postExhibitionDislike = async ({exhibition_id}: PostExhibitionLikeParams): Promise<AxiosResponse<any>> => {
+  const response = await mygalleryInstance.delete(`/exhibitions/like/${exhibition_id}`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiToken}`,
