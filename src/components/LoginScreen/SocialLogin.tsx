@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import naver from '@assets/imgs/naverlogin.png';
 import {
@@ -11,6 +11,8 @@ import {
 } from '@react-native-seoul/kakao-login';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NaverLogin, { NaverLoginInitParams } from '@react-native-seoul/naver-login';
+import Config from 'react-native-config';
 
 const windowWidth = Dimensions.get('window').width;
 type socialProp = {
@@ -18,6 +20,13 @@ type socialProp = {
   navigation?: () => void;
   label?: string;
 };
+
+const naverLoginParams: NaverLoginInitParams = {
+  consumerKey: Config.CONSUMER_KEY as string,
+  consumerSecret: Config.CONSUMER_SECRET as string,
+  appName: 'esthete'
+};
+
 function SocialLogin(props: socialProp): React.JSX.Element {
   const navigation = useNavigation();
   // const login = () => {
@@ -62,18 +71,34 @@ function SocialLogin(props: socialProp): React.JSX.Element {
   // };
   const [result, setResult] = useState<string>('');
 
+  useEffect(() => {
+    NaverLogin.initialize({
+      appName: 'esthete',
+      consumerKey: Config.CONSUMER_KEY as string,
+      consumerSecret: Config.CONSUMER_SECRET as string,
+      serviceUrlSchemeIOS: 'naverlogin',
+      disableNaverAppAuthIOS: true,
+    })
+  }, []);
+
   const signInWithKakao = async (): Promise<void> => {
     try {
       const token: KakaoOAuthToken = await login();
       setResult(JSON.stringify(token));
       console.log('카카오 로그인 성공');
-      const response = await 
-      getProfile();
+      const response = await getProfile();
       navigation.navigate('SignUp2');
     } catch (err) {
       console.error('login err', err);
     }
   };
+
+  const signInWithNaver = async (): Promise<void> => {
+    const token = await NaverLogin.login();
+    setResult(JSON.stringify(token));
+    console.log('네이버 로그인 성공');
+  }
+
   const getProfile = async (): Promise<void> => {
     try {
       const profile = await getKakaoProfile();
@@ -90,6 +115,7 @@ function SocialLogin(props: socialProp): React.JSX.Element {
           signInWithKakao();
         } else if (props.label == 'naver') {
           // getNaverLogin();
+          signInWithNaver();
         }
       }}>
       <Image source={props.img} style={styles.buttonLayer} />

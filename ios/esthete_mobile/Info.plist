@@ -46,6 +46,8 @@
 		<string>kakaokompassauth</string>
 		<string>storykompassauth</string>
 		<string>kakaolink</string>
+		<string>naversearchapp</string>
+		<string>naversearchthirdlogin</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -94,5 +96,18 @@
 	<false/>
 	<key>USER_BASE_URL</key>
 	<string>${USER_BASE_URL}</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>naver</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>naverlogin</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

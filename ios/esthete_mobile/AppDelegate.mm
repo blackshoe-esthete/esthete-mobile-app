@@ -3,6 +3,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <GoogleMaps/GoogleMaps.h>
 #import <RNKakaoLogins.h>
+#import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 
 @implementation AppDelegate
 
@@ -20,6 +21,11 @@
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   
+  // naver
+  if ([url.scheme isEqualToString:@"naverlogin"]) {
+    return [[NaverThirdPartyLoginConnection getSharedInstance] application:app openURL:url options:options];
+  }
+
   if ([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       dispatch_async(dispatch_get_main_queue(), ^{
