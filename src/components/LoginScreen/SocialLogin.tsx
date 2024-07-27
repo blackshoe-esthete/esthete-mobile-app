@@ -13,18 +13,13 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NaverLogin, { NaverLoginInitParams } from '@react-native-seoul/naver-login';
 import Config from 'react-native-config';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const windowWidth = Dimensions.get('window').width;
 type socialProp = {
   img: string;
   navigation?: () => void;
   label?: string;
-};
-
-const naverLoginParams: NaverLoginInitParams = {
-  consumerKey: Config.CONSUMER_KEY as string,
-  consumerSecret: Config.CONSUMER_SECRET as string,
-  appName: 'esthete'
 };
 
 function SocialLogin(props: socialProp): React.JSX.Element {
@@ -75,10 +70,13 @@ function SocialLogin(props: socialProp): React.JSX.Element {
     NaverLogin.initialize({
       appName: 'esthete',
       consumerKey: Config.CONSUMER_KEY as string,
-      consumerSecret: Config.CONSUMER_SECRET as string,
+      consumerSecret: Config.CONSUMER_SECRET_KEY as string,
       serviceUrlSchemeIOS: 'naverlogin',
       disableNaverAppAuthIOS: true,
-    })
+    });
+    GoogleSignin.configure({
+      iosClientId: Config.GOOGLE_CLIENT_IOS_ID as string
+    });
   }, []);
 
   const signInWithKakao = async (): Promise<void> => {
@@ -99,6 +97,19 @@ function SocialLogin(props: socialProp): React.JSX.Element {
     console.log('네이버 로그인 성공');
   }
 
+  const signInWithGoogle = async (): Promise<void> => {
+    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+    const {idToken} = await GoogleSignin.signIn();
+    console.log('idToekn : ', idToken);
+    if (idToken) {
+      setResult(idToken);
+    }
+  }
+
+  useEffect(() => {
+    console.log(result);
+  }, [result]);
+
   const getProfile = async (): Promise<void> => {
     try {
       const profile = await getKakaoProfile();
@@ -116,6 +127,8 @@ function SocialLogin(props: socialProp): React.JSX.Element {
         } else if (props.label == 'naver') {
           // getNaverLogin();
           signInWithNaver();
+        } else if (props.label == 'google'){
+          signInWithGoogle();
         }
       }}>
       <Image source={props.img} style={styles.buttonLayer} />

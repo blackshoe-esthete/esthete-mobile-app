@@ -109,5 +109,16 @@
 			</array>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>${GOOGLE_CLIENT_IOS_ID}</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>${GOOGLE_REVERSED_CLIENT_IOS_ID}</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
