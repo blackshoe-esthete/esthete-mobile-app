@@ -1,6 +1,5 @@
 import axios, {AxiosError} from 'axios';
-import {mygalleryInstance, userInstance} from './instance';
-import {exhibitionServiceToken} from '@utils/dummy';
+import {userInstance} from './instance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type loginProp = {

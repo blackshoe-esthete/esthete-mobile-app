@@ -5,6 +5,7 @@ import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {getMyFollower, getMyFollowing, getMyInfo} from 'src/apis/userInfo';
 import { NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
+import Profile from '@components/SettingScreen/Profile';
 
 type Props = NativeStackScreenProps<Routes, 'MyTab'>;
 
@@ -44,7 +45,13 @@ function GalleryProfile({route, navigation}: Props): React.JSX.Element {
           </TouchableOpacity>
         </View>
       </View>
-      <Image source={{uri: userProfile?.profile_url?.startsWith('http') ? userProfile?.profile_url : `https://${userProfile?.profile_url}`}} style={styles.icon} resizeMode='cover' />
+      {
+        userProfile?.profile_url ? (
+          <Image source={{uri: userProfile.profile_url?.startsWith('http') ? userProfile.profile_url : `https://${userProfile.profile_url}`}} style={styles.icon} resizeMode='cover' />
+        ): (
+          <Image src={profile} style={styles.icon}/>
+        )
+      }
     </View>
   );
 }
@@ -81,7 +88,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     marginVertical: 25,
-    borderRadius: 100
+    borderRadius: 100,
+    // backgroundColor: 'white'
   },
   followLayer: {
     display: 'flex',
@@ -102,5 +110,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     marginLeft: 11,
+  },
+  circle: {
+    backgroundColor: '#D9D9D9',
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
+  },
+  profileCircle: {
+    width: 85,
+    height: 85,
+    borderRadius: 100,
+    backgroundColor: '#D9D9D9'
   },
 });

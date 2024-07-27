@@ -49,6 +49,7 @@ export const getMyInfo = async () => {
     if (response.data.code == 200) {
       console.log(response.data.message);
     }
+    console.log(response.data.payload);
     return response.data.payload;
   } catch (error) {
     console.log('실패 데이터: ', (error as AxiosError).config);
@@ -58,6 +59,10 @@ export const getMyInfo = async () => {
 
 export const putMyProfile = async (image: string) => {
   try {
+    if (!image) {
+      console.error("Image URI is empty.");
+      return;
+    }
     const formData = new FormData();
     formData.append('file', {
       uri: image as string,
@@ -95,6 +100,10 @@ export const putMyAdditional = async (info: profileInfo) => {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
     });
+    if(response.status == 200){
+      console.log('프로필이 정상적으로 수정됐습니다.');
+    }
+    
   } catch (error) {
     console.log('실패 데이터: ', (error as AxiosError).config);
     throw error;
