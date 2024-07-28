@@ -66,7 +66,9 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
   const { mutate, isPending } = useMutation<CreateFilterResponse, AxiosError, CreateFilterParams>({
     mutationFn: createFilter,
-    onSuccess: () => onSaveSuccess(tempModalVisible),
+    onSuccess: (_, variables) => {
+      onSaveSuccess(variables.url === '/temporary_filter');
+    },
   });
 
   const onSaveSuccess = (temp = false) => {

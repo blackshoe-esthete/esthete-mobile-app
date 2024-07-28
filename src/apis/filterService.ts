@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { filterInstance } from './instance';
 import { CreateFilterParams, CreateFilterResponse } from '#types/filterService.type';
 import { exhibitionServiceToken } from '@utils/dummy';
+import { Alert } from 'react-native';
 
 // 썸네일 불러오기 (GET 테스트 해보려고)
 export const getThumbnail = async (filterId: string, token: string) => {
@@ -64,7 +65,7 @@ export const createFilter = async ({
     // console.log('formData', formData);
     return response.data;
   } catch (error) {
-    console.log('실패', (error as AxiosError)?.response?.data);
+    Alert.alert(((error as AxiosError)?.response?.data as { error: string }).error);
     console.log('실패 데이터', (error as AxiosError)?.config?.data._parts);
     // 에러코드에 따라 분기처리
     throw error;
@@ -90,7 +91,7 @@ export const getTemporaryFilterList = async (token: string) => {
 //필터조회
 export const filterSearch = async () => {
   try {
-    const response = await filterInstance.get(`/searching`, {
+    const response = await filterInstance.get('/searching', {
       headers: {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
