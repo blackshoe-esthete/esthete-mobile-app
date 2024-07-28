@@ -31,7 +31,7 @@ import {
   TemporaryFilter,
 } from '#types/filterService.type';
 import { filterIdToName, filterNameToId, filterTagsData } from '@utils/filter';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import cancelIcon from '@assets/icons/cancel_gray.png';
 import { LoadingIndicator } from '@components/common/LoadingIndicator';
 
