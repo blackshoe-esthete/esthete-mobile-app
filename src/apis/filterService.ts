@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import { filterInstance } from './instance';
 import { CreateFilterParams, CreateFilterResponse } from '#types/filterService.type';
 import { exhibitionServiceToken } from '@utils/dummy';
@@ -38,7 +38,7 @@ export const createFilter = async ({
   });
 
   // representation 이미지 파일 추가
-  representationImg.forEach((img, index) => {
+  representationImg.forEach((img) => {
     formData.append('representation_img', {
       uri: img.uri,
       name: img.name,
@@ -60,13 +60,13 @@ export const createFilter = async ({
       //   timeout: 5000, // 타임아웃을 5초로 설정
     });
 
-    console.log('성공', response.data);
-    console.log('성공 데이터', response.config.data._parts);
+    // console.log('성공', response.data);
+    // console.log('성공 데이터', response.config.data._parts);
     // console.log('formData', formData);
     return response.data;
   } catch (error) {
     Alert.alert(((error as AxiosError)?.response?.data as { error: string }).error);
-    console.log('실패 데이터', (error as AxiosError)?.config?.data._parts);
+    // console.error('실패 데이터', (error as AxiosError)?.config?.data._parts);
     // 에러코드에 따라 분기처리
     throw error;
   }
@@ -83,7 +83,24 @@ export const getTemporaryFilterList = async (token: string) => {
     });
     return response.data.content;
   } catch (error) {
-    console.log('실패');
+    console.log('실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+};
+
+// 임시 필터 삭제
+export const deleteTemporaryFilter = async (filterId: string, token: string) => {
+  try {
+    const response = await filterInstance.delete(`/temporary/${filterId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    Alert.alert(((error as AxiosError)?.response?.data as { error: string }).error);
+    // console.log('실패', (error as AxiosError)?.response?.data);
     throw error;
   }
 };

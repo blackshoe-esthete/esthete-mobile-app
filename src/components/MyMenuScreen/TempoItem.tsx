@@ -5,7 +5,7 @@ import { TemporaryFilter } from '#types/filterService.type';
 import { RootStackParamList } from '#types/navigations';
 import { formatDate } from '@utils/format';
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, Text, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import {
   Sharpen,
   ColorMatrix,
@@ -17,7 +17,10 @@ import {
   temperature,
   grayscale,
 } from 'react-native-image-filter-kit';
-import { brightness, filters } from '@utils/filter';
+import { brightness } from '@utils/filter';
+import { deleteTemporaryFilter } from 'src/apis/filterService';
+import { InvalidateQueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
+import { filterServiceToken } from '@utils/dummy';
 
 type galleryProp = {
   temporary_exhibition_id: string;
@@ -33,25 +36,40 @@ type filterProp = TemporaryFilter & {
 
 const { width } = Dimensions.get('window');
 
-function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const deleteModalShow = () => {
-    setDeleteModalVisible(!deleteModalVisible);
-  };
-  const subTitleText = `
+const subTitleText = `
     임시저장한 전시를 삭제하시겠습니까?
 
     삭제를 완료하면 관련된 정보도 모두 사라지며
     복구가 불가능합니다.
-    `;
+`;
+
+function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const queryClient = useQueryClient();
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
+  const { mutate } = useMutation({
+    mutationFn: () => deleteTemporaryFilter((props as filterProp).temporary_filter_id, filterServiceToken),
+    onSuccess: () => {
+      setDeleteModalVisible(!deleteModalVisible);
+      Alert.alert('삭제가 완료되었습니다.');
+      queryClient.invalidateQueries({ 'temp-filter': true } as InvalidateQueryFilters);
+    },
+  });
+
+  const deleteTempFilter = () => {
+    mutate();
+  };
+
   const deleteProps = {
     title: '임시저장본을 삭제하시겠습니까?',
     subTitle: subTitleText,
     visible: deleteModalVisible,
-    onClose: deleteModalShow,
+    onConfirm: deleteTempFilter,
+    onClose: () => setDeleteModalVisible(!deleteModalVisible),
     button: ['삭제하기', '닫기'],
   };
+
   const navigateScreen = (title: string) => {
     if (title == 'collection') {
       navigation.navigate('ExhibitionCreation');
@@ -106,7 +124,7 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
         <View style={styles.titleBox}>{resume()}</View>
       </View>
       <View style={styles.buttonLayer}>
-        <TouchableOpacity style={styles.buttonLeftBox} onPress={deleteModalShow}>
+        <TouchableOpacity style={styles.buttonLeftBox} onPress={() => setDeleteModalVisible(!deleteModalVisible)}>
           <View style={styles.buttonContent}>
             <Text style={styles.buttonText}>삭제하기</Text>
           </View>
