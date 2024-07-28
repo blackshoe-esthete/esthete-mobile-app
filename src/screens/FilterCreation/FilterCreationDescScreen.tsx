@@ -20,7 +20,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '#types/navigations';
 import CommonModal from '@components/common/CommonModal';
-import { useMutation } from '@tanstack/react-query';
+import { InvalidateQueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFilter } from 'src/apis/filterService';
 import { filterServiceToken } from '@utils/dummy';
 import {
@@ -37,6 +37,7 @@ import { LoadingIndicator } from '@components/common/LoadingIndicator';
 
 function FilterCreationDescScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const queryClient = useQueryClient();
   const route = useRoute();
   const tempFilterRef = useRef(route.params as TemporaryFilter);
   const tempFilter = tempFilterRef.current;
@@ -68,6 +69,7 @@ function FilterCreationDescScreen(): React.JSX.Element {
     mutationFn: createFilter,
     onSuccess: (_, variables) => {
       onSaveSuccess(variables.url === '/temporary_filter');
+      queryClient.invalidateQueries({ 'temp-filter': true } as InvalidateQueryFilters);
     },
   });
 
