@@ -45,6 +45,7 @@ function HorizontalList({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gap10}
           data={data}
+          ListEmptyComponent={<Text>데이터가 없습니다.</Text>}
           renderItem={({ item, index }: { item: any; index: number }) => (
             <TouchableOpacity
               onPress={() => handlePress(item[idKey])}
