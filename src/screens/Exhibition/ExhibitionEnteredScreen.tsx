@@ -46,7 +46,7 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
 
-  const [onLike, setOnLike] = useState(false);
+  const [onLike, setOnLike] = useState(exhibibitionDetailData.is_liked);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const animatedHeight = useRef(new Animated.Value(0)).current;

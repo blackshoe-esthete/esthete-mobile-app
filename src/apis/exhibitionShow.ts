@@ -6,7 +6,13 @@ import {useMutation} from '@tanstack/react-query';
 const apiToken = Config.API_TOKEN;
 
 export const getExhibitionDetails = async (id: string) => {
-  const response = await exhibitionInstance.get(`/details/${id}`);
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${apiToken}`,
+  };
+
+  const response = await exhibitionInstance.get(`/details/${id}`, {headers});
+
   return response.data.payload;
 };
 
