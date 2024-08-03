@@ -1,20 +1,38 @@
 import React from 'react';
-import {Image, View, StyleSheet, Dimensions} from 'react-native';
-import {ImageItem} from '../../types';
+import {Image, StyleSheet, View, Text} from 'react-native';
 
-const RenderImage = ({item}: {item: string}) => {
+interface RenderImageProps {
+  item: string;
+}
+
+const RenderImage: React.FC<RenderImageProps> = ({item}) => {
+  const [error, setError] = React.useState(false);
+
   return (
-    <View>
-      <Image source={{uri: item}} style={styles.image} />
+    <View style={styles.imageContainer}>
+      {error ? (
+        <Text style={styles.errorText}>Image not found</Text>
+      ) : (
+        <Image style={styles.image} source={{uri: item}} onError={() => setError(true)} />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    width: '100%',
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ccc',
+  },
   image: {
-    margin: 6,
-    // 이미지 높이 계산해서 렌더링해야하는데 임시로 Dimensions로 처리
-    height: Dimensions.get('window').width / 2,
+    width: '100%',
+    height: '100%',
+  },
+  errorText: {
+    color: 'red',
   },
 });
 

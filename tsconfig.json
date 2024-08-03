@@ -11,7 +11,7 @@
       "@constants/*": ["src/constants/*"],
       "@hooks/*": ["src/hooks/*"],
       "@navigations/*": ["src/navigations/*"],
-      "@types/*": ["src/types/*"],
+      "#types/*": ["src/types/*"],
       "@apis/*": ["src/api/*"],
       "@store/*": ["src/store/*"]
     }

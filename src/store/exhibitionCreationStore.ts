@@ -13,6 +13,8 @@ interface ExhibitionCreationStore {
   currentGrayScale: number;
   setCurrentGrayScale: (grayScale: number, imageIndex: number) => void; // 이미지 인덱스 추가
   setCurrentGrayScaleForAll: (grayScale: number) => void; // 모든 이미지에 적용
+  sliderValue: number;
+  setSliderValue: (value: number) => void;
 }
 
 export const useExhibitionCreationStore = create<ExhibitionCreationStore>((set, get) => ({
@@ -20,11 +22,12 @@ export const useExhibitionCreationStore = create<ExhibitionCreationStore>((set, 
   additionalImageUri: [],
   currentFilterId: '',
   currentGrayScale: 0,
+  sliderValue: 0,
 
   setSelectedImageUri: (uri: string) => set({selectedImageUri: uri}),
   setAdditionalImageUri: (images: ImageItem[]) => set({additionalImageUri: images}),
   setCurrentFilterId: (filterId: string) => {
-    const {additionalImageUri, currentGrayScale} = get();
+    const {additionalImageUri, currentGrayScale, sliderValue} = get();
     set({
       currentFilterId: filterId,
       additionalImageUri: additionalImageUri.map(image => ({
@@ -32,14 +35,14 @@ export const useExhibitionCreationStore = create<ExhibitionCreationStore>((set, 
         filterDetails: {
           ...image.filterDetails,
           id: filterId,
-
           grayScale: currentGrayScale,
+          sliderValue: sliderValue,
         },
       })),
     });
   },
   setCurrentFilterIdForAll: (filterId: string) => {
-    const {additionalImageUri, currentGrayScale} = get();
+    const {additionalImageUri, currentGrayScale, sliderValue} = get();
     set({
       currentFilterId: filterId,
       additionalImageUri: additionalImageUri.map(image => ({
@@ -48,6 +51,7 @@ export const useExhibitionCreationStore = create<ExhibitionCreationStore>((set, 
           ...image.filterDetails,
           id: filterId,
           grayScale: currentGrayScale,
+          sliderValue: sliderValue,
         },
       })),
     });
@@ -85,12 +89,14 @@ export const useExhibitionCreationStore = create<ExhibitionCreationStore>((set, 
       })),
     });
   },
+  setSliderValue: (value: number) => set({sliderValue: value}),
   resetImages: () =>
     set({
       selectedImageUri: undefined,
       additionalImageUri: [],
       currentFilterId: '',
       currentGrayScale: 0,
+      sliderValue: 0,
     }),
 }));
 

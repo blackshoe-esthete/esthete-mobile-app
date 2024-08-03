@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import {create} from 'zustand';
 
 interface profileStore {
   nickname: string;
@@ -10,22 +10,22 @@ interface profileStore {
 }
 
 export const useProfileStore = create<profileStore>((set, get) => ({
-  nickname: '',
+  nickname: 'ㄴㄴ',
   intro: '',
   script: '',
   setNickname: (nickname: string) => {
     set({
-      nickname: nickname
+      nickname: nickname,
     });
   },
   setIntro: (intro: string) => {
     set({
-      intro: intro
+      intro: intro,
     });
   },
   setScript: (script: string) => {
     set({
-      script: script
+      script: script,
     });
   },
 }));

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
-// import {useExhibitionCreationStore, useFilterDetailsStore, FilterAttributes} from '../../store/exhibitionCreationStore';
-import { useExhibitionCreationStore, useFilterDetailsStore, FilterAttributes } from '@store/exhibitionCreationStore';
+import {useExhibitionCreationStore, useFilterDetailsStore, FilterAttributes} from '../../store/exhibitionCreationStore';
 import {Slider} from '@miblanchard/react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
@@ -24,26 +23,28 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
-  const {selectedFilterId, setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes} =
-    useFilterDetailsStore();
-  const {selectedImageUri, additionalImageUri} = useExhibitionCreationStore();
+  const {
+    selectedFilterId,
+    setSelectedFilterId,
+    setSelectedFilterAttributes,
+    selectedFilterAttributes,
+    setCurrentFilterAttributes,
+    currentFilterAttributes,
+  } = useFilterDetailsStore();
+  const {
+    selectedImageUri,
+    additionalImageUri,
+    sliderValue,
+    setSliderValue,
+    setCurrentFilterId,
+    setCurrentFilterIdForAll,
+  } = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [sliderValue, setSliderValue] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>('');
-  const [currentFilterAttributes, setCurrentFilterAttributes] = useState<FilterAttributes>({
-    brightness: 1,
-    sharpness: 0,
-    exposure: 0,
-    contrast: 1,
-    saturation: 1,
-    hue: 0,
-    temperature: 0,
-    grayScale: 0,
-  });
-  const {setCurrentFilterId, setCurrentFilterIdForAll} = useExhibitionCreationStore();
 
   useEffect(() => {
     setSelectedFilterId('0');
+    setSliderValue(50);
   }, []);
 
   // 슬라이더 값 변경
@@ -68,6 +69,7 @@ const ExhibitionFilterApplyAllScreen = () => {
     setCurrentFilterId(id);
     setCurrentFilterIdForAll(id);
     setSelectedFilterId(id);
+    setSliderValue(50);
     try {
       const filterDetails = await getFilterDetails(id, filterServiceToken);
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
@@ -78,21 +80,37 @@ const ExhibitionFilterApplyAllScreen = () => {
   };
 
   const applyAdjustedAttributes = (scale: number) => {
-    // Converts the slider value to a scale factor (e.g., 0 to 1 slider value maps to 0.5 to 1.5 scale factor)
-    const scaleToFactor = (value, factorRange) => 1 + (value - 0.5) * factorRange;
-
     if (selectedFilterAttributes) {
-      const adjustedAttributes = {
-        brightness: (selectedFilterAttributes.brightness || 0) * scale, // Allows 50% decrease to 50% increase
-        contrast: (selectedFilterAttributes.contrast || 0) * scale, // Similar to brightness
-        saturation: (selectedFilterAttributes.saturation || 0) * scale, // Keeping the saturation adjustments reasonable
-        hue: (selectedFilterAttributes.hue || 0) * scale, // Hue might be a straightforward scaling
-        temperature: (selectedFilterAttributes.temperature || 0) * scale, // Direct scaling for temperature
-        grayscale: scale < 0.5 ? scale * 2 : 1, // Grayscale increases more quickly
-        sharpness: (selectedFilterAttributes.sharpness || 0) * scale, // Direct scaling for sharpness
+      // scale을 0부터 100까지의 값으로 가정
+      const scaleFactor = scale / 50; // 50일 때 1, 0일 때 0, 100일 때 2가 됩니다.
+
+      const adjustedAttributes: FilterAttributes = {
+        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor),
+        sharpness: adjustAttribute(selectedFilterAttributes.sharpness, scaleFactor),
+        exposure: adjustAttribute(selectedFilterAttributes.exposure, scaleFactor),
+        contrast: adjustAttribute(selectedFilterAttributes.contrast, scaleFactor),
+        saturation: adjustAttribute(selectedFilterAttributes.saturation, scaleFactor),
+        hue: adjustAttribute(selectedFilterAttributes.hue, scaleFactor),
+        temperature: adjustAttribute(selectedFilterAttributes.temperature, scaleFactor),
+        grayScale: adjustAttribute(selectedFilterAttributes.grayScale, scaleFactor, true),
       };
 
       setCurrentFilterAttributes(adjustedAttributes);
+    }
+  };
+
+  const adjustAttribute = (
+    value: number | undefined,
+    scaleFactor: number,
+    isInverse: boolean = false,
+  ): number | undefined => {
+    if (value === undefined) return undefined;
+
+    if (isInverse) {
+      // gray_scale의 경우 반대로 작동
+      return Math.max(0, Math.min(100, value * (2 - scaleFactor)));
+    } else {
+      return Math.max(0, value * scaleFactor);
     }
   };
 
@@ -153,11 +171,14 @@ const ExhibitionFilterApplyAllScreen = () => {
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
-              <Text style={styles.sliderValueText}>{Math.round(sliderValue * 100)}</Text>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValue)}</Text>
             </View>
             <Slider
               value={sliderValue}
               onValueChange={value => handleSliderChange(value[0])}
+              minimumValue={0}
+              maximumValue={100} // 슬라이더의 최대값을 100으로 설정
+              step={1}
               thumbTintColor="#FFFFFF"
               minimumTrackTintColor="#FFFFFF"
               maximumTrackTintColor="#FFFFFF"
@@ -220,12 +241,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: 30,
     justifyContent: 'center',
-  },
-  circle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#424242',
   },
   text: {
     color: '#E9E9E9',

@@ -1,7 +1,8 @@
-import {useNavigation} from '@react-navigation/native';
-import {ExhibitionData} from '@types/mainExhibitionService.type';
+import { useExhibitionDetails } from '@hooks/useExhibitionDetails';
+import { useNavigation } from '@react-navigation/native';
+import { ExhibitionData } from '#types/mainExhibitionService.type';
 import React from 'react';
-import {Image, Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
+import { Image, Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 
 interface ExhibitionMainPictureProps {
   exhibitionData: ExhibitionData;
@@ -29,11 +30,12 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
 
   const navigation = useNavigation();
 
-  console.log(exhibitionData);
+  const exhibitionQuery = useExhibitionDetails(exhibitionData?.exhibition_id);
+  const { data, isLoading } = exhibitionQuery;
 
   return (
     <View style={styles.container}>
-      <Image source={{uri: exhibitionData?.thumbnail_url}} style={{width: width, height: 431}} resizeMode="cover" />
+      <Image source={{ uri: data?.thumbnail_url }} style={{ width: width, height: 431 }} resizeMode="cover" />
       <View style={styles.overlayContainer}>
         <View style={styles.overlayFlex}>
           <TouchableOpacity
@@ -42,7 +44,8 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
               flexDirection: 'row',
               padding: 10,
               alignItems: 'center',
-            }}>
+            }}
+          >
             <Image source={backIcon} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePlayPause}>
@@ -52,17 +55,17 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
 
         <View style={styles.overlayFlex}>
           <View style={styles.overlayExhibitWrap}>
-            <Text style={styles.overlayTitle}>{exhibitionData?.title}</Text>
-            <Text style={styles.overlayDateText}>{exhibitionData?.date.replaceAll('-', '.')}</Text>
+            <Text style={styles.overlayTitle}>{data?.title}</Text>
+            <Text style={styles.overlayDateText}>{data?.date}</Text>
           </View>
 
           <View style={styles.overlayProfileWrap}>
-            {exhibitionData?.author_profile_url ? (
-              <Image source={{uri: exhibitionData?.author_profile_url}} style={styles.profileImage} />
+            {data?.author_profile_url ? (
+              <Image source={{ uri: data?.author_profile_url }} style={styles.profileImage} />
             ) : (
               <Image source={profileImage} style={styles.profileImage} />
             )}
-            <Text style={styles.overlayProfileText}>{exhibitionData?.author_name}</Text>
+            <Text style={styles.overlayProfileText}>{data?.author_name}</Text>
           </View>
         </View>
       </View>
@@ -70,7 +73,7 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
   );
 };
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     width: width,

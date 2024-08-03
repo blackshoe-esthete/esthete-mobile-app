@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,24 +14,26 @@ import {
 } from 'react-native';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import {useNavigation} from '@react-navigation/native';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { useNavigation } from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
-import {useExhibitionComments} from '@hooks/useExhibitionDetails';
+import {useExhibitionComments, useExhibitionDetails} from '@hooks/useExhibitionDetails';
 import {ExhibitionData, IComment} from '@types/mainExhibitionService.type';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
+import {useProfileStore} from '@store/profileEditStore';
 
-const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: ExhibitionData; id: string}}}) => {
-  const {exhibitionData} = route.params;
-  const {id} = route.params;
+const ExhibitionEnteredScreen = ({ route }: { route: { params: { exhibitionData: ExhibitionData; id: string } } }) => {
+  const { exhibitionData } = route.params;
+  const { id } = route.params;
 
-  // const exhibitionQuery = useExhibitionDetails(id);
+  const exhibitionQuery = useExhibitionDetails(id);
   const commentQuery = useExhibitionComments(id);
 
-  // const {data, isLoading} = exhibitionQuery;
-  const {data: comments, isLoading: isCommentLoading} = commentQuery;
+  const {data: exhibibitionDetailData, isLoading} = exhibitionQuery;
+  const {data: comments, isLoading: isCommentLoading, refetch} = commentQuery;
+
 
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
@@ -45,6 +47,8 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
   const fillLikesIcon = require('../../assets/icons/push-likes-big.png');
   const commentsIcon = require('../../assets/icons/comments.png');
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const currentUserName = useProfileStore((state) => state.nickname); // 현재 사용자 닉네임 가져오기
 
   const panResponder = useRef(
     PanResponder.create({
@@ -64,8 +68,12 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
           }).start();
         }
       },
-    }),
+    })
   ).current;
+
+  const handleNewComment = async () => {
+    await refetch(); // 새 댓글이 추가되면 댓글 데이터를 다시 가져옴
+  };
 
   const openModal = () => {
     setModalVisible(true);
@@ -102,17 +110,19 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
           </View>
           <View style={styles.flexContainer}>
             <TouchableOpacity onPress={() => setOnLike(!onLike)}>
-              <Image style={{width: 30, height: 25.6}} source={onLike ? fillLikesIcon : likesIcon} />
+              <Image style={{ width: 30, height: 25.6 }} source={onLike ? fillLikesIcon : likesIcon} />
             </TouchableOpacity>
             <TouchableOpacity onPress={openModal}>
               <Image source={commentsIcon} />
             </TouchableOpacity>
           </View>
           <View style={styles.pictures}>
-            <ExhibitionPictureList isVisited={true} exhibitionData={exhibitionData} id={id} />
+            <ExhibitionPictureList isVisited={true} id={id} />
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>{exhibitionData?.description}</Text>
+            <Text style={styles.infoText}>
+              {exhibibitionDetailData?.description ? exhibibitionDetailData?.description : '전시 설명이 없습니다.'}
+            </Text>
           </View>
           <Text style={styles.title}>위치 정보</Text>
           <TouchableOpacity
@@ -121,13 +131,14 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
               flexDirection: 'row',
               gap: 10,
               alignItems: 'center',
-            }}>
+            }}
+          >
             <MapView
               style={styles.map}
               provider={PROVIDER_GOOGLE}
               initialRegion={{
-                latitude: 37.541,
-                longitude: 126.986,
+                latitude: exhibibitionDetailData?.location.latitude,
+                longitude: exhibibitionDetailData?.location.longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
@@ -138,8 +149,9 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
       <Modal animationType="none" transparent={true} visible={isModalVisible} onRequestClose={closeModal}>
         <View style={styles.modalOverlay} />
         <Animated.View
-          style={[styles.modalContainer, {height: modalHeight, transform: [{translateY: animatedHeight}]}]}
-          {...panResponder.panHandlers}>
+          style={[styles.modalContainer, { height: modalHeight, transform: [{ translateY: animatedHeight }] }]}
+          {...panResponder.panHandlers}
+        >
           <View style={styles.commentModalHeader}></View>
           <Text style={styles.commentTitle}>전시회 방명록</Text>
           {comments.map((comment: IComment, index: number) => (
@@ -152,9 +164,16 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
               commentText={comment.content}
               isLiked={comment.is_like}
               setModalVisible={setModalVisible}
+              exhibitionAuthorName={exhibitionData.photographer_name} // 전시회 작성자의 닉네임 전달
+              currentUserName={currentUserName}
             />
           ))}
-          <CommentInputBox exhibitionId={id} />
+          <CommentInputBox
+            exhibitionId={id}
+            authorName={exhibitionData.photographer_name}
+            currentUserName={currentUserName}
+            onNewComment={handleNewComment}
+          />
         </Animated.View>
       </Modal>
     </View>
@@ -235,7 +254,7 @@ const styles = StyleSheet.create({
   commentModalHeader: {
     marginTop: 15,
     marginLeft: '50%',
-    transform: [{translateX: -20}],
+    transform: [{ translateX: -20 }],
     justifyContent: 'center',
     width: 40,
     height: 5,
@@ -244,7 +263,7 @@ const styles = StyleSheet.create({
   },
   commentTitle: {
     marginLeft: '50%',
-    transform: [{translateX: -38}],
+    transform: [{ translateX: -38 }],
     marginTop: 24,
     color: '#fff',
     fontSize: 14,
