@@ -1,3 +1,4 @@
+import { UseMutationResult } from '@tanstack/react-query';
 import React from 'react';
 import {
   Modal,
@@ -8,12 +9,18 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+type Response = {
+  message: string;
+}
+
 type FilterModalProps = {
   title: string;
   subTitle: String;
   visible: boolean;
   onClose: () => void;
   button: string[];
+  button1?: UseMutationResult<Response, Error, void>
+  button2?: () => void;
 };
 
 const {width, height} = Dimensions.get('window');
@@ -24,6 +31,8 @@ function OutModal({
   visible,
   onClose,
   button,
+  button1,
+  button2
 }: FilterModalProps): React.JSX.Element {
   return (
     <Modal

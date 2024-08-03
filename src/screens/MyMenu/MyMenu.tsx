@@ -6,6 +6,8 @@ import nextIcon from '@assets/icons/arrow.png';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
 import OutModal from '@components/SettingScreen/GoOutModal';
+import { useMutation } from '@tanstack/react-query';
+import { logout } from 'src/apis/login';
 type Props = NativeStackScreenProps<Routes, 'MyMenu'>;
 
 function MyMenu({navigation, route}: Props) {
@@ -13,6 +15,17 @@ function MyMenu({navigation, route}: Props) {
   const modalShown = () => {
     setModalVisible(!modalVisible);
   }
+
+  const mutationLogout = useMutation({
+    mutationFn: logout,
+    onSuccess(data){
+      console.log(data);
+    },
+    onError(data){
+      console.log(data);
+    }
+  });
+
   const subTitleText = `
   ESTHETE를 이용해주셔서 감사합니다.
   다시 이용하시려면 재로그인 부탁드립니다.`
@@ -21,8 +34,10 @@ function MyMenu({navigation, route}: Props) {
     subTitle: subTitleText,
     visible: modalVisible,
     onClose: modalShown,
-    button: ['로그아웃', '닫기']
+    button: ['로그아웃', '닫기'],
+    // button1: mutationLogout.mutate()
   }
+
   const objects = [
     {id: 1, title: '좋아요', name: 'MyLikes'},
     {id: 2, title: '임시저장', name: 'Temporary'},

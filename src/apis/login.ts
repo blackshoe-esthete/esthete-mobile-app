@@ -36,6 +36,20 @@ export const login = async ({id, pwd}: loginProp) => {
   }
 }
 
+export const logout = async () => {
+  try{
+    const response = await userInstance.post(`/logout`, {});
+    if(response.status == 200){
+      console.log("로그아웃이 정상적으로 실행되었습니다.");
+    }
+
+    return response.data;
+  }catch(error) {
+    console.log('로그아웃 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
 //refresh 토큰 재발급
 export const refreshToken = async () => {
   try{
