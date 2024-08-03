@@ -11,9 +11,9 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		2D6C627C5A556BCD0C23A033 /* libPods-esthete_mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2049ACAE70465F206C4C6CBB /* libPods-esthete_mobile.a */; };
+		7CC446EF17B0C88D84E6CDF8 /* libPods-esthete_mobile-esthete_mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDD9E75AE891257BB729F428 /* libPods-esthete_mobile-esthete_mobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		8E82A008A1D7DF55F974DA10 /* libPods-esthete_mobile-esthete_mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C5C1312826F1DF99A9C1F2A3 /* libPods-esthete_mobile-esthete_mobileTests.a */; };
-		D56676E2F5E09366B018B515 /* libPods-esthete_mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB628F91F7802D0E6D54B65B /* libPods-esthete_mobile.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,21 +30,21 @@
 		00E356EE1AD99517003FC87E /* esthete_mobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = esthete_mobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* esthete_mobileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = esthete_mobileTests.m; sourceTree = "<group>"; };
-		079987CA0F92D66347197B97 /* Pods-esthete_mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile.release.xcconfig"; path = "Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* esthete_mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = esthete_mobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = esthete_mobile/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = esthete_mobile/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = esthete_mobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = esthete_mobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = esthete_mobile/main.m; sourceTree = "<group>"; };
-		5D3C47EF47024B7AD2B97331 /* Pods-esthete_mobile-esthete_mobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile-esthete_mobileTests.release.xcconfig"; path = "Target Support Files/Pods-esthete_mobile-esthete_mobileTests/Pods-esthete_mobile-esthete_mobileTests.release.xcconfig"; sourceTree = "<group>"; };
-		6078B852634AA308F56B9338 /* Pods-esthete_mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile.debug.xcconfig"; path = "Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile.debug.xcconfig"; sourceTree = "<group>"; };
+		18DB152261A06AD490F67D42 /* Pods-esthete_mobile-esthete_mobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile-esthete_mobileTests.release.xcconfig"; path = "Target Support Files/Pods-esthete_mobile-esthete_mobileTests/Pods-esthete_mobile-esthete_mobileTests.release.xcconfig"; sourceTree = "<group>"; };
+		2049ACAE70465F206C4C6CBB /* libPods-esthete_mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-esthete_mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4EF2F6F338715FF3D4F28B67 /* Pods-esthete_mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile.release.xcconfig"; path = "Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = esthete_mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		B5ACD8F5E84498C1C62739BA /* Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig"; path = "Target Support Files/Pods-esthete_mobile-esthete_mobileTests/Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig"; sourceTree = "<group>"; };
-		C5C1312826F1DF99A9C1F2A3 /* libPods-esthete_mobile-esthete_mobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-esthete_mobile-esthete_mobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FED323B18DA047B35BD7A29 /* Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig"; path = "Target Support Files/Pods-esthete_mobile-esthete_mobileTests/Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FB628F91F7802D0E6D54B65B /* libPods-esthete_mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-esthete_mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED5D00FA5B0549D4F9B594F6 /* Pods-esthete_mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-esthete_mobile.debug.xcconfig"; path = "Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile.debug.xcconfig"; sourceTree = "<group>"; };
 		FCA9B1462BFDD2430072C9E3 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		FDD9E75AE891257BB729F428 /* libPods-esthete_mobile-esthete_mobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-esthete_mobile-esthete_mobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E82A008A1D7DF55F974DA10 /* libPods-esthete_mobile-esthete_mobileTests.a in Frameworks */,
+				7CC446EF17B0C88D84E6CDF8 /* libPods-esthete_mobile-esthete_mobileTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,7 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D56676E2F5E09366B018B515 /* libPods-esthete_mobile.a in Frameworks */,
+				2D6C627C5A556BCD0C23A033 /* libPods-esthete_mobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,8 +101,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				FB628F91F7802D0E6D54B65B /* libPods-esthete_mobile.a */,
-				C5C1312826F1DF99A9C1F2A3 /* libPods-esthete_mobile-esthete_mobileTests.a */,
+				2049ACAE70465F206C4C6CBB /* libPods-esthete_mobile.a */,
+				FDD9E75AE891257BB729F428 /* libPods-esthete_mobile-esthete_mobileTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -142,10 +142,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6078B852634AA308F56B9338 /* Pods-esthete_mobile.debug.xcconfig */,
-				079987CA0F92D66347197B97 /* Pods-esthete_mobile.release.xcconfig */,
-				B5ACD8F5E84498C1C62739BA /* Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig */,
-				5D3C47EF47024B7AD2B97331 /* Pods-esthete_mobile-esthete_mobileTests.release.xcconfig */,
+				ED5D00FA5B0549D4F9B594F6 /* Pods-esthete_mobile.debug.xcconfig */,
+				4EF2F6F338715FF3D4F28B67 /* Pods-esthete_mobile.release.xcconfig */,
+				9FED323B18DA047B35BD7A29 /* Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig */,
+				18DB152261A06AD490F67D42 /* Pods-esthete_mobile-esthete_mobileTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -157,12 +157,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "esthete_mobileTests" */;
 			buildPhases = (
-				5D4E55BF2C817390D19C73BC /* [CP] Check Pods Manifest.lock */,
+				8CFCFCC3B3113A982718E33D /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				D423D0A77180E2CA8CBEE1C8 /* [CP] Embed Pods Frameworks */,
-				1410B3C0A07257A303BEE108 /* [CP] Copy Pods Resources */,
+				C35CBAB8B264573B5EA88FA3 /* [CP] Embed Pods Frameworks */,
+				050CE91BE038420B5BC591A9 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -178,13 +178,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "esthete_mobile" */;
 			buildPhases = (
-				A027818900CCD80173F6EB6B /* [CP] Check Pods Manifest.lock */,
+				478B9FE1C37DE207DD97FAE6 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				02826511E8CCFFF7735D65F9 /* [CP] Embed Pods Frameworks */,
-				EC62CA63946650762404786C /* [CP] Copy Pods Resources */,
+				26ECB51B8D9CCB6821DCAE1C /* [CP] Embed Pods Frameworks */,
+				3AC74D5CFB6D9265F730CFBD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -267,24 +267,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		02826511E8CCFFF7735D65F9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1410B3C0A07257A303BEE108 /* [CP] Copy Pods Resources */ = {
+		050CE91BE038420B5BC591A9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -301,29 +284,41 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile-esthete_mobileTests/Pods-esthete_mobile-esthete_mobileTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5D4E55BF2C817390D19C73BC /* [CP] Check Pods Manifest.lock */ = {
+		26ECB51B8D9CCB6821DCAE1C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-esthete_mobile-esthete_mobileTests-checkManifestLockResult.txt",
+				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A027818900CCD80173F6EB6B /* [CP] Check Pods Manifest.lock */ = {
+		3AC74D5CFB6D9265F730CFBD /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		478B9FE1C37DE207DD97FAE6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -345,7 +340,29 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D423D0A77180E2CA8CBEE1C8 /* [CP] Embed Pods Frameworks */ = {
+		8CFCFCC3B3113A982718E33D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-esthete_mobile-esthete_mobileTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C35CBAB8B264573B5EA88FA3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -360,23 +377,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile-esthete_mobileTests/Pods-esthete_mobile-esthete_mobileTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EC62CA63946650762404786C /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-esthete_mobile/Pods-esthete_mobile-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -412,7 +412,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B5ACD8F5E84498C1C62739BA /* Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig */;
+			baseConfigurationReference = 9FED323B18DA047B35BD7A29 /* Pods-esthete_mobile-esthete_mobileTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = RGVVGHH3TK;
@@ -442,7 +442,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D3C47EF47024B7AD2B97331 /* Pods-esthete_mobile-esthete_mobileTests.release.xcconfig */;
+			baseConfigurationReference = 18DB152261A06AD490F67D42 /* Pods-esthete_mobile-esthete_mobileTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -469,7 +469,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6078B852634AA308F56B9338 /* Pods-esthete_mobile.debug.xcconfig */;
+			baseConfigurationReference = ED5D00FA5B0549D4F9B594F6 /* Pods-esthete_mobile.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -497,7 +497,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 079987CA0F92D66347197B97 /* Pods-esthete_mobile.release.xcconfig */;
+			baseConfigurationReference = 4EF2F6F338715FF3D4F28B67 /* Pods-esthete_mobile.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -591,10 +591,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -663,10 +660,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

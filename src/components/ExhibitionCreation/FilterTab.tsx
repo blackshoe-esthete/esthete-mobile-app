@@ -25,15 +25,13 @@ const FilterTab: React.FC<FilterTabProps> = ({onPressFilter, selectedFilter}) =>
     const fetchFilters = async () => {
       try {
         const createdResults = await getCreatedFilters(filterServiceToken);
-
         if (createdResults && createdResults.payload && createdResults.payload.created_filter_list) {
           setMyFilters(currentFilters => [...currentFilters, ...createdResults.payload.created_filter_list]);
         }
 
         const purchasedResults = await getPurchasedFilters(filterServiceToken);
-
-        if (purchasedResults && purchasedResults.payload && purchasedResults.payload.purchased_filter_list) {
-          setPurchasedFilters(currentFilters => [...currentFilters, ...purchasedResults.payload.purchased_filter_list]);
+        if (purchasedResults && purchasedResults.payload && purchasedResults.payload.created_filter_list) {
+          setPurchasedFilters(currentFilters => [...currentFilters, ...purchasedResults.payload.created_filter_list]);
         }
       } catch (error) {
         console.log('Error fetching filters:', error);
