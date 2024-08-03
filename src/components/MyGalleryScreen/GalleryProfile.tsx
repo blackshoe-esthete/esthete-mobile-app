@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
   },
   circle: {
     // backgroundColor: '#D9D9D9',
-    width: '100%',
-    height: '100%',
+    width: 85,
+    height: 85,
     borderRadius: 100,
   },
   profileCircle: {
