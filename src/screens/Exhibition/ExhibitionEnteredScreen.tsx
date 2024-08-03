@@ -20,7 +20,6 @@ import {useNavigation} from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
 import {
-  useDislikeComment,
   useDislikeExhibition,
   useExhibitionComments,
   useExhibitionDetails,
@@ -30,6 +29,7 @@ import {ExhibitionData, IComment} from '@types/mainExhibitionService.type';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
 import {useProfileStore} from '@store/profileEditStore';
+import {getExhibitionDetails} from 'src/apis/exhibitionShow';
 
 const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: ExhibitionData; id: string}}}) => {
   const {exhibitionData} = route.params;
@@ -39,6 +39,7 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
   const commentQuery = useExhibitionComments(id);
 
   const {data: exhibibitionDetailData, isLoading} = exhibitionQuery;
+
   const {data: comments, isLoading: isCommentLoading, refetch} = commentQuery;
   const {mutate: likeExhibition} = useLikeExhibition();
   const {mutate: dislikeExhibition} = useDislikeExhibition();
@@ -46,7 +47,7 @@ const ExhibitionEnteredScreen = ({route}: {route: {params: {exhibitionData: Exhi
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
 
-  const [onLike, setOnLike] = useState(false);
+  const [onLike, setOnLike] = useState(exhibibitionDetailData.is_liked);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const animatedHeight = useRef(new Animated.Value(0)).current;
