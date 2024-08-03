@@ -109,3 +109,19 @@ export const putMyAdditional = async (info: profileInfo) => {
     throw error;
   }
 };
+
+//아이디 중복 체크
+export const duplicateId = async (nickname: string) => {
+  try{
+    const response = await mygalleryInstance.get(`/check-nickname/${nickname}`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    
+    return response.data.is_success;
+  } catch (error) {
+    console.log('아이디 중복 확인 실패 데이터: ', (error as AxiosError).config);
+    throw error;
+  }
+}

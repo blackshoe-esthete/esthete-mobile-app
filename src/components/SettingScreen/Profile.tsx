@@ -13,8 +13,9 @@ import verified from '@assets/icons/verified.png';
 import unverified from '@assets/icons/unverified.png';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProfileStore } from '@store/profileEditStore';
+import { duplicateId } from 'src/apis/userInfo';
 
 type ProfileScreenNavigationProp = NativeStackScreenProps<Routes, 'ProfileEdit'>;
 interface NavigationProps {
@@ -59,33 +60,38 @@ function Profile({navigation, route, image}: Props) {
     );
   };
 
-  const textState = useRef<TextInput>();
-  const [enable, setEnable] = useState(false);
   const {nickname, intro, script, setNickname, setIntro, setScript} = useProfileStore();
   const getText = (newText: any) => {
-    setNickname(newText);
+    if(newText != nickname && newText.length > 0){
+      setNickname(newText);
+    }
   };
-  const getFocus = () => {
-    const text = textState.current?.focus;
-    console.log(text);
-  };
+  const {data: checkNickname} = useQuery({
+    queryKey: ['check-nickname', nickname],
+    queryFn: () => duplicateId(nickname),
+    enabled: !!nickname
+  });
   
   const getIntro = (newIntro: any) => {
-    setIntro(newIntro);
+    if(newIntro != intro && newIntro.length > 0){
+      setIntro(newIntro);
+    }
   };
 
   const getScript = (newScript: any) => {
-    setScript(newScript);
+    if(newScript != script && newScript.length > 0){
+      setScript(newScript);
+    }
   }
 
   useEffect(() => {
-    if (nickname === '') {
-      setEnable(false);
-    }else{
-      setEnable(true);
+    if (userInfo?.name && userInfo?.introduce && userInfo?.biography) {
+      setNickname(userInfo.name);
+      setIntro(userInfo.introduce);
+      setScript(userInfo.biography);
     }
-    // 중복확인
-  });
+  }, [userInfo, setNickname, setIntro, setScript]);
+
 
   return (
     <View style={styles.container}>
@@ -94,11 +100,10 @@ function Profile({navigation, route, image}: Props) {
         onChange={getText}
         placeholder={userInfo?.name}
         height={70} 
-        ref={textState}
         marginTop={30}
         value={nickname}
       />
-      {enable ? (
+      {checkNickname ? (
         <View style={styles.alertBox}>
           <Image source={verified} style={styles.alertIcon} />
           <Text style={styles.alertText}>사용 가능한 닉네임입니다.</Text>
