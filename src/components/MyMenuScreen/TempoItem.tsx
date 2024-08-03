@@ -1,14 +1,7 @@
+import React, {useState} from 'react';
+import {View, StyleSheet, Image, Text, Dimensions, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import CommonModal from '@components/common/CommonModal';
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
 
 type galleryProp = {
   temporary_exhibition_id: string;
@@ -16,8 +9,9 @@ type galleryProp = {
   thumbnail_url: string;
   author?: string;
   date?: string;
-  label?: string;
+  label?: 'collection';
 };
+
 type filterProp = {
   temporary_filter_id: string;
   filter_thumbnail: string;
@@ -25,70 +19,67 @@ type filterProp = {
   representation_img_list: string[];
   filter_tag_list: string[];
   updated_at: string;
-  label?: string;
+  label?: 'filter';
 };
 
+type Props = galleryProp | filterProp;
+
 const {width} = Dimensions.get('window');
-function TempoItem(props: (galleryProp | filterProp)): React.JSX.Element {
+
+const TempoItem: React.FC<Props> = props => {
   const navigation = useNavigation();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
   const deleteModalShow = () => {
     setDeleteModalVisible(!deleteModalVisible);
   };
+
   const subTitleText = `
     임시저장한 전시를 삭제하시겠습니까?
 
     삭제를 완료하면 관련된 정보도 모두 사라지며
     복구가 불가능합니다.
-    `
+    `;
+
   const deleteProps = {
     title: '임시저장본을 삭제하시겠습니까?',
     subTitle: subTitleText,
     visible: deleteModalVisible,
     onClose: deleteModalShow,
-    button: ['삭제하기', '닫기']
+    button: ['삭제하기', '닫기'],
   };
-  const navigateScreen = (title: string) => {
-    if(title == "collection"){
-      navigation.navigate('ExhibitionCreate');
-    }else{
+
+  const navigateScreen = () => {
+    if (props.label === 'collection') {
+      navigation.navigate('ExhibitionCreate', {tmp_id: (props as galleryProp).temporary_exhibition_id});
+    } else if (props.label === 'filter') {
       navigation.navigate('FilterCreate');
     }
-  }
+  };
 
   const thumbnailImage = () => {
-    if(props.label == 'collection'){
-      return (
-        <Image src={(props as galleryProp).thumbnail_url} style={styles.photoIcon} />
-      );
-    }else if(props.label == 'filter'){
-      return (
-        <Image src={(props as filterProp).filter_thumbnail} style={styles.photoIcon} />
-      )
+    if (props.label === 'collection') {
+      return <Image source={{uri: (props as galleryProp).thumbnail_url}} style={styles.photoIcon} />;
+    } else if (props.label === 'filter') {
+      return <Image source={{uri: (props as filterProp).filter_thumbnail}} style={styles.photoIcon} />;
     }
     return null;
-  }
+  };
 
   const resume = () => {
-    if(props.label == 'collection'){
-      return (
-        <Text style={styles.textStyle}>{(props as galleryProp).date} 임시저장</Text>
-      );
-    }else if(props.label == 'filter'){
-      return (
-        <Text style={styles.textStyle}>{(props as filterProp).updated_at} 임시저장</Text>
-      )
+    if (props.label === 'collection') {
+      return <Text style={styles.textStyle}>{(props as galleryProp).date} 임시저장</Text>;
+    } else if (props.label === 'filter') {
+      return <Text style={styles.textStyle}>{(props as filterProp).updated_at} 임시저장</Text>;
     }
     return null;
-  }
+  };
 
   return (
     <View style={{flex: 1}}>
       <View style={styles.photoBox}>
         {thumbnailImage()}
-        <View style={styles.titleBox}>
-          {resume()}
-        </View>
+        <View style={styles.titleBox}>{resume()}</View>
       </View>
       <View style={styles.buttonLayer}>
         <TouchableOpacity style={styles.buttonLeftBox} onPress={deleteModalShow}>
@@ -96,16 +87,16 @@ function TempoItem(props: (galleryProp | filterProp)): React.JSX.Element {
             <Text style={styles.buttonText}>삭제하기</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonRightBox} onPress={()=>navigateScreen(props.label || "collection")}>
+        <TouchableOpacity style={styles.buttonRightBox} onPress={navigateScreen}>
           <View style={styles.buttonContent}>
             <Text style={styles.buttonText}>편집하기</Text>
           </View>
         </TouchableOpacity>
-        <CommonModal {...deleteProps}/> 
+        <CommonModal {...deleteProps} />
       </View>
     </View>
   );
-}
+};
 
 export default TempoItem;
 
