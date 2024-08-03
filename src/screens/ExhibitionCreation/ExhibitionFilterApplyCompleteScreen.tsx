@@ -93,7 +93,6 @@ const ExhibitionFilterApplyCompleteScreen = () => {
         title: response.title,
         description: response.description,
         mood: mappedTags,
-        location: null,
         tmpExhibitionId: tmpId,
       });
     } catch (error) {
@@ -259,7 +258,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           <View style={styles.textInput}>
             <TextInput
               style={styles.text}
-              placeholder="필터 설명을 작성해주세요"
+              placeholder="전시 설명을 작성해주세요"
               placeholderTextColor="#D6D6D6"
               onChangeText={text => setDetails({description: text})}
               value={details.description}

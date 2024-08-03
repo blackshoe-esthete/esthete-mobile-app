@@ -1,6 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
-import {useExhibitionCreationStore, useFilterDetailsStore, FilterAttributes} from '../../store/exhibitionCreationStore';
+import {
+  useExhibitionCreationStore,
+  useFilterDetailsStore,
+  FilterAttributes,
+  ImageFilterSettings,
+} from '../../store/exhibitionCreationStore';
 import {Slider} from '@miblanchard/react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
@@ -24,7 +29,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
   const {
-    selectedFilterId,
     setSelectedFilterId,
     setSelectedFilterAttributes,
     selectedFilterAttributes,
@@ -34,42 +38,53 @@ const ExhibitionFilterApplyAllScreen = () => {
   const {
     selectedImageUri,
     additionalImageUri,
-    sliderValue,
-    setSliderValue,
-    setCurrentFilterId,
+    sliderValues,
+    setSliderValueForAll,
     setCurrentFilterIdForAll,
+    imageFilterSettings,
+    setImageFilterSettingsForAll, // 모든 이미지에 필터 및 슬라이더 설정 적용
   } = useExhibitionCreationStore();
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>('');
 
   useEffect(() => {
     setSelectedFilterId('0');
-    setSliderValue(50);
+    setSliderValueForAll(50);
   }, []);
 
   // 슬라이더 값 변경
   const handleSliderChange = (value: number) => {
-    setSliderValue(value);
+    setSliderValueForAll(value);
     if (selectedFilterAttributes) {
       // 슬라이더 값에 따라 필터 속성 조정
       applyAdjustedAttributes(value);
     }
+    // 모든 이미지에 필터 및 슬라이더 값 저장
+    const currentFilterId = selectedFilter;
+    const currentSliderValue = sliderValues[0] || 50; // Use the first value or default to 50
+    const settings: ImageFilterSettings = {
+      filterId: currentFilterId,
+      filterAttributes: currentFilterAttributes,
+      sliderValue: currentSliderValue,
+    };
+    setImageFilterSettingsForAll(settings);
   };
+
   // 다음 버튼 클릭
   const onPressNext = () => {
     if (!selectedImageUri && additionalImageUri.length === 0) {
       Alert.alert('이미지를 선택해주세요');
       return;
     }
+
     navigation.navigate('ExhibitionFilterApplyComplete');
   };
 
   const onPressFilter = async (id: string) => {
     setSelectedFilter(id);
-    setCurrentFilterId(id);
     setCurrentFilterIdForAll(id);
     setSelectedFilterId(id);
-    setSliderValue(50);
+    setSliderValueForAll(50);
     try {
       const filterDetails = await getFilterDetails(id, filterServiceToken);
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
@@ -83,8 +98,7 @@ const ExhibitionFilterApplyAllScreen = () => {
 
   const applyAdjustedAttributes = (scale: number) => {
     if (selectedFilterAttributes) {
-      // scale을 0부터 100까지의 값으로 가정
-      const scaleFactor = scale / 50; // 50일 때 1, 0일 때 0, 100일 때 2가 됩니다.
+      const scaleFactor = scale / 100; // 슬라이더 값에 따라 필터 강도 조절
 
       const adjustedAttributes: FilterAttributes = {
         brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor),
@@ -109,8 +123,7 @@ const ExhibitionFilterApplyAllScreen = () => {
     if (value === undefined) return undefined;
 
     if (isInverse) {
-      // gray_scale의 경우 반대로 작동
-      return Math.max(0, Math.min(100, value * (2 - scaleFactor)));
+      return Math.max(0, value * (1 - scaleFactor));
     } else {
       return Math.max(0, value * scaleFactor);
     }
@@ -142,30 +155,30 @@ const ExhibitionFilterApplyAllScreen = () => {
             }
             scrollAnimationDuration={1000}
             onSnapToItem={index => setCurrentImageIndex(index)}
-            renderItem={({item, index}) => (
-              <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index: index})}>
-                {selectedFilterId !== '0' && sliderValue !== 0 ? (
+            renderItem={({item, index}) => {
+              const currentFilter = imageFilterSettings[index]?.filterAttributes || {};
+              console.log(currentFilter);
+              return (
+                <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index})}>
                   <Sharpen
                     image={
                       <ColorMatrix
                         matrix={concatColorMatrices([
-                          brightness(currentFilterAttributes?.brightness),
-                          contrast(currentFilterAttributes?.contrast),
-                          saturate(currentFilterAttributes?.saturation),
-                          hueRotate(currentFilterAttributes?.hue),
-                          temperature(currentFilterAttributes?.temperature),
-                          grayscale(currentFilterAttributes?.grayScale),
+                          brightness(currentFilter.brightness),
+                          contrast(currentFilter.contrast),
+                          saturate(currentFilter.saturation),
+                          hueRotate(currentFilter.hue),
+                          temperature(currentFilter.temperature),
+                          grayscale(currentFilter.grayScale),
                         ])}
                         image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
                       />
                     }
-                    amount={selectedFilterAttributes?.sharpness}
+                    amount={currentFilter.sharpness}
                   />
-                ) : (
-                  <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
-                )}
-              </TouchableOpacity>
-            )}
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
 
@@ -173,10 +186,10 @@ const ExhibitionFilterApplyAllScreen = () => {
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
-              <Text style={styles.sliderValueText}>{Math.round(sliderValue)}</Text>
+              <Text style={styles.sliderValueText}>{Math.round(sliderValues[currentImageIndex] || 50)}</Text>
             </View>
             <Slider
-              value={sliderValue}
+              value={sliderValues[currentImageIndex] || 50}
               onValueChange={value => handleSliderChange(value[0])}
               minimumValue={0}
               maximumValue={100} // 슬라이더의 최대값을 100으로 설정
@@ -249,7 +262,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
-  // carousel
   carouselContainer: {
     width: SCREEN_WIDTH - 40,
     height: (SCREEN_WIDTH - 40) * 0.75,
