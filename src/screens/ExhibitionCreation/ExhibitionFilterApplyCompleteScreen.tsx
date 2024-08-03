@@ -44,7 +44,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
   const navigation = useNavigation();
   const {details, setDetails, resetDetails} = useExhibitionDetailsStore(); // 스토어 사용
   //선택한 이미지
-  const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri, resetImages} =
+  const {selectedImageUri, setSelectedImageUri, additionalImageUri, imageFilterSettings, resetImages} =
     useExhibitionCreationStore();
   const {currentFilterAttributes} = useFilterDetailsStore();
 
@@ -219,26 +219,31 @@ const ExhibitionFilterApplyCompleteScreen = () => {
             }
             scrollAnimationDuration={1000}
             onSnapToItem={index => setCurrentImageIndex(index)}
-            renderItem={({item}) => (
-              <TouchableOpacity>
-                <Sharpen
-                  image={
-                    <ColorMatrix
-                      matrix={concatColorMatrices([
-                        brightness(currentFilterAttributes?.brightness),
-                        contrast(currentFilterAttributes?.contrast),
-                        saturate(currentFilterAttributes?.saturation),
-                        hueRotate(currentFilterAttributes?.hue),
-                        temperature(currentFilterAttributes?.temperature),
-                        grayscale(currentFilterAttributes?.grayScale),
-                      ])}
-                      image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
-                    />
-                  }
-                  amount={currentFilterAttributes?.sharpness}
-                />
-              </TouchableOpacity>
-            )}
+            renderItem={({item, index}) => {
+              const currentFilter = imageFilterSettings[index]?.filterAttributes || {};
+
+              return (
+                // JSX를 반환하도록 return 추가
+                <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index})}>
+                  <Sharpen
+                    image={
+                      <ColorMatrix
+                        matrix={concatColorMatrices([
+                          brightness(currentFilter?.brightness),
+                          contrast(currentFilter?.contrast),
+                          saturate(currentFilter?.saturation),
+                          hueRotate(currentFilter?.hue),
+                          temperature(currentFilter?.temperature),
+                          grayscale(currentFilter?.grayScale),
+                        ])}
+                        image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                      />
+                    }
+                    amount={currentFilterAttributes?.sharpness}
+                  />
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
 

@@ -26,6 +26,9 @@ import {getFilterDetails} from 'src/apis/exhibitionCreate';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
+// 최소 및 최대 밝기 값 설정
+const MIN_BRIGHTNESS = 0.2; // 최소 밝기 임계값
+
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
   const {
@@ -49,7 +52,7 @@ const ExhibitionFilterApplyAllScreen = () => {
 
   useEffect(() => {
     setSelectedFilterId('0');
-    setSliderValueForAll(50);
+    setSliderValueForAll(100);
   }, []);
 
   // 슬라이더 값 변경
@@ -61,7 +64,7 @@ const ExhibitionFilterApplyAllScreen = () => {
     }
     // 모든 이미지에 필터 및 슬라이더 값 저장
     const currentFilterId = selectedFilter;
-    const currentSliderValue = sliderValues[0] || 50; // Use the first value or default to 50
+    const currentSliderValue = sliderValues[0] || 100; // Use the first value or default to 50
     const settings: ImageFilterSettings = {
       filterId: currentFilterId,
       filterAttributes: currentFilterAttributes,
@@ -80,11 +83,7 @@ const ExhibitionFilterApplyAllScreen = () => {
     navigation.navigate('ExhibitionFilterApplyComplete');
   };
 
-  const onPressFilter = async (id: string) => {
-    setSelectedFilter(id);
-    setCurrentFilterIdForAll(id);
-    setSelectedFilterId(id);
-    setSliderValueForAll(50);
+  const applyFilterAttributes = async (id: string) => {
     try {
       const filterDetails = await getFilterDetails(id, filterServiceToken);
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
@@ -96,12 +95,29 @@ const ExhibitionFilterApplyAllScreen = () => {
     }
   };
 
+  const onPressFilter = async (id: string) => {
+    setSelectedFilter(id);
+    setCurrentFilterIdForAll(id);
+    setSelectedFilterId(id);
+    setSliderValueForAll(100);
+    applyFilterAttributes(id); // Fetch and apply filter details
+
+    const currentFilterId = selectedFilter;
+    const currentSliderValue = 100;
+    const settings: ImageFilterSettings = {
+      filterId: currentFilterId,
+      filterAttributes: currentFilterAttributes,
+      sliderValue: currentSliderValue,
+    };
+    setImageFilterSettingsForAll(settings);
+  };
+
   const applyAdjustedAttributes = (scale: number) => {
     if (selectedFilterAttributes) {
       const scaleFactor = scale / 100; // 슬라이더 값에 따라 필터 강도 조절
 
       const adjustedAttributes: FilterAttributes = {
-        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor),
+        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor, MIN_BRIGHTNESS),
         sharpness: adjustAttribute(selectedFilterAttributes.sharpness, scaleFactor),
         exposure: adjustAttribute(selectedFilterAttributes.exposure, scaleFactor),
         contrast: adjustAttribute(selectedFilterAttributes.contrast, scaleFactor),
@@ -157,25 +173,30 @@ const ExhibitionFilterApplyAllScreen = () => {
             onSnapToItem={index => setCurrentImageIndex(index)}
             renderItem={({item, index}) => {
               const currentFilter = imageFilterSettings[index]?.filterAttributes || {};
-              console.log(currentFilter);
+              const sliderValue = sliderValues[index];
+              console.log(sliderValue);
               return (
                 <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index})}>
-                  <Sharpen
-                    image={
-                      <ColorMatrix
-                        matrix={concatColorMatrices([
-                          brightness(currentFilter.brightness),
-                          contrast(currentFilter.contrast),
-                          saturate(currentFilter.saturation),
-                          hueRotate(currentFilter.hue),
-                          temperature(currentFilter.temperature),
-                          grayscale(currentFilter.grayScale),
-                        ])}
-                        image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
-                      />
-                    }
-                    amount={currentFilter.sharpness}
-                  />
+                  {sliderValue === 0 ? (
+                    <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+                  ) : (
+                    <Sharpen
+                      image={
+                        <ColorMatrix
+                          matrix={concatColorMatrices([
+                            brightness(currentFilter.brightness),
+                            contrast(currentFilter.contrast),
+                            saturate(currentFilter.saturation),
+                            hueRotate(currentFilter.hue),
+                            temperature(currentFilter.temperature),
+                            grayscale(currentFilter.grayScale),
+                          ])}
+                          image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                        />
+                      }
+                      amount={currentFilter.sharpness}
+                    />
+                  )}
                 </TouchableOpacity>
               );
             }}

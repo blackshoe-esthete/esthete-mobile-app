@@ -31,6 +31,9 @@ interface RouteParams {
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
+// 최소 및 최대 밝기 값 설정
+const MIN_BRIGHTNESS = 0.2; // 최소 밝기 임계값
+
 const ExhibitionFilterApplyScreen: React.FC = () => {
   const {
     selectedImageUri,
@@ -52,7 +55,7 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
 
   // Use index-based state from the store
   const currentFilterId = currentFilterIds[index] || '0';
-  const currentSliderValue = sliderValues[index] || 50;
+  const currentSliderValue = sliderValues[index] || 100;
 
   const [selectedFilter, setSelectedFilter] = useState<string>(currentFilterId);
   const [temporaryFilterAttributes, setTemporaryFilterAttributes] = useState<FilterAttributes>({});
@@ -80,7 +83,7 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
       const scaleFactor = scale / 100; // Adjusting scale based on 0-100
 
       const adjustedAttributes: FilterAttributes = {
-        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor),
+        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor, MIN_BRIGHTNESS),
         sharpness: adjustAttribute(selectedFilterAttributes.sharpness, scaleFactor),
         exposure: adjustAttribute(selectedFilterAttributes.exposure, scaleFactor),
         contrast: adjustAttribute(selectedFilterAttributes.contrast, scaleFactor),
@@ -141,7 +144,7 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
     setSelectedFilter(id); // Update selected filter
     setSelectedFilterId(id); // Set in global state
     applyFilterAttributes(id); // Fetch and apply filter details
-    setTemporarySliderValue(50); // Reset slider value to default
+    setTemporarySliderValue(100); // Reset slider value to default
   };
 
   return (
