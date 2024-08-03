@@ -41,9 +41,12 @@ export const getMyFollower = async () => {
 
 export const getMyInfo = async () => {
   try {
+    const token = AsyncStorage.getItem('token');
+    console.log(token);
     const response = await mygalleryInstance.get(`/authors`, {
       headers: {
         Authorization: `Bearer ${exhibitionServiceToken}`,
+        // Authorization: `Bearer ${token}`
       },
     });
     if (response.data.code == 200) {

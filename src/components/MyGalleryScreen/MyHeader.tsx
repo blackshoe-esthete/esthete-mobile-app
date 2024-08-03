@@ -13,7 +13,7 @@ function MyHeader({route, navigation}: Props): React.JSX.Element {
   const {data: userProfile} = useQuery({
     queryKey: ['my-profile'],
     queryFn: getMyInfo,
-  });   
+  });
 
   return (
     <SafeAreaView style={styles.container}>

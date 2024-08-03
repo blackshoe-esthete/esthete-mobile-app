@@ -103,6 +103,7 @@ function SocialLogin(props: socialProp): React.JSX.Element {
     console.log('idToekn : ', idToken);
     if (idToken) {
       setResult(idToken);
+      navigation.navigate('SignUp2');
     }
   }
 
