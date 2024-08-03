@@ -35,6 +35,9 @@ export const getCreatedFilters = async (token: string | undefined) => {
 };
 
 export const getFilterDetails = async (filterId: string, authToken: string) => {
+  if (filterId === '0') {
+    return;
+  }
   const url = `/${filterId}/details`;
   const headers = {
     Authorization: `Bearer ${authToken}`,

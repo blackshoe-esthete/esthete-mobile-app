@@ -61,7 +61,10 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
       setTemporaryFilterAttributes(filterDetails.payload.filter_attributes);
     } catch (error) {
-      console.error('Failed to fetch filter details:', error);
+      if (id !== '0') {
+        console.log(id);
+        console.error('Failed to fetch filter details:', error);
+      }
     }
   };
 

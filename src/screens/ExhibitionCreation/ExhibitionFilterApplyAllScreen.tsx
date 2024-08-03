@@ -75,7 +75,9 @@ const ExhibitionFilterApplyAllScreen = () => {
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
       setCurrentFilterAttributes(filterDetails.payload.filter_attributes);
     } catch (error) {
-      console.error('Failed to fetch filter details:', error);
+      if (id !== '0') {
+        console.error('Failed to fetch filter details:', error);
+      }
     }
   };
 
