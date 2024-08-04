@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
+import {captureRef} from 'react-native-view-shot';
 import {
   Pressable,
   StyleSheet,
@@ -78,16 +79,16 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     }
   }, []);
 
-  const loadTemporaryExhibition = async tmpId => {
+  const loadTemporaryExhibition = async (tmpId: string) => {
     try {
       const response = await myTempExhibitionDetails(tmpId);
 
       const mappedTags = response.tags
-        .map(tag => {
+        .map((tag: string) => {
           const moodOption = moodOptions.find(option => option.name === tag);
           return moodOption ? moodOption.id : null;
         })
-        .filter(tag => tag !== null);
+        .filter((tag: string) => tag !== null);
 
       setDetails({
         title: response.title,
@@ -101,6 +102,26 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     }
   };
 
+  const imageRefs = useRef([]);
+
+  const saveFilteredImage = async (index: number) => {
+    return new Promise<string | null>(resolve => {
+      setTimeout(async () => {
+        try {
+          const uri = await captureRef(imageRefs.current[index], {
+            format: 'jpg',
+            quality: 0.8,
+          });
+          console.log('Saved image uri:', uri);
+          resolve(uri);
+        } catch (error) {
+          console.error('Failed to save image:', error);
+          resolve(null);
+        }
+      }, 500); // 500ms 대기 시간
+    });
+  };
+
   const finalizeCreation = async (type: string) => {
     if (type == 'create' && !allFieldsFilled) {
       console.log('details', details);
@@ -108,19 +129,27 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       return;
     }
 
-    // filter_photo_list 구성
-    const filterPhotos = additionalImageUri.map(image => ({
+    const filteredImages = await Promise.all(
+      additionalImageUri.map(async (image, index) => {
+        const uri = await saveFilteredImage(index);
+        return {
+          ...image,
+          filteredUri: uri || image.uri, // 캡처 실패 시 원본 URI 사용
+        };
+      }),
+    );
+
+    const filterPhotos = filteredImages.map(image => ({
       gray_scale: image.filterDetails?.grayScale,
       filter_id: image.filterDetails?.id,
     }));
 
-    const exhibition_photo = additionalImageUri.map((uri, index) => ({
-      uri: uri.uri,
-      name: `representation${index}${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
+    const exhibition_photo = filteredImages.map((image, index) => ({
+      uri: image.filteredUri,
+      name: `representation${index}${Date.now()}.jpg`,
       type: 'image/jpg',
     }));
 
-    // exhibitionData 구성
     const exhibitionData = {
       filter_photo_list: {filter_photos: filterPhotos},
       exhibition_information: {
@@ -223,8 +252,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
               const currentFilter = imageFilterSettings[index]?.filterAttributes || {};
 
               return (
-                // JSX를 반환하도록 return 추가
-                <TouchableOpacity onPress={() => navigation.navigate('ExhibitionFilterApply', {index})}>
+                <View ref={el => (imageRefs.current[index] = el)}>
                   <Sharpen
                     image={
                       <ColorMatrix
@@ -239,9 +267,9 @@ const ExhibitionFilterApplyCompleteScreen = () => {
                         image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
                       />
                     }
-                    amount={currentFilterAttributes?.sharpness}
+                    amount={currentFilter?.sharpness}
                   />
-                </TouchableOpacity>
+                </View>
               );
             }}
           />

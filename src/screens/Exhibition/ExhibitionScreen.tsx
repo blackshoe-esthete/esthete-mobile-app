@@ -96,7 +96,7 @@ const ExhibitionScreen: React.FC = () => {
                     isPlaying={isPlaying}
                     currentExhibitionIndex={item}
                   />
-                  <ExhibitionPictureList isVisited={false} exhibitionData={currentExhibitionData} id={item} />
+                  <ExhibitionPictureList isVisited={false} id={item} />
                 </View>
               </View>
               <View style={styles.buttonContainer}>
