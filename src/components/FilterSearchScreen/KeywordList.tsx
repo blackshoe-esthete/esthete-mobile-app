@@ -12,6 +12,7 @@ function Keyword({dummy, marginProp, marginVertical}: any): React.JSX.Element {
           dummy
             ? dummy
             : [
+                '전체',
                 '따뜻한',
                 '부드러운',
                 '평화로운',

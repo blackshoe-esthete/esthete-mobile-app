@@ -180,3 +180,36 @@ export const deleteLikeToFilter = async (filterId: string) => {
     throw error;
   }
 }
+
+type tagIdList = {
+  tagId?: string;
+  keyword?: string;
+};
+
+//필터태그로 검색
+export const searchForTag = async (tags: tagIdList) => {
+  try{
+ 
+     const params = {
+       keyword: tags?.keyword || '',
+       tagId: tags?.tagId || '',
+     };
+
+    const queryString = new URLSearchParams(params).toString();
+    const response = await filterInstance.get(`/searching?${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+
+    if(response.status == 200){
+      console.log("필터 태그결과가 정상적으로 조회되었습니다.");
+      console.log(response.data.content);
+    }
+
+    return response.data.content;
+  }catch (error) {
+    console.log('필터 태그로 검색 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}

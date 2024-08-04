@@ -1,5 +1,5 @@
 import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -15,7 +15,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
 import searchIcon from '@assets/icons/search.png';
 import { useQuery } from '@tanstack/react-query';
-import { filterSearch } from 'src/apis/filterService';
+import { filterSearch, searchForTag } from 'src/apis/filterService';
+import ActivateKeyword from '@components/FilterSearchScreen/ActivateKeyword';
 type Props = NativeStackScreenProps<Routes, 'FilterSearchPage'>;
 
 type ImageItem = {
@@ -31,11 +32,29 @@ type ImageItem = {
 
 function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
   const {top} = useSafeAreaInsets();
+  const [tagId, setTagId] = useState<string>('');
+  const [keyword, setKeyword] = useState('');
+
+  const handleTagChange = (newTagId: string) => {
+    setTagId(newTagId);
+  };
+
+  useEffect(() => {
+    console.log(tagId);
+  }, [tagId]);
+
+  const {data: tagFilterData, isLoading: isLoading1} = useQuery({
+    queryKey: ['tag-filter', {tagId, keyword}],
+    queryFn: () => searchForTag({tagId, keyword}),
+    enabled: !!keyword || !!tagId
+  });
+
+  //필터 검색 전체 데이터
   const {data: filterData, isLoading, isError} = useQuery({
     queryKey: ['filter-searched'],
     queryFn: filterSearch
   });
-  if (isLoading) {
+  if (isLoading || isLoading1) {
     // 데이터 로딩 중일 때 로딩 인디케이터 표시
     return (
       <SafeAreaView edges={['bottom']} style={styles.loadingContainer}>
@@ -53,6 +72,7 @@ function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
     );
   }
 
+
   return (
     <SafeAreaView edges={['bottom']}>
       <View style={[styles.topInset, {paddingTop: top}]} />
@@ -69,13 +89,14 @@ function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
 
         {/* 키워드 */}
         <View style={{marginLeft: 20}}>
-          <KeywordList marginVertical={30} />
+          <ActivateKeyword marginVertical={30} onValueChange={handleTagChange} />
         </View>
 
         {/* 필터 */}
         <View style={{display: 'flex'}}>
           <MasonryList
-            data={filterData}
+            data={(tagId|| keyword) ? tagFilterData : filterData}
+            // data={filterData}
             keyExtractor={(item: ImageItem) => item.filter_id}
             numColumns={2}
             renderItem={({item, i}) => (
