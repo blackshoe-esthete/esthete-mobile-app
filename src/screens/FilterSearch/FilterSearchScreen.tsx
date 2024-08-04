@@ -17,6 +17,7 @@ import searchIcon from '@assets/icons/search.png';
 import { useQuery } from '@tanstack/react-query';
 import { filterSearch, searchForTag } from 'src/apis/filterService';
 import ActivateKeyword from '@components/FilterSearchScreen/ActivateKeyword';
+import { useHomeSearchStore } from '@store/searchStore';
 type Props = NativeStackScreenProps<Routes, 'FilterSearchPage'>;
 
 type ImageItem = {
@@ -33,7 +34,8 @@ type ImageItem = {
 function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
   const {top} = useSafeAreaInsets();
   const [tagId, setTagId] = useState<string>('');
-  const [keyword, setKeyword] = useState('');
+  // const [keyword, setKeyword] = useState('');
+  const { keyword, setKeyword } = useHomeSearchStore();
 
   const handleTagChange = (newTagId: string) => {
     setTagId(newTagId);
