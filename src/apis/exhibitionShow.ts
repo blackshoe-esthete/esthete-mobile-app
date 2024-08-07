@@ -173,7 +173,7 @@ export const postExhibitionLike = async ({exhibition_id}: PostExhibitionLikePara
 };
 
 export const postExhibitionDislike = async ({exhibition_id}: PostExhibitionLikeParams): Promise<AxiosResponse<any>> => {
-  const response = await mygalleryInstance.delete(`/exhibitions/like/${exhibition_id}`, {
+  const response = await mygalleryInstance.delete(`/exhibitions/likes/${exhibition_id}`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiToken}`,
