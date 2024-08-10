@@ -62,7 +62,16 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
   const [temporarySliderValue, setTemporarySliderValue] = useState<number>(currentSliderValue);
 
   useEffect(() => {
-    applyAdjustedAttributes(temporarySliderValue);
+    // 올바른 필터 설정 및 슬라이더 값을 가져오기 위한 초기화
+    setSelectedFilterId(currentFilterId);
+    setTemporarySliderValue(currentSliderValue);
+    applyFilterAttributes(currentFilterId); // 필터 속성을 가져와서 적용
+  }, []);
+
+  useEffect(() => {
+    if (selectedFilterAttributes) {
+      applyAdjustedAttributes(temporarySliderValue);
+    }
   }, [temporarySliderValue, selectedFilterAttributes]);
 
   const applyFilterAttributes = async (id: string) => {
@@ -77,13 +86,12 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
     }
   };
 
-  // Adjust attributes based on slider value
   const applyAdjustedAttributes = (scale: number) => {
     if (selectedFilterAttributes) {
-      const scaleFactor = scale / 100; // Adjusting scale based on 0-100
+      const scaleFactor = scale / 100; // 0-100 범위의 스케일 조정
 
       const adjustedAttributes: FilterAttributes = {
-        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor, MIN_BRIGHTNESS),
+        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor, false, true),
         sharpness: adjustAttribute(selectedFilterAttributes.sharpness, scaleFactor),
         exposure: adjustAttribute(selectedFilterAttributes.exposure, scaleFactor),
         contrast: adjustAttribute(selectedFilterAttributes.contrast, scaleFactor),
@@ -93,33 +101,44 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
         grayScale: adjustAttribute(selectedFilterAttributes.grayScale, scaleFactor, true),
       };
 
-      setTemporaryFilterAttributes(adjustedAttributes); // Apply to temporary attributes
+      setTemporaryFilterAttributes(adjustedAttributes); // 임시 필터 속성 업데이트
+      setCurrentFilterAttributes(adjustedAttributes); // 현재 필터 속성 업데이트
     }
   };
+
+  const MAX_BRIGHTNESS = 10.0;
+  const MIN_BRIGHTNESS = 0.4;
 
   const adjustAttribute = (
     value: number | undefined,
     scaleFactor: number,
     isInverse: boolean = false,
+    isBrightness: boolean = false,
   ): number | undefined => {
     if (value === undefined) return undefined;
 
-    if (isInverse) {
-      // For grayScale, act inversely
-      return Math.max(0, value * (1 - scaleFactor));
-    } else {
-      return Math.max(0, value * scaleFactor);
+    let adjustedValue = isInverse ? Math.max(0, value * (1 - scaleFactor)) : Math.max(0, value * scaleFactor);
+
+    if (isBrightness) {
+      // Clamp brightness to be between MIN_BRIGHTNESS and MAX_BRIGHTNESS
+      adjustedValue = Math.max(MIN_BRIGHTNESS, Math.min(adjustedValue, MAX_BRIGHTNESS));
     }
+
+    return adjustedValue;
   };
 
-  // Handle slider value change
-  const handleSliderChange = (value: number) => {
+  // 슬라이더 값 변경
+  const handleSliderChange = async (value: number) => {
     setTemporarySliderValue(value);
-    applyAdjustedAttributes(value);
-    setCurrentGrayScale(value, index); // To visually update the grayscale value
+
+    if (selectedFilterAttributes) {
+      applyAdjustedAttributes(value);
+      setCurrentFilterAttributes(temporaryFilterAttributes); // 필터 속성 업데이트
+    }
+
+    setCurrentGrayScale(value, index);
   };
 
-  // Save changes on completion
   const onPressNext = () => {
     if (!selectedImageUri && additionalImageUri.length === 0) {
       Alert.alert('이미지를 선택해주세요');
@@ -133,18 +152,21 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
     };
 
     setImageFilterSettings(settings, index);
-    setCurrentFilterAttributes(temporaryFilterAttributes); // Save final filter attributes
-    setSliderValue(temporarySliderValue, index); // Save final slider value
-    setCurrentFilterId(selectedFilter, index); // Save selected filter ID
-    navigation.goBack(); // Go back to previous screen
+    setCurrentFilterAttributes(temporaryFilterAttributes);
+    setSliderValue(temporarySliderValue, index);
+    setCurrentFilterId(selectedFilter, index);
+    navigation.goBack();
   };
 
-  // Handle filter selection
   const onPressFilter = async (id: string) => {
-    setSelectedFilter(id); // Update selected filter
-    setSelectedFilterId(id); // Set in global state
-    applyFilterAttributes(id); // Fetch and apply filter details
-    setTemporarySliderValue(100); // Reset slider value to default
+    try {
+      await setSelectedFilter(id);
+      await setSelectedFilterId(id);
+      await applyFilterAttributes(id);
+      await setTemporarySliderValue(100);
+    } catch (error) {
+      console.error('Error in onPressFilter:', error);
+    }
   };
 
   return (
