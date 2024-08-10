@@ -32,7 +32,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { filterServiceToken } from "@utils/dummy";
-
 type galleryProp = {
   temporary_exhibition_id: string;
   title?: string;
@@ -53,8 +52,7 @@ const subTitleText = `
 
     삭제를 완료하면 관련된 정보도 모두 사라지며
     복구가 불가능합니다.
-`;
-
+    `;
 function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -79,7 +77,6 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
   const deleteTempFilter = () => {
     mutate();
   };
-
   const deleteProps = {
     title: "임시저장본을 삭제하시겠습니까?",
     subTitle: subTitleText,
@@ -89,11 +86,13 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
     button: ["삭제하기", "닫기"],
   };
 
-  const navigateScreen = (title: string) => {
-    if (title == "collection") {
-      navigation.navigate("ExhibitionCreation");
-    } else {
-      navigation.navigate("FilterCreation", props as filterProp);
+  const navigateScreen = () => {
+    if (props.label === "collection") {
+      navigation.navigate("ExhibitionCreate", {
+        tmp_id: (props as galleryProp).temporary_exhibition_id,
+      });
+    } else if (props.label === "filter") {
+      navigation.navigate("FilterCreate");
     }
   };
 
