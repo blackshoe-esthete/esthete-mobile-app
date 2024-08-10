@@ -13,12 +13,14 @@ import Carousel from 'react-native-reanimated-carousel';
 // import {useExhibitionCreationStore} from '../../store/ExhibitionCreationStore';
 import {useExhibitionCreationStore, useExhibitionDetailsStore} from '@store/exhibitionCreationStore';
 
+
 import {RootStackParamList} from '@types/navigations';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   ExhibitionCreate: {tmp_id: string};
 };
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -32,7 +34,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
   const {setDetails} = useExhibitionDetailsStore(); // 스토어 사용
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri} =
+  const { selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri } =
     useExhibitionCreationStore();
   const [galleryCursor, setGalleryCursor] = useState<string | undefined>();
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
@@ -63,14 +65,14 @@ function ExhibitionCreationScreen(): React.JSX.Element {
     const identifier = item.node.image.filename || originalUri;
 
     if (multiSelectEnabled) {
-      if (additionalImageUri.some(image => image.identifier === identifier)) {
-        setAdditionalImageUri(additionalImageUri.filter(image => image.identifier !== identifier));
+      if (additionalImageUri.some((image) => image.identifier === identifier)) {
+        setAdditionalImageUri(additionalImageUri.filter((image) => image.identifier !== identifier));
       } else {
-        setAdditionalImageUri([...additionalImageUri, {uri: originalUri, identifier}]);
+        setAdditionalImageUri([...additionalImageUri, { uri: originalUri, identifier }]);
       }
     } else {
       setSelectedImageUri(originalUri);
-      setAdditionalImageUri([{uri: originalUri, identifier}]);
+      setAdditionalImageUri([{ uri: originalUri, identifier }]);
     }
     setSelectedImageIndex(index);
   };
@@ -78,11 +80,11 @@ function ExhibitionCreationScreen(): React.JSX.Element {
   const getGalleryPhotos = async () => {
     const params = {
       first: 16,
-      ...(galleryCursor && {after: galleryCursor}),
+      ...(galleryCursor && { after: galleryCursor }),
     };
 
     try {
-      const {edges, page_info} = await CameraRoll.getPhotos(params);
+      const { edges, page_info } = await CameraRoll.getPhotos(params);
 
       if (page_info.has_next_page) {
         setGalleryCursor(page_info.end_cursor);
@@ -95,7 +97,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
       if (Platform.OS === 'ios') {
         for await (const item of edges) {
           const thumbnailUri = await phPathToFilePath(item.node.image.uri, 300, 300);
-          newGalleryList.push({...item, thumbnailUri});
+          newGalleryList.push({ ...item, thumbnailUri });
         }
       } else {
         newGalleryList.push(...edges);
@@ -139,7 +141,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
   }, [galleryList]);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       {/* 상단 탭 */}
       <View style={styles.topTab}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -158,18 +160,18 @@ function ExhibitionCreationScreen(): React.JSX.Element {
           height={(SCREEN_WIDTH - 40) * 0.75}
           data={
             additionalImageUri.length > 0
-              ? additionalImageUri.map(image => image.uri)
+              ? additionalImageUri.map((image) => image.uri)
               : [selectedImageUri].filter(Boolean)
           }
           scrollAnimationDuration={1000}
-          onSnapToItem={index => setCurrentImageIndex(index)}
-          renderItem={({item}) => <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+          onSnapToItem={(index) => setCurrentImageIndex(index)}
+          renderItem={({ item }) => <Image source={{ uri: item }} style={styles.carouselImage} resizeMode="contain" />}
         />
       </View>
 
       {/* 최근 항목 & 선택 텍스트 */}
       <View style={styles.recentItems}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.recentItemsText}>최근 항목</Text>
           <Image source={arrowIcon} style={styles.arrowIcon} resizeMode="contain" />
         </View>
@@ -184,7 +186,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
         data={galleryList}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.galleryContainer}
-        columnWrapperStyle={{gap: 5}}
+        columnWrapperStyle={{ gap: 5 }}
         getItemLayout={(data, index) => ({
           length: SCREEN_WIDTH / 4,
           offset: (SCREEN_WIDTH / 4) * (index + 3),
@@ -195,22 +197,22 @@ function ExhibitionCreationScreen(): React.JSX.Element {
         onEndReached={() => {
           if (galleryCursor) getGalleryPhotos();
         }}
-        renderItem={({item, index}) => {
+        renderItem={({ item, index }) => {
           const originalUri = Platform.OS === 'ios' ? item.thumbnailUri || item.node.image.uri : item.node.image.uri;
           const identifier = item.node.image.filename || originalUri;
-          const selectedIndex = additionalImageUri.findIndex(image => image.identifier === identifier);
+          const selectedIndex = additionalImageUri.findIndex((image) => image.identifier === identifier);
           const isSelected = selectedIndex !== -1;
 
           return (
             <TouchableOpacity onPress={() => selectImage(item, index)}>
-              <Image source={{uri: item.thumbnailUri || item.node.image.uri}} style={styles.galleryImage} />
+              <Image source={{ uri: item.thumbnailUri || item.node.image.uri }} style={styles.galleryImage} />
               {isSelected && (
                 <View style={styles.overlay}>
                   <View style={styles.checkIconContainer}>
                     {multiSelectEnabled ? (
                       <Text style={styles.checkIndex}>{selectedIndex + 1}</Text>
                     ) : (
-                      <Image source={checkIcon} style={{width: 12, height: 12}} resizeMode="contain" />
+                      <Image source={checkIcon} style={{ width: 12, height: 12 }} resizeMode="contain" />
                     )}
                   </View>
                 </View>
@@ -226,7 +228,7 @@ function ExhibitionCreationScreen(): React.JSX.Element {
 export default ExhibitionCreationScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, paddingHorizontal: 20},
+  container: { flex: 1, paddingHorizontal: 20 },
   topTab: {
     flexDirection: 'row',
     marginTop: 60,
@@ -236,8 +238,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  nextIcon: {width: 20, height: 30, transform: [{scaleX: -1}]},
-  cancelIcon: {width: 30, height: 30},
+  nextIcon: { width: 20, height: 30, transform: [{ scaleX: -1 }] },
+  cancelIcon: { width: 30, height: 30 },
   carouselContainer: {
     width: SCREEN_WIDTH - 40,
     height: (SCREEN_WIDTH - 40) * 0.75,
@@ -255,10 +257,10 @@ const styles = StyleSheet.create({
     gap: 12,
     height: 70,
   },
-  recentItemsText: {color: 'white', fontSize: 16, fontWeight: '700', marginRight: 10},
-  arrowIcon: {width: 6.5, transform: [{rotate: '90deg'}]},
-  multiSelectText: {color: 'white', fontSize: 16, fontWeight: '700', paddingRight: 20},
-  galleryContainer: {width: SCREEN_WIDTH, gap: 5},
+  recentItemsText: { color: 'white', fontSize: 16, fontWeight: '700', marginRight: 10 },
+  arrowIcon: { width: 6.5, transform: [{ rotate: '90deg' }] },
+  multiSelectText: { color: 'white', fontSize: 16, fontWeight: '700', paddingRight: 20 },
+  galleryContainer: { width: SCREEN_WIDTH, gap: 5 },
   galleryImage: {
     width: (SCREEN_WIDTH - 15) / 4,
     height: (SCREEN_WIDTH - 15) / 4,
