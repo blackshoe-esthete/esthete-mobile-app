@@ -1,16 +1,16 @@
 import React from 'react';
-import {Modal, View, StyleSheet, Dimensions, Text, TouchableOpacity} from 'react-native';
+import { Modal, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 type FilterModalProps = {
   title: string;
-  subTitle: String;
+  subTitle: string;
   visible: boolean;
   onConfirm?: () => void;
   onClose: () => void;
   button: string[];
 };
 
-function CommonModal({title, subTitle, visible, onConfirm, onClose, button}: FilterModalProps): React.JSX.Element {
+function CommonModal({ title, subTitle, visible, onConfirm, onClose, button }: FilterModalProps): React.JSX.Element {
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.outerContainer}>
@@ -19,13 +19,13 @@ function CommonModal({title, subTitle, visible, onConfirm, onClose, button}: Fil
           <Text style={styles.subTitleText}>{subTitle}</Text>
           <View style={styles.buttonStyle}>
             <TouchableOpacity onPress={onConfirm}>
-              <View style={[styles.buttonBox, {backgroundColor: '#FFD600'}]}>
+              <View style={[styles.buttonBox, { backgroundColor: '#FFD600' }]}>
                 <Text style={styles.buttonText}>{button[0]}</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={onClose}>
-              <View style={[styles.buttonBox, {backgroundColor: '#E9E9E9'}]}>
+              <View style={[styles.buttonBox, { backgroundColor: '#E9E9E9' }]}>
                 <Text style={styles.buttonText}>{button[1]}</Text>
               </View>
             </TouchableOpacity>

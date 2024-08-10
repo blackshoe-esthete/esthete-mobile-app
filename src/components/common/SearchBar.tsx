@@ -1,10 +1,10 @@
 import React from 'react';
-import {Alert, Image, ImageSourcePropType, StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { Alert, Image, ImageSourcePropType, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import backIcon from '@assets/icons/backspace_white.png';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@types/navigations';
-import {useHomeSearchStore} from '@store/searchStore';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '#types/navigations';
+import { useHomeSearchStore } from '@store/searchStore';
 
 type SearchBarProps = {
   iconSource: ImageSourcePropType;
@@ -13,9 +13,9 @@ type SearchBarProps = {
   placeHolder?: string;
 };
 
-function SearchBar({iconSource, to, back, placeHolder}: SearchBarProps): React.JSX.Element {
+function SearchBar({ iconSource, to, back, placeHolder }: SearchBarProps): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {keyword, setKeyword} = useHomeSearchStore();
+  const { keyword, setKeyword } = useHomeSearchStore();
 
   const onPressSearch = () => {
     if (keyword === '') {
@@ -38,7 +38,7 @@ function SearchBar({iconSource, to, back, placeHolder}: SearchBarProps): React.J
         onChangeText={setKeyword}
         placeholder={placeHolder ? placeHolder : '전시회, 작가 검색'}
         placeholderTextColor="#DADADA"
-        style={[styles.text, {fontWeight: '400'}, back && {width: '80%', }]}
+        style={[styles.text, { fontWeight: '400' }, back && { width: '80%' }]}
         onSubmitEditing={onPressSearch}
       />
       <TouchableOpacity onPress={onPressSearch}>
