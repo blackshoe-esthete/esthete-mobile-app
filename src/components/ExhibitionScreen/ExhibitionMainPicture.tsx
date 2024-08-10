@@ -33,6 +33,13 @@ const ExhibitionMainPicture: React.FC<ExhibitionMainPictureProps> = ({
   const exhibitionQuery = useExhibitionDetails(exhibitionData?.exhibition_id);
   const { data, isLoading } = exhibitionQuery;
 
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <Image source={{ uri: data?.thumbnail_url }} style={{ width: width, height: 431 }} resizeMode="cover" />

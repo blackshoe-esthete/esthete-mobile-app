@@ -24,6 +24,7 @@ export interface Photo {
 export interface ExhibitionData {
   exhibition_id: string;
   author_name: string;
+  is_liked?: boolean;
   photographer_name?: string;
   author_profile_url: string;
   date: string;

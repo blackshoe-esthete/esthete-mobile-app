@@ -1,12 +1,18 @@
 import {AxiosError, AxiosResponse} from 'axios';
-import {exhibitionInstance} from './instance';
+import {exhibitionInstance, mygalleryInstance} from './instance';
 import Config from 'react-native-config';
 import {useMutation} from '@tanstack/react-query';
 
 const apiToken = Config.API_TOKEN;
 
 export const getExhibitionDetails = async (id: string) => {
-  const response = await exhibitionInstance.get(`/details/${id}`);
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${apiToken}`,
+  };
+
+  const response = await exhibitionInstance.get(`/details/${id}`, {headers});
+
   return response.data.payload;
 };
 
@@ -145,4 +151,44 @@ export const postExhibitionCommentDislike = async ({commentId}: PostCommentLikeP
     },
   });
   return response.data.payload;
+};
+
+//전시 좋아요
+interface PostExhibitionLikeParams {
+  exhibition_id: string;
+}
+
+export const postExhibitionLike = async ({exhibition_id}: PostExhibitionLikeParams): Promise<AxiosResponse<any>> => {
+  const response = await mygalleryInstance.post(
+    `/exhibitions/likes/${exhibition_id}`,
+    {},
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiToken}`,
+      },
+    },
+  );
+  return response.data.payload;
+};
+
+export const postExhibitionDislike = async ({exhibition_id}: PostExhibitionLikeParams): Promise<AxiosResponse<any>> => {
+  const response = await mygalleryInstance.delete(`/exhibitions/like/${exhibition_id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiToken}`,
+    },
+  });
+  return response.data.payload;
+};
+
+// 모든 전시 불러오기
+export const getAllExhibition = async (keyword: string) => {
+  try {
+    const response = await exhibitionInstance.get(`/searching/title?exhibitionKeyword=${keyword}&page=0&size=100`);
+    return response.data.payload;
+  } catch (error) {
+    console.log('실패 데이터: ', error);
+    throw error;
+  }
 };

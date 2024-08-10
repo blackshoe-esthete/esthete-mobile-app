@@ -1,3 +1,6 @@
+import React, {useState} from 'react';
+import {View, StyleSheet, Image, Text, Dimensions, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import CommonModal from '@components/common/CommonModal';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -28,8 +31,9 @@ type galleryProp = {
   thumbnail_url: string;
   author?: string;
   date?: string;
-  label?: string;
+  label?: 'collection';
 };
+
 type filterProp = TemporaryFilter & {
   label?: string;
 };
@@ -61,6 +65,7 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
     mutate();
   };
 
+
   const deleteProps = {
     title: '임시저장본을 삭제하시겠습니까?',
     subTitle: subTitleText,
@@ -75,6 +80,7 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
       navigation.navigate('ExhibitionCreation');
     } else {
       navigation.navigate('FilterCreation', props as filterProp);
+
     }
   };
 
@@ -138,7 +144,7 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
       </View>
     </View>
   );
-}
+};
 
 export default TempoItem;
 

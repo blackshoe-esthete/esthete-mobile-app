@@ -1,7 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, Dimensions, TouchableOpacity, Image, Text, View, Alert, ScrollView} from 'react-native';
 import {Slider} from '@miblanchard/react-native-slider';
-import {useExhibitionCreationStore, useFilterDetailsStore} from '../../store/exhibitionCreationStore';
+import {
+  FilterAttributes,
+  ImageFilterSettings,
+  useExhibitionCreationStore,
+  useFilterDetailsStore,
+} from '../../store/exhibitionCreationStore';
 import cancelIcon from '@assets/icons/cancel_black.png';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
@@ -26,34 +31,39 @@ interface RouteParams {
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
+// 최소 및 최대 밝기 값 설정
+const MIN_BRIGHTNESS = 0.2; // 최소 밝기 임계값
+
 const ExhibitionFilterApplyScreen: React.FC = () => {
   const {
     selectedImageUri,
     additionalImageUri,
     setCurrentGrayScale,
-    sliderValue,
+    sliderValues,
     setSliderValue,
-    currentFilterId,
+    currentFilterIds,
     setCurrentFilterId,
+    setImageFilterSettings,
   } = useExhibitionCreationStore();
-  const {
-    selectedFilterId,
-    setSelectedFilterId,
-    setSelectedFilterAttributes,
-    selectedFilterAttributes,
-    setCurrentFilterAttributes,
-    currentFilterAttributes,
-  } = useFilterDetailsStore();
+
+  const {setSelectedFilterId, setSelectedFilterAttributes, selectedFilterAttributes, setCurrentFilterAttributes} =
+    useFilterDetailsStore();
+
   const navigation = useNavigation();
   const route = useRoute();
   const {index} = route.params as RouteParams;
+
+  // Use index-based state from the store
+  const currentFilterId = currentFilterIds[index] || '0';
+  const currentSliderValue = sliderValues[index] || 100;
+
   const [selectedFilter, setSelectedFilter] = useState<string>(currentFilterId);
-  const [temporaryFilterAttributes, setTemporaryFilterAttributes] = useState<FilterAttributes>(currentFilterAttributes);
-  const [temporarySliderValue, setTemporarySliderValue] = useState<number>(sliderValue);
+  const [temporaryFilterAttributes, setTemporaryFilterAttributes] = useState<FilterAttributes>({});
+  const [temporarySliderValue, setTemporarySliderValue] = useState<number>(currentSliderValue);
 
   useEffect(() => {
     applyAdjustedAttributes(temporarySliderValue);
-  }, [temporarySliderValue]);
+  }, [temporarySliderValue, selectedFilterAttributes]);
 
   const applyFilterAttributes = async (id: string) => {
     try {
@@ -61,61 +71,93 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
       setTemporaryFilterAttributes(filterDetails.payload.filter_attributes);
     } catch (error) {
-      console.error('Failed to fetch filter details:', error);
+      if (id !== '0') {
+        console.error('Failed to fetch filter details:', error);
+      }
     }
   };
 
-  // 슬라이더 값 변경
-  const handleSliderChange = (value: number) => {
-    setTemporarySliderValue(value);
-    setCurrentGrayScale(value, index);
-  };
-
+  // Adjust attributes based on slider value
   const applyAdjustedAttributes = (scale: number) => {
     if (selectedFilterAttributes) {
-      const adjustedAttributes = {
-        brightness: (selectedFilterAttributes.brightness || 0) * scale,
-        contrast: (selectedFilterAttributes.contrast || 0) * scale,
-        saturation: (selectedFilterAttributes.saturation || 0) * scale,
-        hue: (selectedFilterAttributes.hue || 0) * scale,
-        temperature: (selectedFilterAttributes.temperature || 0) * scale,
-        grayScale: scale < 0.5 ? scale * 2 : 1,
-        sharpness: (selectedFilterAttributes.sharpness || 0) * scale,
+      const scaleFactor = scale / 100; // Adjusting scale based on 0-100
+
+      const adjustedAttributes: FilterAttributes = {
+        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor, MIN_BRIGHTNESS),
+        sharpness: adjustAttribute(selectedFilterAttributes.sharpness, scaleFactor),
+        exposure: adjustAttribute(selectedFilterAttributes.exposure, scaleFactor),
+        contrast: adjustAttribute(selectedFilterAttributes.contrast, scaleFactor),
+        saturation: adjustAttribute(selectedFilterAttributes.saturation, scaleFactor),
+        hue: adjustAttribute(selectedFilterAttributes.hue, scaleFactor),
+        temperature: adjustAttribute(selectedFilterAttributes.temperature, scaleFactor),
+        grayScale: adjustAttribute(selectedFilterAttributes.grayScale, scaleFactor, true),
       };
 
-      setTemporaryFilterAttributes(adjustedAttributes);
+      setTemporaryFilterAttributes(adjustedAttributes); // Apply to temporary attributes
     }
   };
 
+  const adjustAttribute = (
+    value: number | undefined,
+    scaleFactor: number,
+    isInverse: boolean = false,
+  ): number | undefined => {
+    if (value === undefined) return undefined;
+
+    if (isInverse) {
+      // For grayScale, act inversely
+      return Math.max(0, value * (1 - scaleFactor));
+    } else {
+      return Math.max(0, value * scaleFactor);
+    }
+  };
+
+  // Handle slider value change
+  const handleSliderChange = (value: number) => {
+    setTemporarySliderValue(value);
+    applyAdjustedAttributes(value);
+    setCurrentGrayScale(value, index); // To visually update the grayscale value
+  };
+
+  // Save changes on completion
   const onPressNext = () => {
     if (!selectedImageUri && additionalImageUri.length === 0) {
       Alert.alert('이미지를 선택해주세요');
       return;
     }
-    setCurrentFilterAttributes(temporaryFilterAttributes); // 최종 필터 속성 저장
-    setSliderValue(temporarySliderValue); // 최종 슬라이더 값 저장
-    navigation.goBack();
+
+    const settings: ImageFilterSettings = {
+      filterId: currentFilterId,
+      filterAttributes: temporaryFilterAttributes,
+      sliderValue: currentSliderValue,
+    };
+
+    setImageFilterSettings(settings, index);
+    setCurrentFilterAttributes(temporaryFilterAttributes); // Save final filter attributes
+    setSliderValue(temporarySliderValue, index); // Save final slider value
+    setCurrentFilterId(selectedFilter, index); // Save selected filter ID
+    navigation.goBack(); // Go back to previous screen
   };
 
+  // Handle filter selection
   const onPressFilter = async (id: string) => {
-    setSelectedFilter(id);
-    setCurrentFilterId(id);
-    setSelectedFilterId(id);
-    applyFilterAttributes(id);
-    setTemporarySliderValue(50);
+    setSelectedFilter(id); // Update selected filter
+    setSelectedFilterId(id); // Set in global state
+    applyFilterAttributes(id); // Fetch and apply filter details
+    setTemporarySliderValue(100); // Reset slider value to default
   };
 
   return (
     <View style={{flex: 1}}>
       <ScrollView>
-        {/* 상단 탭 */}
+        {/* Top tab */}
         <View style={styles.topTab}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={cancelIcon} style={styles.cancelIcon} resizeMode="contain" />
           </TouchableOpacity>
         </View>
 
-        {/* 이미지 Carousel */}
+        {/* Image Carousel */}
         <View style={styles.carouselContainer}>
           <Carousel
             loop={false}
@@ -123,28 +165,34 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
             height={(SCREEN_WIDTH - 40) * 0.9}
             data={additionalImageUri.length > 0 ? [additionalImageUri[index].uri] : [selectedImageUri].filter(Boolean)}
             scrollAnimationDuration={1000}
-            renderItem={({item}: {item: string}) => (
-              <Sharpen
-                image={
-                  <ColorMatrix
-                    matrix={concatColorMatrices([
-                      brightness(temporaryFilterAttributes.brightness),
-                      contrast(temporaryFilterAttributes.contrast),
-                      saturate(temporaryFilterAttributes.saturation),
-                      hueRotate(temporaryFilterAttributes.hue),
-                      temperature(temporaryFilterAttributes.temperature),
-                      grayscale(temporaryFilterAttributes.grayScale),
-                    ])}
-                    image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
-                  />
-                }
-                amount={temporaryFilterAttributes.sharpness}
-              />
-            )}
+            renderItem={({item}: {item: string}) =>
+              temporarySliderValue === 0 ? (
+                // 슬라이더 값이 0일 때 원본 이미지 표시
+                <Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />
+              ) : (
+                // 슬라이더 값이 0이 아닐 때 필터 적용
+                <Sharpen
+                  image={
+                    <ColorMatrix
+                      matrix={concatColorMatrices([
+                        brightness(temporaryFilterAttributes.brightness),
+                        contrast(temporaryFilterAttributes.contrast),
+                        saturate(temporaryFilterAttributes.saturation),
+                        hueRotate(temporaryFilterAttributes.hue),
+                        temperature(temporaryFilterAttributes.temperature),
+                        grayscale(temporaryFilterAttributes.grayScale),
+                      ])}
+                      image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                    />
+                  }
+                  amount={temporaryFilterAttributes.sharpness}
+                />
+              )
+            }
           />
         </View>
 
-        {/* 슬라이더 */}
+        {/* Slider */}
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
@@ -154,7 +202,7 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
               value={temporarySliderValue}
               onValueChange={value => handleSliderChange(value[0])}
               minimumValue={0}
-              maximumValue={100} // 슬라이더의 최대값을 100으로 설정
+              maximumValue={100} // Set slider max value to 100
               step={1}
               thumbTintColor="#FFFFFF"
               minimumTrackTintColor="#FFFFFF"
@@ -164,10 +212,10 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* 필터 선택 */}
+        {/* Filter Selection */}
         <FilterTab onPressFilter={onPressFilter} selectedFilter={selectedFilter} />
 
-        {/* 완료 */}
+        {/* Completion */}
         <View
           style={{
             flex: 1,
@@ -225,7 +273,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
-  // carousel
   carouselContainer: {
     width: SCREEN_WIDTH - 40,
     height: (SCREEN_WIDTH - 40) * 0.75,
@@ -235,7 +282,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  // 완료 버튼
   completeButton: {
     width: 80,
     height: 40,
