@@ -1,14 +1,18 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Image, Text, Dimensions, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import CommonModal from '@components/common/CommonModal';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { TemporaryFilter } from '#types/filterService.type';
-import { RootStackParamList } from '#types/navigations';
-import { formatDate } from '@utils/format';
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, Text, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import CommonModal from "@components/common/CommonModal";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { TemporaryFilter } from "#types/filterService.type";
+import { RootStackParamList } from "#types/navigations";
+import { formatDate } from "@utils/format";
 import {
   Sharpen,
   ColorMatrix,
@@ -19,11 +23,15 @@ import {
   hueRotate,
   temperature,
   grayscale,
-} from 'react-native-image-filter-kit';
-import { brightness } from '@utils/filter';
-import { deleteTemporaryFilter } from 'src/apis/filterService';
-import { InvalidateQueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
-import { filterServiceToken } from '@utils/dummy';
+} from "react-native-image-filter-kit";
+import { brightness } from "@utils/filter";
+import { deleteTemporaryFilter } from "src/apis/filterService";
+import {
+  InvalidateQueryFilters,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { filterServiceToken } from "@utils/dummy";
 
 type galleryProp = {
   temporary_exhibition_id: string;
@@ -31,14 +39,14 @@ type galleryProp = {
   thumbnail_url: string;
   author?: string;
   date?: string;
-  label?: 'collection';
+  label?: "collection";
 };
 
 type filterProp = TemporaryFilter & {
   label?: string;
 };
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const subTitleText = `
     임시저장한 전시를 삭제하시겠습니까?
@@ -48,16 +56,23 @@ const subTitleText = `
 `;
 
 function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const queryClient = useQueryClient();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const { mutate } = useMutation({
-    mutationFn: () => deleteTemporaryFilter((props as filterProp).temporary_filter_id, filterServiceToken),
+    mutationFn: () =>
+      deleteTemporaryFilter(
+        (props as filterProp).temporary_filter_id,
+        filterServiceToken
+      ),
     onSuccess: () => {
       setDeleteModalVisible(!deleteModalVisible);
-      Alert.alert('삭제가 완료되었습니다.');
-      queryClient.invalidateQueries({ 'temp-filter': true } as InvalidateQueryFilters);
+      Alert.alert("삭제가 완료되었습니다.");
+      queryClient.invalidateQueries({
+        "temp-filter": true,
+      } as InvalidateQueryFilters);
     },
   });
 
@@ -65,29 +80,32 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
     mutate();
   };
 
-
   const deleteProps = {
-    title: '임시저장본을 삭제하시겠습니까?',
+    title: "임시저장본을 삭제하시겠습니까?",
     subTitle: subTitleText,
     visible: deleteModalVisible,
     onConfirm: deleteTempFilter,
     onClose: () => setDeleteModalVisible(!deleteModalVisible),
-    button: ['삭제하기', '닫기'],
+    button: ["삭제하기", "닫기"],
   };
 
   const navigateScreen = (title: string) => {
-    if (title == 'collection') {
-      navigation.navigate('ExhibitionCreation');
+    if (title == "collection") {
+      navigation.navigate("ExhibitionCreation");
     } else {
-      navigation.navigate('FilterCreation', props as filterProp);
-
+      navigation.navigate("FilterCreation", props as filterProp);
     }
   };
 
   const thumbnailImage = () => {
-    if (props.label == 'collection') {
-      return <Image src={(props as galleryProp).thumbnail_url} style={styles.photoIcon} />;
-    } else if (props.label == 'filter') {
+    if (props.label == "collection") {
+      return (
+        <Image
+          src={(props as galleryProp).thumbnail_url}
+          style={styles.photoIcon}
+        />
+      );
+    } else if (props.label == "filter") {
       return (
         <Sharpen
           image={
@@ -98,11 +116,18 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
                 contrast((props as filterProp).filter_attributes.contrast),
                 saturate((props as filterProp).filter_attributes.saturation),
                 hueRotate((props as filterProp).filter_attributes.hue),
-                temperature((props as filterProp).filter_attributes.temperature),
+                temperature(
+                  (props as filterProp).filter_attributes.temperature
+                ),
                 grayscale((props as filterProp).filter_attributes.gray_scale),
               ])}
               style={styles.photoIcon}
-              image={<Image src={(props as filterProp).filter_thumbnail} style={styles.photoIcon} />}
+              image={
+                <Image
+                  src={(props as filterProp).filter_thumbnail}
+                  style={styles.photoIcon}
+                />
+              }
             />
           }
           style={styles.photoIcon}
@@ -115,10 +140,18 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
   };
 
   const resume = () => {
-    if (props.label == 'collection') {
-      return <Text style={styles.textStyle}>{formatDate((props as galleryProp).date!)} 임시저장</Text>;
-    } else if (props.label == 'filter') {
-      return <Text style={styles.textStyle}>{formatDate((props as filterProp).updated_at)} 임시저장</Text>;
+    if (props.label == "collection") {
+      return (
+        <Text style={styles.textStyle}>
+          {formatDate((props as galleryProp).date!)} 임시저장
+        </Text>
+      );
+    } else if (props.label == "filter") {
+      return (
+        <Text style={styles.textStyle}>
+          {formatDate((props as filterProp).updated_at)} 임시저장
+        </Text>
+      );
     }
     return null;
   };
@@ -130,12 +163,18 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
         <View style={styles.titleBox}>{resume()}</View>
       </View>
       <View style={styles.buttonLayer}>
-        <TouchableOpacity style={styles.buttonLeftBox} onPress={() => setDeleteModalVisible(!deleteModalVisible)}>
+        <TouchableOpacity
+          style={styles.buttonLeftBox}
+          onPress={() => setDeleteModalVisible(!deleteModalVisible)}
+        >
           <View style={styles.buttonContent}>
             <Text style={styles.buttonText}>삭제하기</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonRightBox} onPress={() => navigateScreen(props.label || 'collection')}>
+        <TouchableOpacity
+          style={styles.buttonRightBox}
+          onPress={() => navigateScreen(props.label || "collection")}
+        >
           <View style={styles.buttonContent}>
             <Text style={styles.buttonText}>편집하기</Text>
           </View>
@@ -144,7 +183,7 @@ function TempoItem(props: galleryProp | filterProp): React.JSX.Element {
       </View>
     </View>
   );
-};
+}
 
 export default TempoItem;
 
@@ -154,66 +193,66 @@ const styles = StyleSheet.create({
     height: 180,
   },
   photoIcon: {
-    width: '100%',
-    resizeMode: 'cover',
-    height: '100%',
+    width: "100%",
+    resizeMode: "cover",
+    height: "100%",
   },
   titleBox: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
-    backgroundColor: 'rgba(41, 41, 41, 0.40)',
+    backgroundColor: "rgba(41, 41, 41, 0.40)",
     zIndex: 1,
-    width: '100%',
+    width: "100%",
     height: 60,
   },
   textStyle: {
     marginTop: 21,
     marginLeft: 10,
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   authorStyle: {
     marginTop: 6,
     marginLeft: 10,
-    color: 'white',
+    color: "white",
     fontSize: 14,
-    fontWeight: '400',
+    fontWeight: "400",
   },
   buttonLayer: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     height: 45,
     marginBottom: 20,
   },
   buttonLeftBox: {
-    backgroundColor: '#171717',
-    borderTopColor: '#292929',
-    borderBottomColor: '#292929',
-    borderLeftColor: '#292929',
+    backgroundColor: "#171717",
+    borderTopColor: "#292929",
+    borderBottomColor: "#292929",
+    borderLeftColor: "#292929",
     borderWidth: 1,
-    width: '50%',
+    width: "50%",
   },
   buttonRightBox: {
-    backgroundColor: '#171717',
-    borderColor: '#292929',
+    backgroundColor: "#171717",
+    borderColor: "#292929",
     borderWidth: 1,
-    width: '50%',
+    width: "50%",
   },
   buttonContent: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
   },
   buttonText: {
-    color: '#E9E9E9',
+    color: "#E9E9E9",
     fontSize: 16,
-    fontWeight: '400',
+    fontWeight: "400",
   },
   absolute: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     bottom: 0,
