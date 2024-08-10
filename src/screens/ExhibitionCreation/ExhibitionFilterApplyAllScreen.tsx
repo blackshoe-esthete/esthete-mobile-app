@@ -26,9 +26,6 @@ import {getFilterDetails} from 'src/apis/exhibitionCreate';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-// 최소 및 최대 밝기 값 설정
-const MIN_BRIGHTNESS = 0.2; // 최소 밝기 임계값
-
 const ExhibitionFilterApplyAllScreen = () => {
   const navigation = useNavigation();
   const {
@@ -56,21 +53,22 @@ const ExhibitionFilterApplyAllScreen = () => {
   }, []);
 
   // 슬라이더 값 변경
-  const handleSliderChange = (value: number) => {
+  const handleSliderChange = async (value: number) => {
     setSliderValueForAll(value);
+
     if (selectedFilterAttributes) {
-      // 슬라이더 값에 따라 필터 속성 조정
-      applyAdjustedAttributes(value);
+      await applyAdjustedAttributes(value);
     }
-    // 모든 이미지에 필터 및 슬라이더 값 저장
+
     const currentFilterId = selectedFilter;
-    const currentSliderValue = sliderValues[0] || 100; // Use the first value or default to 50
+    const currentSliderValue = value || 100;
     const settings: ImageFilterSettings = {
       filterId: currentFilterId,
       filterAttributes: currentFilterAttributes,
       sliderValue: currentSliderValue,
     };
-    setImageFilterSettingsForAll(settings);
+
+    await setImageFilterSettingsForAll(settings);
   };
 
   // 다음 버튼 클릭
@@ -83,41 +81,40 @@ const ExhibitionFilterApplyAllScreen = () => {
     navigation.navigate('ExhibitionFilterApplyComplete');
   };
 
-  const applyFilterAttributes = async (id: string) => {
-    try {
-      const filterDetails = await getFilterDetails(id, filterServiceToken);
-      setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
-      setCurrentFilterAttributes(filterDetails.payload.filter_attributes);
-    } catch (error) {
-      if (id !== '0') {
-        console.error('Failed to fetch filter details:', error);
-      }
-    }
-  };
-
   const onPressFilter = async (id: string) => {
     setSelectedFilter(id);
     setCurrentFilterIdForAll(id);
     setSelectedFilterId(id);
     setSliderValueForAll(100);
-    applyFilterAttributes(id); // Fetch and apply filter details
 
-    const currentFilterId = selectedFilter;
-    const currentSliderValue = 100;
-    const settings: ImageFilterSettings = {
-      filterId: currentFilterId,
-      filterAttributes: currentFilterAttributes,
-      sliderValue: currentSliderValue,
-    };
-    setImageFilterSettingsForAll(settings);
+    try {
+      const filterDetails = await getFilterDetails(id, filterServiceToken);
+      const newFilterAttributes = filterDetails.payload.filter_attributes;
+
+      // 새로운 필터 속성으로 상태 업데이트
+      setSelectedFilterAttributes(newFilterAttributes);
+      setCurrentFilterAttributes(newFilterAttributes);
+
+      // 새로운 설정 생성
+      const settings: ImageFilterSettings = {
+        filterId: id,
+        filterAttributes: newFilterAttributes,
+        sliderValue: 100,
+      };
+
+      // 모든 이미지에 새 설정 적용
+      setImageFilterSettingsForAll(settings);
+    } catch (error) {
+      console.error('Failed to fetch or apply filter details:', error);
+    }
   };
 
   const applyAdjustedAttributes = (scale: number) => {
     if (selectedFilterAttributes) {
-      const scaleFactor = scale / 100; // 슬라이더 값에 따라 필터 강도 조절
+      const scaleFactor = scale / 50; // Adjusting scale based on 0-100
 
       const adjustedAttributes: FilterAttributes = {
-        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor, MIN_BRIGHTNESS),
+        brightness: adjustAttribute(selectedFilterAttributes.brightness, scaleFactor, false, true), // Pass isBrightness = true
         sharpness: adjustAttribute(selectedFilterAttributes.sharpness, scaleFactor),
         exposure: adjustAttribute(selectedFilterAttributes.exposure, scaleFactor),
         contrast: adjustAttribute(selectedFilterAttributes.contrast, scaleFactor),
@@ -131,18 +128,25 @@ const ExhibitionFilterApplyAllScreen = () => {
     }
   };
 
+  const MAX_BRIGHTNESS = 10.0;
+  const MIN_BRIGHTNESS = 0.4;
+
   const adjustAttribute = (
     value: number | undefined,
     scaleFactor: number,
     isInverse: boolean = false,
+    isBrightness: boolean = false,
   ): number | undefined => {
     if (value === undefined) return undefined;
 
-    if (isInverse) {
-      return Math.max(0, value * (1 - scaleFactor));
-    } else {
-      return Math.max(0, value * scaleFactor);
+    let adjustedValue = isInverse ? Math.max(0, value * (1 - scaleFactor)) : Math.max(0, value * scaleFactor);
+
+    if (isBrightness) {
+      // Clamp brightness to be between MIN_BRIGHTNESS and MAX_BRIGHTNESS
+      adjustedValue = Math.max(MIN_BRIGHTNESS, Math.min(adjustedValue, MAX_BRIGHTNESS));
     }
+
+    return adjustedValue;
   };
 
   return (
@@ -207,7 +211,9 @@ const ExhibitionFilterApplyAllScreen = () => {
         <View style={styles.sliderContainer}>
           <View>
             <View style={styles.sliderValueWrapper}>
-              <Text style={styles.sliderValueText}>{Math.round(sliderValues[currentImageIndex] || 50)}</Text>
+              <Text style={styles.sliderValueText}>
+                {Math.round(sliderValues[currentImageIndex] !== undefined ? sliderValues[currentImageIndex] : 50)}
+              </Text>
             </View>
             <Slider
               value={sliderValues[currentImageIndex] || 50}
