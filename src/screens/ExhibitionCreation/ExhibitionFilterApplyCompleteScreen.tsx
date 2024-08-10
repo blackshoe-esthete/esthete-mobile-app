@@ -115,7 +115,6 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           console.log('Saved image uri:', uri);
           resolve(uri);
         } catch (error) {
-          console.error('Failed to save image:', error);
           resolve(null);
         }
       }, 500); // 500ms 대기 시간
