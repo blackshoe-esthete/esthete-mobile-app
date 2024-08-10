@@ -129,9 +129,9 @@ export const indexFilterDetail = async (filterId: string) => {
   console.log('이 필터아이디는' + filterId);
   try {
     const response = await filterInstance.get(`/${filterId}/details`, {
-      headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
-      },
+      // headers: {
+      //   Authorization: `Bearer ${exhibitionServiceToken}`,
+      // },
     });
     if (response.status == 200) {
       console.log('개별 필터 상세조회에 성공했습니다.');
@@ -197,9 +197,9 @@ export const searchForTag = async (tags: tagIdList) => {
 
     const queryString = new URLSearchParams(params).toString();
     const response = await filterInstance.get(`/searching?${queryString}`, {
-      headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`
-      }
+      // headers: {
+      //   Authorization: `Bearer ${exhibitionServiceToken}`
+      // }
     });
 
     if(response.status == 200){
