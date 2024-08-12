@@ -14,7 +14,7 @@ import { useExhibitionCluster, useNearbyExhibitions } from '@hooks/useNearbyExhi
 
 function MapScreen(): React.JSX.Element {
   const [isClicked, setIsClicked] = useState(false);
-  // const [clickedLocation, setClickedLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  // const [, setClickedLocation] = useState<{ latitude: number; longitude: number } | null>(null); // 클릭한 위치의 좌표 상태 추가
   const [clickedCluster, setClickedCluster] = useState<Cluster | null>(null);
   const [region, setRegion] = useState<Region | undefined>({
     latitude: 37.55703563268905,
@@ -27,7 +27,7 @@ function MapScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const { top } = useSafeAreaInsets();
 
-  const group = region!.latitudeDelta! < 0.381 ? 'town' : region!.latitudeDelta! < 4.3 ? 'city' : 'state';
+  const group = region!.latitudeDelta < 0.381 ? 'town' : region!.latitudeDelta < 4.3 ? 'city' : 'state';
 
   const calculateRadius = (latitudeDelta: number, longitudeDelta: number): number => {
     // Approximate calculation of radius based on latitudeDelta and longitudeDelta
@@ -38,14 +38,17 @@ function MapScreen(): React.JSX.Element {
 
   const radius = calculateRadius(region?.latitudeDelta || 0.015, region?.longitudeDelta || 0.0121);
 
-  const { data: clusterData } = useExhibitionCluster(region!.latitude!, region!.longitude!, radius, group);
+  const { data: clusterData } = useExhibitionCluster(region!.latitude, region!.longitude, radius, group);
 
   const geocodeQueries = useQueries({
-    queries: (clusterData?.content || []).map((cluster: Cluster) => ({
-      queryKey: ['geocode', `${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim()],
-      queryFn: () => getGeocode(`${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim()),
-      enabled: !!clusterData, // Ensure the cluster data is available
-    })),
+    queries: (clusterData?.content || []).map((cluster: Cluster) => {
+      const location = `${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim();
+      return {
+        queryKey: ['geocode', location],
+        queryFn: () => getGeocode(location),
+        enabled: !!clusterData, // Ensure the cluster data is available
+      };
+    }),
   });
 
   const geocodedClusters =
@@ -77,10 +80,6 @@ function MapScreen(): React.JSX.Element {
       setRegion(myRegion);
     }
   }, [myRegion]);
-
-  useEffect(() => {
-    console.log('Region changed:', region);
-  }, [region]);
 
   return (
     <View style={styles.container}>
@@ -134,8 +133,8 @@ function MapScreen(): React.JSX.Element {
           <Marker
             key={`${cluster.state}-${cluster.city}-${cluster.town}-${index}`}
             coordinate={{
-              latitude: cluster.location!.lat!,
-              longitude: cluster.location!.lng!,
+              latitude: cluster.location?.lat || 0,
+              longitude: cluster.location?.lng || 0,
             }}
             onPress={() => handleMarkerPress(cluster)}
           >
@@ -143,7 +142,6 @@ function MapScreen(): React.JSX.Element {
               <Image source={locationIcon} style={styles.markerIcon} resizeMode="contain" />
               <Image source={{ uri: cluster.thumbnail }} style={styles.markerImage} resizeMode="cover" />
               <View style={styles.numberContainer}>
-                {/* <Text style={styles.number}>{group === 'town' ? cluster.count : clusterData.content.length}</Text> */}
                 <Text style={styles.number}>{cluster.count}</Text>
               </View>
             </View>

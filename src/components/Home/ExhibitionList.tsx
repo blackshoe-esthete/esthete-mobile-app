@@ -3,7 +3,7 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import arrowIcon from '@assets/icons/arrow.png';
 import { useNavigation } from '@react-navigation/native';
 import HorizontalList from './HorizontalList';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   getIsolatedExhibitionList,
   getIsolatedExhibitionListWithTag,
@@ -18,10 +18,10 @@ import useMyLocation from '@hooks/useMyLocation';
 import anonymousImg from '@assets/imgs/anonymous.png';
 
 interface ExhibitionListProps {
-  selectedTags: string[];
+  selectedTag: string;
 }
 
-function ExhibitionList({ selectedTags }: ExhibitionListProps): React.JSX.Element {
+function ExhibitionList({ selectedTag }: ExhibitionListProps): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { data: preferedAuthorData } = useQuery({
@@ -29,37 +29,29 @@ function ExhibitionList({ selectedTags }: ExhibitionListProps): React.JSX.Elemen
     queryFn: () => getPreferAuthorList(),
   });
 
-  const recommendedQueries = useQueries({
-    queries: selectedTags.map((tag) => ({
-      queryKey: ['recommendedExhibition', tag],
-      queryFn: () => getMainExhibitionListWithTag([tag]),
-    })),
+  const recommendedQuery = useQuery({
+    queryKey: ['recommendedExhibition', selectedTag],
+    queryFn: () => getMainExhibitionListWithTag([selectedTag]),
   });
 
-  const isolatedQueries = useQueries({
-    queries: selectedTags.map((tag) => ({
-      queryKey: ['isolatedExhibition', tag],
-      queryFn: () => getIsolatedExhibitionListWithTag([tag]),
-    })),
+  const isolatedQuery = useQuery({
+    queryKey: ['isolatedExhibition', selectedTag],
+    queryFn: () => getIsolatedExhibitionListWithTag([selectedTag]),
   });
 
   const defaultRecommendedQuery = useQuery({
     queryKey: ['recommendedExhibition'],
     queryFn: () => getMainExhibitionList(),
-    enabled: selectedTags.length === 0,
   });
 
   const defaultIsolatedQuery = useQuery({
     queryKey: ['isolatedExhibition'],
     queryFn: () => getIsolatedExhibitionList(),
-    enabled: selectedTags.length === 0,
   });
 
-  const recommendedExhibitionData =
-    selectedTags.length === 0 ? defaultRecommendedQuery.data : recommendedQueries.flatMap((query) => query.data || []);
+  const recommendedExhibitionData = selectedTag === '' ? defaultRecommendedQuery.data : recommendedQuery.data || [];
 
-  const isolatedExhibitionData =
-    selectedTags.length === 0 ? defaultIsolatedQuery.data : isolatedQueries.flatMap((query) => query.data || []);
+  const isolatedExhibitionData = selectedTag === '' ? defaultIsolatedQuery.data : isolatedQuery.data || [];
 
   const myRegion = useMyLocation();
   const { data: clusterData } = useExhibitionCluster(myRegion!.latitude, myRegion!.longitude, 10, 'state');
