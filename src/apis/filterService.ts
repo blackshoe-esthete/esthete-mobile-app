@@ -248,19 +248,3 @@ export const deleteItem = async ({title, id}: deleteProp) => {
     throw error;
   }
 }
-
-// 필터 구매내역 조회 및 수정
-export const purchaseFilter = async () => {
-  try{
-    const response = await filterInstance.get(`/purchased`, {
-      headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`
-      }
-    });
-
-    return response.data.payload.purchased_filter_list;
-  }catch (error) {
-    console.log('필터 구매내역 조회 실패', (error as AxiosError)?.response?.data);
-    throw error;
-  }
-}

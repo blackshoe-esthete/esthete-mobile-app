@@ -96,6 +96,7 @@ type verifyProp = {
 //인증번호 검사
 export const emailVerification = async ({email, number}: verifyProp) => {
   try{
+
     const response = await userInstance.post(`/signup/email/verification`, {
       email: email,
       auth_num: number
@@ -179,10 +180,28 @@ type socialLoginProp = {
   birthday?: string;
 }
 
-//소셜로그인
+//소셜로그인-회원인경우
+export const socialOkLogin = async(socialBody: socialLoginProp) => {
+  try{
+    const body = {
+      original_nickname: socialBody.nickname,
+      provide: socialBody.provider
+    }
+    const response = await userInstance.post(`/social-login`, body);
+    if(response.status == 200){
+      console.log(response.data.payload);
+    }
+    return response.data.payload;
+  }catch (error) {
+    console.log('소셜로그인 회원 아님 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//소셜로그인-비회원인경우
 export const socialLogin = async (socialBody: socialLoginProp) => {
   try{
-    const response = await userInstance.post(`/social-login`, {
+    const response = await userInstance.post(`/social-login/signup`, {
       socialBody
     });
 

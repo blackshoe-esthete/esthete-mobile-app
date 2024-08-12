@@ -122,7 +122,7 @@ export const myPurchasedFilter = async() => {
     if(response.status == 200){
       console.log("구매한 필터내역이 조회되었습니다.");      
     }
-    return response.data.payload;
+    return response.data.payload.purchased_filter_list;
   }catch(error){
     console.log('구매한 필터내역 조회 실패: ', (error as AxiosError).config);
     throw error;
