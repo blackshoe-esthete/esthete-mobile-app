@@ -7,7 +7,7 @@ import { RootStackParamList } from '#types/navigations';
 import { useHomeSearchStore } from '@store/searchStore';
 
 type SearchBarProps = {
-  iconSource: ImageSourcePropType;
+  iconSource?: ImageSourcePropType;
   to: string;
   back?: boolean;
   placeHolder?: string;

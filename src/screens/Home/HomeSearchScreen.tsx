@@ -3,7 +3,6 @@ import SearchBar from '@components/common/SearchBar';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, View } from 'react-native';
 import HomeSearchTopTab from '@navigations/HomeSearchTopTab';
-import searchIcon from '@assets/icons/search.png';
 
 function SearchScreen(): React.JSX.Element {
   const { top } = useSafeAreaInsets();
@@ -11,7 +10,7 @@ function SearchScreen(): React.JSX.Element {
   return (
     <SafeAreaView edges={['bottom']}>
       <View style={[styles.topInset, { paddingTop: top }]} />
-      <SearchBar iconSource={searchIcon} to={'Main'} back={true} />
+      <SearchBar to={'Main'} back={true} />
       <View style={styles.container}>
         <HomeSearchTopTab />
       </View>
