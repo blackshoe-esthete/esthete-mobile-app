@@ -4,11 +4,12 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '#types/navigations';
 import { ImageSourcePropType } from 'react-native';
+import { AuthorResponse, ExhibitionListResponse } from '#types/mainExhibitionService.type';
 
 type HorizontalListProps = {
   imgStyles: StyleProp<ImageStyle>;
   title: string;
-  data: any[];
+  data: ExhibitionListResponse[] | AuthorResponse[];
   idKey: 'exhibition_id' | 'user_id';
   urlKey: 'thumbnail_url' | 'profile_url';
   imgSource?: ImageSourcePropType;
@@ -36,49 +37,39 @@ function HorizontalList({
     }
   };
 
+  const renderItem = ({ item, index }: { item: ExhibitionListResponse | AuthorResponse; index: number }) => (
+    <TouchableOpacity
+      onPress={() => handlePress(item[idKey as keyof typeof item])}
+      style={{
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'center',
+      }}
+    >
+      <Image
+        style={[imgStyles, index === 0 && { marginLeft: 20 }, index === data.length - 1 && { marginRight: 20 }]}
+        source={item[urlKey as keyof typeof item] ? { uri: item[urlKey as keyof typeof item] } : imgSource}
+      />
+    </TouchableOpacity>
+  );
+
   return (
-    <>
-      <View style={styles.gap10}>
-        {children ? children : <Text style={styles.text}>{title}</Text>}
+    <View style={styles.gap10}>
+      {children ? children : <Text style={styles.text}>{title}</Text>}
+      {data.length === 0 ? (
+        <View style={styles.emptyTextWrapper}>
+          <Text style={styles.emptyText}>결과가 없습니다.</Text>
+        </View>
+      ) : (
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gap10}
           data={data}
-          ListEmptyComponent={<Text>데이터가 없습니다.</Text>}
-          renderItem={({ item, index }: { item: any; index: number }) => (
-            <TouchableOpacity
-              onPress={() => handlePress(item[idKey])}
-              style={{
-                flexDirection: 'row',
-                gap: 10,
-                alignItems: 'center',
-              }}
-            >
-              {item[urlKey] ? (
-                <Image
-                  style={[
-                    imgStyles,
-                    index === 0 && { marginLeft: 20 },
-                    index === data.length - 1 && { marginRight: 20 },
-                  ]}
-                  source={{ uri: item[urlKey] }}
-                />
-              ) : (
-                <Image
-                  style={[
-                    imgStyles,
-                    index === 0 && { marginLeft: 20 },
-                    index === data.length - 1 && { marginRight: 20 },
-                  ]}
-                  source={imgSource}
-                />
-              )}
-            </TouchableOpacity>
-          )}
+          renderItem={renderItem}
         />
-      </View>
-    </>
+      )}
+    </View>
   );
 }
 
@@ -90,6 +81,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     marginLeft: 20,
+  },
+  emptyTextWrapper: {
+    flex: 1,
+    paddingVertical: 30,
+  },
+  emptyText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
   gap10: {
     gap: 10,
