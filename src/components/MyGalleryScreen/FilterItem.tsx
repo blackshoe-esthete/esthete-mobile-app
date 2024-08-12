@@ -1,4 +1,5 @@
-import React from 'react';
+import { useEditStore } from "@store/edit-store";
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -6,25 +7,44 @@ import {
   Text,
   Dimensions,
   ImageBackground,
-} from 'react-native';
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import trash from "@assets/icons/trash.png";
 
 type filterProp = {
   filter_id: string;
   filter_name: string;
   filter_thumbnail_url: string;
 };
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 function FilterItem(props: filterProp): React.JSX.Element {
+  const { tab, editable, setId, setDelete } = useEditStore();
+  const onHandleDelete = (id: string) => {
+    setId(id);
+    setDelete(true);
+  };
   return (
-    <View style={styles.photoBox}>
-      <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
-      {/* <View style={styles.titleBox}>
-        <Text style={styles.textStyle}>{props.title}</Text>
-      </View> */}
-      <ImageBackground style={styles.titleBox} borderRadius={4}>
-        <Text style={styles.textStyle}>{props.filter_name}</Text>
-      </ImageBackground>
-    </View>
+    <>
+      {editable ? (
+        <View style={styles.photoBox}>
+          <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
+          <TouchableOpacity onPress={() => onHandleDelete(props.filter_id)} style={styles.trashContainer}>
+            <Image source={trash} style={styles.trashIcon} />
+          </TouchableOpacity>
+          <ImageBackground style={styles.titleBox} borderRadius={4}>
+            <Text style={styles.textStyle}>{props.filter_name}</Text>
+          </ImageBackground>
+        </View>
+      ) : (
+        <View style={styles.photoBox}>
+          <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
+          <ImageBackground style={styles.titleBox} borderRadius={4}>
+            <Text style={styles.textStyle}>{props.filter_name}</Text>
+          </ImageBackground>
+        </View>
+      )}
+    </>
   );
 }
 
@@ -35,26 +55,49 @@ const styles = StyleSheet.create({
     width: width,
     height: 180,
     marginBottom: 20,
+    position: "relative",
   },
   photoIcon: {
-    width: '100%',
-    resizeMode: 'stretch',
-    height: '100%',
+    width: "100%",
+    resizeMode: "stretch",
+    height: "100%",
+  },
+  trashContainer:{
+    position: "absolute",
+    top: 15,
+    right: 50,
+  },
+  trashIcon: {
+    width: 20,
+    height: 25,
+    zIndex: 3,
+    backgroundColor: "transparent",
+    ...Platform.select({
+      // ios: {
+      //   shadowColor: "#000",
+      //   shadowOffset: { width: 0, height: 4 },
+      //   shadowOpacity: 0.25,
+      //   shadowRadius: 4,
+      // },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   titleBox: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
-    backgroundColor: '#0000004D',
+    backgroundColor: "#0000004D",
     zIndex: 1,
-    width: '100%',
+    width: "100%",
     height: 50,
     // blurRadius: 4,
   },
   textStyle: {
     marginTop: 21,
     marginLeft: 10,
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

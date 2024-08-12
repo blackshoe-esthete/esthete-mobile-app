@@ -2,6 +2,9 @@ import {FlatList, ImageProps} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import GalleryItem from '@components/MyGalleryScreen/GalleryItem';
 import TempoItem from '@components/MyMenuScreen/TempoItem';
+import { useEffect, useState } from 'react';
+import { useEditStore } from '@store/edit-store';
+import CommonModal from '@components/common/CommonModal';
 
 type galleryProp = {
   exhibition_id: string;

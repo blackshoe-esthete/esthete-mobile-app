@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { filterInstance } from './instance';
+import { filterInstance, mygalleryInstance } from './instance';
 import { CreateFilterParams, CreateFilterResponse } from '#types/filterService.type';
 import { exhibitionServiceToken } from '@utils/dummy';
 import { Alert } from 'react-native';
@@ -232,9 +232,35 @@ export const deleteItem = async ({title, id}: deleteProp) => {
         console.log("필터가 정상적으로 지워졌습니다.");
       }
       return response;
+    }else if(title == 'exhibition'){
+      const response = await mygalleryInstance.delete(`/exhibitions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${exhibitionServiceToken}`
+        }
+      });
+      if(response.status == 200){
+        console.log("전시가 정상적으로 지워졌습니다.");
+      }
+      return response;
     }
   }catch (error) {
     console.log('필터 삭제 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
+
+// 필터 구매내역 조회 및 수정
+export const purchaseFilter = async () => {
+  try{
+    const response = await filterInstance.get(`/purchased`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+
+    return response.data.payload.purchased_filter_list;
+  }catch (error) {
+    console.log('필터 구매내역 조회 실패', (error as AxiosError)?.response?.data);
     throw error;
   }
 }
