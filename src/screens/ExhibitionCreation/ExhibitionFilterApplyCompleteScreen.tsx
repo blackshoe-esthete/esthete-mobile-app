@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
+import {captureRef} from 'react-native-view-shot';
 import {
   Pressable,
   StyleSheet,
@@ -34,6 +35,7 @@ import {
   temperature,
   grayscale,
 } from 'react-native-image-filter-kit';
+import {myTempExhibitionDetails} from 'src/apis/mygallery';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -43,15 +45,26 @@ const ExhibitionFilterApplyCompleteScreen = () => {
   const navigation = useNavigation();
   const {details, setDetails, resetDetails} = useExhibitionDetailsStore(); // 스토어 사용
   //선택한 이미지
-  const {selectedImageUri, additionalImageUri, resetImages} = useExhibitionCreationStore();
+  const {selectedImageUri, setSelectedImageUri, additionalImageUri, imageFilterSettings, resetImages} =
+    useExhibitionCreationStore();
   const {currentFilterAttributes} = useFilterDetailsStore();
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   //모달
   const [tempModalVisible, setTempModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  //전시 설명
 
+  const moodOptions = [
+    {id: 'fe96c294-b5f3-425e-a6de-8cc1b13beb5a', name: '부드러운'},
+    {id: '118ccbfb-8caf-498b-913a-16a315b3a859', name: '초상화'},
+    {id: '4a0db2eb-f4bc-4fa3-ae47-8381ed0da1ab', name: '풍경'},
+    {id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267', name: '거리'},
+    {id: '1f479a8d-dab2-4d95-96c9-73d5f7382a01', name: '음식'},
+    {id: '8969e7f1-2d1e-4a6d-b234-73c2aa7b24ff', name: '여행'},
+    {id: '9b11a16b-6786-4a28-8273-ff9e06b80318', name: '패션'},
+  ];
+
+  //전시 설명
   const allFieldsFilled =
     selectedImageUri &&
     additionalImageUri.length > 0 &&
@@ -60,6 +73,54 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     details.mood.length > 0 &&
     details.location;
 
+  useEffect(() => {
+    if (details.tmpExhibitionId) {
+      loadTemporaryExhibition(details.tmpExhibitionId);
+    }
+  }, []);
+
+  const loadTemporaryExhibition = async (tmpId: string) => {
+    try {
+      const response = await myTempExhibitionDetails(tmpId);
+
+      const mappedTags = response.tags
+        .map((tag: string) => {
+          const moodOption = moodOptions.find(option => option.name === tag);
+          return moodOption ? moodOption.id : null;
+        })
+        .filter((tag: string) => tag !== null);
+
+      setDetails({
+        title: response.title,
+        description: response.description,
+        mood: mappedTags,
+        tmpExhibitionId: tmpId,
+      });
+    } catch (error) {
+      console.error('Failed to load temporary exhibition', error);
+      Alert.alert('임시 저장된 전시를 불러오는 데 실패했습니다.');
+    }
+  };
+
+  const imageRefs = useRef([]);
+
+  const saveFilteredImage = async (index: number) => {
+    return new Promise<string | null>(resolve => {
+      setTimeout(async () => {
+        try {
+          const uri = await captureRef(imageRefs.current[index], {
+            format: 'jpg',
+            quality: 0.8,
+          });
+          console.log('Saved image uri:', uri);
+          resolve(uri);
+        } catch (error) {
+          resolve(null);
+        }
+      }, 500); // 500ms 대기 시간
+    });
+  };
+
   const finalizeCreation = async (type: string) => {
     if (type == 'create' && !allFieldsFilled) {
       console.log('details', details);
@@ -67,19 +128,27 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       return;
     }
 
-    // filter_photo_list 구성
-    const filterPhotos = additionalImageUri.map(image => ({
+    const filteredImages = await Promise.all(
+      additionalImageUri.map(async (image, index) => {
+        const uri = await saveFilteredImage(index);
+        return {
+          ...image,
+          filteredUri: uri || image.uri, // 캡처 실패 시 원본 URI 사용
+        };
+      }),
+    );
+
+    const filterPhotos = filteredImages.map(image => ({
       gray_scale: image.filterDetails?.grayScale,
       filter_id: image.filterDetails?.id,
     }));
 
-    const exhibition_photo = additionalImageUri.map((uri, index) => ({
-      uri: uri.uri,
-      name: `representation${index}${Date.now()}.jpg`, // 현재 시간을 이용하여 파일명을 생성합니다.
+    const exhibition_photo = filteredImages.map((image, index) => ({
+      uri: image.filteredUri,
+      name: `representation${index}${Date.now()}.jpg`,
       type: 'image/jpg',
     }));
 
-    // exhibitionData 구성
     const exhibitionData = {
       filter_photo_list: {filter_photos: filterPhotos},
       exhibition_information: {
@@ -141,16 +210,6 @@ const ExhibitionFilterApplyCompleteScreen = () => {
     }
   };
 
-  const moodOptions = [
-    {id: 'fe96c294-b5f3-425e-a6de-8cc1b13beb5a', name: '부드러운'},
-    {id: '118ccbfb-8caf-498b-913a-16a315b3a859', name: '초상화'},
-    {id: '4a0db2eb-f4bc-4fa3-ae47-8381ed0da1ab', name: '풍경'},
-    {id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267', name: '거리'},
-    {id: '1f479a8d-dab2-4d95-96c9-73d5f7382a01', name: '음식'},
-    {id: '8969e7f1-2d1e-4a6d-b234-73c2aa7b24ff', name: '여행'},
-    {id: '9b11a16b-6786-4a28-8273-ff9e06b80318', name: '패션'},
-  ];
-
   const toggleMood = (selectedMoodId: string) => {
     let newMood = details.mood.includes(selectedMoodId)
       ? details.mood.filter(m => m !== selectedMoodId)
@@ -188,26 +247,30 @@ const ExhibitionFilterApplyCompleteScreen = () => {
             }
             scrollAnimationDuration={1000}
             onSnapToItem={index => setCurrentImageIndex(index)}
-            renderItem={({item}) => (
-              <TouchableOpacity>
-                <Sharpen
-                  image={
-                    <ColorMatrix
-                      matrix={concatColorMatrices([
-                        brightness(currentFilterAttributes?.brightness),
-                        contrast(currentFilterAttributes?.contrast),
-                        saturate(currentFilterAttributes?.saturation),
-                        hueRotate(currentFilterAttributes?.hue),
-                        temperature(currentFilterAttributes?.temperature),
-                        grayscale(currentFilterAttributes?.grayScale),
-                      ])}
-                      image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
-                    />
-                  }
-                  amount={currentFilterAttributes?.sharpness}
-                />
-              </TouchableOpacity>
-            )}
+            renderItem={({item, index}) => {
+              const currentFilter = imageFilterSettings[index]?.filterAttributes || {};
+
+              return (
+                <View ref={el => (imageRefs.current[index] = el)}>
+                  <Sharpen
+                    image={
+                      <ColorMatrix
+                        matrix={concatColorMatrices([
+                          brightness(currentFilter?.brightness),
+                          contrast(currentFilter?.contrast),
+                          saturate(currentFilter?.saturation),
+                          hueRotate(currentFilter?.hue),
+                          temperature(currentFilter?.temperature),
+                          grayscale(currentFilter?.grayScale),
+                        ])}
+                        image={<Image source={{uri: item}} style={styles.carouselImage} resizeMode="contain" />}
+                      />
+                    }
+                    amount={currentFilter?.sharpness}
+                  />
+                </View>
+              );
+            }}
           />
         </View>
 
@@ -227,7 +290,7 @@ const ExhibitionFilterApplyCompleteScreen = () => {
           <View style={styles.textInput}>
             <TextInput
               style={styles.text}
-              placeholder="필터 설명을 작성해주세요"
+              placeholder="전시 설명을 작성해주세요"
               placeholderTextColor="#D6D6D6"
               onChangeText={text => setDetails({description: text})}
               value={details.description}

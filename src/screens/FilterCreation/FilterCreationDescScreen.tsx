@@ -20,7 +20,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '#types/navigations';
 import CommonModal from '@components/common/CommonModal';
-import { useMutation } from '@tanstack/react-query';
+import { InvalidateQueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFilter } from 'src/apis/filterService';
 import { filterServiceToken } from '@utils/dummy';
 import {
@@ -31,12 +31,13 @@ import {
   TemporaryFilter,
 } from '#types/filterService.type';
 import { filterIdToName, filterNameToId, filterTagsData } from '@utils/filter';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import cancelIcon from '@assets/icons/cancel_gray.png';
 import { LoadingIndicator } from '@components/common/LoadingIndicator';
 
 function FilterCreationDescScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const queryClient = useQueryClient();
   const route = useRoute();
   const tempFilterRef = useRef(route.params as TemporaryFilter);
   const tempFilter = tempFilterRef.current;
@@ -66,7 +67,10 @@ function FilterCreationDescScreen(): React.JSX.Element {
 
   const { mutate, isPending } = useMutation<CreateFilterResponse, AxiosError, CreateFilterParams>({
     mutationFn: createFilter,
-    onSuccess: () => onSaveSuccess(tempModalVisible),
+    onSuccess: (_, variables) => {
+      onSaveSuccess(variables.url === '/temporary_filter');
+      queryClient.invalidateQueries({ 'temp-filter': true } as InvalidateQueryFilters);
+    },
   });
 
   const onSaveSuccess = (temp = false) => {
@@ -80,11 +84,11 @@ function FilterCreationDescScreen(): React.JSX.Element {
     if (temp) {
       setTempModalVisible(!tempModalVisible);
       navigation.navigate('CameraPage');
-      console.log('임시 저장 성공');
+      Alert.alert('필터 제작이 임시저장되었습니다.');
     } else {
       setCreateModalVisible(!createModalVisible);
       navigation.navigate('Exhibitions');
-      console.log('필터 제작 성공');
+      Alert.alert('필터 제작이 완료되었습니다.');
     }
   };
 

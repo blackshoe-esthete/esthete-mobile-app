@@ -11,7 +11,7 @@ export const getPurchasedFilters = async (token: string | undefined) => {
       },
     });
 
-    return response.data.purchased_filter_list;
+    return response.data;
   } catch (error) {
     console.error('Error fetching purchased filters', (error as AxiosError)?.response?.data);
     throw error;
@@ -35,6 +35,9 @@ export const getCreatedFilters = async (token: string | undefined) => {
 };
 
 export const getFilterDetails = async (filterId: string, authToken: string) => {
+  if (filterId === '0') {
+    return;
+  }
   const url = `/${filterId}/details`;
   const headers = {
     Authorization: `Bearer ${authToken}`,

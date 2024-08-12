@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import arrowIcon from '@assets/icons/arrow.png';
 import { useNavigation } from '@react-navigation/native';
 import HorizontalList from './HorizontalList';
@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '#types/navigations';
 import { useExhibitionCluster, useNearbyExhibitions } from '@hooks/useNearbyExhibitions';
 import useMyLocation from '@hooks/useMyLocation';
+import anonymousImg from '@assets/imgs/anonymous.png';
 
 interface ExhibitionListProps {
   selectedTags: string[];
@@ -61,7 +62,7 @@ function ExhibitionList({ selectedTags }: ExhibitionListProps): React.JSX.Elemen
     selectedTags.length === 0 ? defaultIsolatedQuery.data : isolatedQueries.flatMap((query) => query.data || []);
 
   const myRegion = useMyLocation();
-  const { data: clusterData } = useExhibitionCluster(myRegion?.latitude!, myRegion?.longitude!, 10, 'state');
+  const { data: clusterData } = useExhibitionCluster(myRegion!.latitude, myRegion!.longitude, 10, 'state');
   const { data: nearbyExhibitionData } = useNearbyExhibitions(clusterData?.content[0]);
 
   return (
@@ -86,7 +87,7 @@ function ExhibitionList({ selectedTags }: ExhibitionListProps): React.JSX.Elemen
         imgStyles={styles.personImg}
         idKey="user_id"
         urlKey="profile_url"
-        // imgSource={anonymousImg}
+        imgSource={anonymousImg}
       />
       <HorizontalList
         title="내 주변"

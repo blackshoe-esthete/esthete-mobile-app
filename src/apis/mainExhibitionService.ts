@@ -1,10 +1,10 @@
-import {exhibitionServiceToken} from '@utils/dummy';
-import {exhibitionInstance} from './instance';
+import { exhibitionServiceToken } from '@utils/dummy';
+import { exhibitionInstance } from './instance';
 
 // 개인 추천 전시 리스트 반환
 export const getMainExhibitionList = async () => {
   try {
-    const response = await exhibitionInstance.get(`/recommend`, {
+    const response = await exhibitionInstance.get('/recommend', {
       headers: {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
@@ -34,7 +34,7 @@ export const getMainExhibitionListWithTag = async (tags: string[]) => {
 // 고립된 전시 리스트 반환
 export const getIsolatedExhibitionList = async () => {
   try {
-    const response = await exhibitionInstance.get(`/isolation`);
+    const response = await exhibitionInstance.get('/isolation');
     return response.data.payload;
   } catch (error) {
     console.log('실패 데이터: ', error);
@@ -89,10 +89,11 @@ export const getTagExhibitionList = async (tag: string) => {
     throw error;
   }
 };
+
 // 개인 선호 작가 조회
 export const getPreferAuthorList = async () => {
   try {
-    const response = await exhibitionInstance.get(`/authors`, {
+    const response = await exhibitionInstance.get('/authors', {
       headers: {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
