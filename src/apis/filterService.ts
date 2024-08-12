@@ -213,3 +213,28 @@ export const searchForTag = async (tags: tagIdList) => {
     throw error;
   }
 }
+
+type deleteProp = {
+  title: string; //filter 인지 exhibition 인지
+  id: string;
+}
+
+//필터 삭제
+export const deleteItem = async ({title, id}: deleteProp) => {
+  try{
+    if(title == 'filter'){
+      const response = await filterInstance.delete(`/${id}`, {
+        headers: {
+          Authorization: `Bearer ${exhibitionServiceToken}`
+        }
+      })
+      if(response.status == 200){
+        console.log("필터가 정상적으로 지워졌습니다.");
+      }
+      return response;
+    }
+  }catch (error) {
+    console.log('필터 삭제 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
