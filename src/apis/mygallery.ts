@@ -189,6 +189,27 @@ export const myFilterPreferTag = async () => {
   }
 }
 
+//(수정) 사용자 필터 선호 태그 리스트로 추가
+export const putMyFilterPreferTag = async(tag_list: string[]) => {
+  try{
+    const response = await filterInstance.put(`/tags`, {
+      tag_list
+    }, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자 선호태그가 정상적으로 업로드됐습니다.');
+    }
+    return response.data.payload.tag_list;
+  }catch(error){
+    console.log('사용자 선호태그 넣기 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+
 //사용자 필터 선호 태그 추가
 export const myFilterAddPreferTag = async (filterId: string) => {
   try{
