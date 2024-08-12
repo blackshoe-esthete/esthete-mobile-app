@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '#types/navigations';
 import { ImageSourcePropType } from 'react-native';
 import { AuthorResponse, ExhibitionListResponse } from '#types/mainExhibitionService.type';
+import CustomSkeletonPlaceholder from './SkeletonPlaceholder';
 
 type HorizontalListProps = {
   imgStyles: StyleProp<ImageStyle>;
@@ -12,6 +13,7 @@ type HorizontalListProps = {
   data: ExhibitionListResponse[] | AuthorResponse[];
   idKey: 'exhibition_id' | 'user_id';
   urlKey: 'thumbnail_url' | 'profile_url';
+  isFetching?: boolean;
   imgSource?: ImageSourcePropType;
   children?: React.ReactNode;
 };
@@ -22,6 +24,7 @@ function HorizontalList({
   data,
   idKey,
   urlKey,
+  isFetching,
   imgSource,
   children,
 }: HorizontalListProps): React.JSX.Element {
@@ -56,7 +59,9 @@ function HorizontalList({
   return (
     <View style={styles.gap10}>
       {children ? children : <Text style={styles.text}>{title}</Text>}
-      {data.length === 0 ? (
+      {isFetching ? (
+        <CustomSkeletonPlaceholder type={idKey === 'exhibition_id' ? 'exhibition' : 'user'} />
+      ) : data?.length === 0 ? (
         <View style={styles.emptyTextWrapper}>
           <Text style={styles.emptyText}>결과가 없습니다.</Text>
         </View>
@@ -84,7 +89,7 @@ const styles = StyleSheet.create({
   },
   emptyTextWrapper: {
     flex: 1,
-    paddingVertical: 30,
+    paddingVertical: 60,
   },
   emptyText: {
     color: 'white',

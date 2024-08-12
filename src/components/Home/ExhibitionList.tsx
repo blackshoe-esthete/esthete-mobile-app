@@ -24,38 +24,26 @@ interface ExhibitionListProps {
 function ExhibitionList({ selectedTag }: ExhibitionListProps): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const { data: preferedAuthorData } = useQuery({
+  const { data: preferedAuthorData, isFetching: isFetchingPreferedAuthor } = useQuery({
     queryKey: ['preferedAuthor'],
-    queryFn: () => getPreferAuthorList(),
+    queryFn: getPreferAuthorList,
   });
 
-  const recommendedQuery = useQuery({
+  const { data: recommendedExhibitionData, isFetching: isFetchingRecommendedExhibition } = useQuery({
     queryKey: ['recommendedExhibition', selectedTag],
-    queryFn: () => getMainExhibitionListWithTag([selectedTag]),
+    queryFn: () => (selectedTag === '' ? getMainExhibitionList() : getMainExhibitionListWithTag([selectedTag])),
   });
 
-  const isolatedQuery = useQuery({
+  const { data: isolatedExhibitionData, isFetching: isFetchingIsolatedExhibition } = useQuery({
     queryKey: ['isolatedExhibition', selectedTag],
-    queryFn: () => getIsolatedExhibitionListWithTag([selectedTag]),
+    queryFn: () => (selectedTag === '' ? getIsolatedExhibitionList() : getIsolatedExhibitionListWithTag([selectedTag])),
   });
-
-  const defaultRecommendedQuery = useQuery({
-    queryKey: ['recommendedExhibition'],
-    queryFn: () => getMainExhibitionList(),
-  });
-
-  const defaultIsolatedQuery = useQuery({
-    queryKey: ['isolatedExhibition'],
-    queryFn: () => getIsolatedExhibitionList(),
-  });
-
-  const recommendedExhibitionData = selectedTag === '' ? defaultRecommendedQuery.data : recommendedQuery.data || [];
-
-  const isolatedExhibitionData = selectedTag === '' ? defaultIsolatedQuery.data : isolatedQuery.data || [];
 
   const myRegion = useMyLocation();
   const { data: clusterData } = useExhibitionCluster(myRegion!.latitude, myRegion!.longitude, 10, 'state');
-  const { data: nearbyExhibitionData } = useNearbyExhibitions(clusterData?.content[0]);
+  const { data: nearbyExhibitionData, isFetching: isFetchingNearbyExhibition } = useNearbyExhibitions(
+    clusterData?.content[0]
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.exhibitionContainer}>
@@ -65,6 +53,7 @@ function ExhibitionList({ selectedTag }: ExhibitionListProps): React.JSX.Element
         imgStyles={styles.exhibitionImg}
         idKey="exhibition_id"
         urlKey="thumbnail_url"
+        isFetching={isFetchingRecommendedExhibition}
       />
       <HorizontalList
         title="이런 전시실은 어떠세요?"
@@ -72,6 +61,7 @@ function ExhibitionList({ selectedTag }: ExhibitionListProps): React.JSX.Element
         imgStyles={styles.exhibitionImg}
         idKey="exhibition_id"
         urlKey="thumbnail_url"
+        isFetching={isFetchingIsolatedExhibition}
       />
       <HorizontalList
         title="선호 작가"
@@ -80,6 +70,7 @@ function ExhibitionList({ selectedTag }: ExhibitionListProps): React.JSX.Element
         idKey="user_id"
         urlKey="profile_url"
         imgSource={anonymousImg}
+        isFetching={isFetchingPreferedAuthor}
       />
       <HorizontalList
         title="내 주변"
@@ -87,6 +78,7 @@ function ExhibitionList({ selectedTag }: ExhibitionListProps): React.JSX.Element
         imgStyles={[styles.exhibitionImg, { marginBottom: 70 }]}
         idKey="exhibition_id"
         urlKey="thumbnail_url"
+        isFetching={isFetchingNearbyExhibition}
       >
         <View
           style={{
