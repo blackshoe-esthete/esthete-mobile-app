@@ -35,7 +35,7 @@ function MyMenu({navigation, route}: Props) {
     visible: modalVisible,
     onClose: modalShown,
     button: ['로그아웃', '닫기'],
-    // button1: mutationLogout.mutate()
+    button1: () => mutationLogout.mutate()
   }
 
   const objects = [

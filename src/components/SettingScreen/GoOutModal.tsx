@@ -19,7 +19,7 @@ type FilterModalProps = {
   visible: boolean;
   onClose: () => void;
   button: string[];
-  button1?: UseMutationResult<Response, Error, void>
+  button1?: () => void;
   button2?: () => void;
 };
 
@@ -45,7 +45,7 @@ function OutModal({
           <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.subTitleText}>{subTitle}</Text>
           <View style={styles.buttonStyle}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={button1}>
               <View style={[styles.buttonBox, {backgroundColor: '#FFD600'}]}>
                 <Text style={styles.buttonText}>{button[0]}</Text>
               </View>
