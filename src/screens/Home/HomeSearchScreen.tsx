@@ -1,17 +1,16 @@
 import React from 'react';
 import SearchBar from '@components/common/SearchBar';
-import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 import HomeSearchTopTab from '@navigations/HomeSearchTopTab';
-import cancelIcon from '@assets/icons/cancel.png';
 
 function SearchScreen(): React.JSX.Element {
-  const {top} = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
 
   return (
     <SafeAreaView edges={['bottom']}>
-      <View style={[styles.topInset, {paddingTop: top}]} />
-      <SearchBar iconSource={cancelIcon} to={'Main'} />
+      <View style={[styles.topInset, { paddingTop: top }]} />
+      <SearchBar to={'Main'} back={true} />
       <View style={styles.container}>
         <HomeSearchTopTab />
       </View>
