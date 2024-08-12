@@ -8,7 +8,7 @@ import { useHomeSearchStore } from '@store/searchStore';
 
 type SearchBarProps = {
   iconSource: ImageSourcePropType;
-  to: any;
+  to: string;
   back?: boolean;
   placeHolder?: string;
 };
@@ -22,7 +22,7 @@ function SearchBar({ iconSource, to, back, placeHolder }: SearchBarProps): React
       Alert.alert('검색어를 입력해주세요.');
       return;
     }
-    navigation.navigate(to);
+    navigation.navigate(to as never);
   };
 
   return (
