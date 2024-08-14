@@ -44,7 +44,7 @@ export const filterTags: tagForm[] = [
   {id: 1, tag_id: 'fe96c294-b5f3-425e-a6de-8cc1b13beb5a', title: '부드러운'},
   {id: 2, tag_id: '118ccbfb-8caf-498b-913a-16a315b3a859', title: '평화로운'},
   {id: 3, tag_id: '4a0db2eb-f4bc-4fa3-ae47-8381ed0da1ab', title: '차가운'},
-  {id: 4, tag_id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267', title: '빈티지한'},
-  {id: 5, tag_id: '3e3f2d48-7e19-4d53-bf91-776d5b0915e3', title: '몽환적인'},
-  {id: 6, tag_id: '7d2b1c46-3f2d-45c1-a6a8-392d2b9b48b6', title: '싱그러운'}
+  {id: 4, tag_id: 'ae4a3cee-f7e3-48a1-8b0a-eb4d177b2267', title: '세련된'},
+  {id: 5, tag_id: '1f479a8d-dab2-4d95-96c9-73d5f7382a01', title: '자연스러운'},
+  {id: 6, tag_id: '8969e7f1-2d1e-4a6d-b234-73c2aa7b24ff', title: '클래식한'},
 ];

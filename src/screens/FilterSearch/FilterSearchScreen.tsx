@@ -1,5 +1,5 @@
 import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -7,8 +7,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import KeywordList from '@components/FilterSearchScreen/KeywordList';
-import SearchBar from '@components/common/SearchBar';
 import MasonryList from '@react-native-seoul/masonry-list';
 import RenderItem from '@components/FilterSearchScreen/RenderItem';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -17,7 +15,8 @@ import searchIcon from '@assets/icons/search.png';
 import { useQuery } from '@tanstack/react-query';
 import { filterSearch, searchForTag } from 'src/apis/filterService';
 import ActivateKeyword from '@components/FilterSearchScreen/ActivateKeyword';
-import { useHomeSearchStore } from '@store/searchStore';
+import { useFilterSearchStore, useHomeSearchStore } from '@store/searchStore';
+import FilterSearchBar from '@components/FilterSearchScreen/FilterSearchBar';
 type Props = NativeStackScreenProps<Routes, 'FilterSearchPage'>;
 
 type ImageItem = {
@@ -34,29 +33,37 @@ type ImageItem = {
 function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
   const {top} = useSafeAreaInsets();
   const [tagId, setTagId] = useState<string>('');
-  // const [keyword, setKeyword] = useState('');
-  const { keyword, setKeyword } = useHomeSearchStore();
+  const { keyword } = useFilterSearchStore();
+  const deferredKeyword = useDeferredValue(keyword);
 
-  const handleTagChange = (newTagId: string) => {
+  const handleTagChange = useCallback((newTagId: string) => {
     setTagId(newTagId);
-  };
+  }, []);
 
-  useEffect(() => {
-    console.log(tagId);
-  }, [tagId]);
-
-  const {data: tagFilterData, isLoading: isLoading1} = useQuery({
-    queryKey: ['tag-filter', {tagId, keyword}],
+  const tagFilterDataQuery = useQuery({
+    queryKey: ['tag-filter', {tagId, deferredKeyword}],
     queryFn: () => searchForTag({tagId, keyword}),
-    enabled: !!keyword || !!tagId
+    enabled: !!(deferredKeyword || tagId),
+    staleTime: 5 * 60 * 1000,
   });
 
   //필터 검색 전체 데이터
-  const {data: filterData, isLoading, isError} = useQuery({
+  const filterDataQuery = useQuery({
     queryKey: ['filter-searched'],
-    queryFn: filterSearch
+    queryFn: filterSearch,
+    staleTime: 5 * 60 * 1000,
   });
-  if (isLoading || isLoading1) {
+
+  const isLoading = tagFilterDataQuery.isLoading || filterDataQuery.isLoading;
+  const isError = tagFilterDataQuery.isError || filterDataQuery.isError;
+  const tagFilterData = tagFilterDataQuery.data;
+  const filterData = filterDataQuery.data;
+
+  const data = useMemo(() => {
+    return (tagId || deferredKeyword) ? tagFilterData : filterData;
+  }, [tagId, deferredKeyword, tagFilterData, filterData]);
+
+  if (isLoading) {
     // 데이터 로딩 중일 때 로딩 인디케이터 표시
     return (
       <SafeAreaView edges={['bottom']} style={styles.loadingContainer}>
@@ -74,7 +81,6 @@ function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
     );
   }
 
-
   return (
     <SafeAreaView edges={['bottom']}>
       <View style={[styles.topInset, {paddingTop: top}]} />
@@ -82,11 +88,12 @@ function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
         showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}>
         {/* 검색창 */}
-        <SearchBar
+        <FilterSearchBar
           iconSource={searchIcon}
           to={'FilterSearchPage'}
           back={true}
           placeHolder={'필터, 작가 검색'}
+          label={'filter'}
         />
 
         {/* 키워드 */}
@@ -97,8 +104,8 @@ function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
         {/* 필터 */}
         <View style={{display: 'flex'}}>
           <MasonryList
-            data={(tagId|| keyword) ? tagFilterData : filterData}
-            // data={filterData}
+            // data={(tagId|| keyword) ? tagFilterData : filterData}
+            data={data}
             keyExtractor={(item: ImageItem) => item.filter_id}
             numColumns={2}
             renderItem={({item, i}) => (

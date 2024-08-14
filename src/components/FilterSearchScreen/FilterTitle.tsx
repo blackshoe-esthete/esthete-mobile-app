@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import unlike from '@assets/icons/unlike.png';
 import like from '@assets/icons/like.png';
@@ -38,6 +38,10 @@ function FilterTitle({title, likeCount, isLike, filterId}: titleProp) : React.JS
       console.log(error);
     }
   });
+
+  useEffect(() => {
+    console.log(isLike);
+  }, [isLike])
 
   return(
     <>

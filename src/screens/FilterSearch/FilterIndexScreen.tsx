@@ -137,7 +137,7 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
             <FilterTitle
               title={filterIndexData?.filter_name}
               likeCount={filterIndexData?.like_count}
-              isLike={filterIndexData?.is_like}
+              isLike={filterIndexData.is_like}
               filterId={filterIndex}
             />
           </View>

@@ -7,18 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { filterTags } from "@utils/tags";
+import { filterTags, preferTags } from "@utils/tags";
 
-function ActivateKeyword({
-  dummy,
-  marginProp,
-  marginVertical,
-  onValueChange
-}: any): React.JSX.Element {
+function ActivateKeyword({marginVertical, onValueChange}: any): React.JSX.Element {
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
-  const initial = Array(filterTags.length).fill(false);
+  const initial = Array(preferTags.length).fill(false);
   const [status, setStatus] = useState<boolean[]>(initial);
-
 
   type tagForm = {
     id: number;
@@ -31,14 +25,16 @@ function ActivateKeyword({
     setStatus: React.Dispatch<React.SetStateAction<boolean[]>>;
   };
 
-  const TagItem = ({item, status, setStatus}: tagItemProps) => {
-    const {id, title, tag_id} = item;
+  const TagItem = ({ item, status, setStatus }: tagItemProps) => {
+    const { id, title, tag_id } = item;
     return (
       <TouchableOpacity
         onPress={() => {
-          setSelectedTagId((prevTagId: string | null) => (prevTagId === tag_id ? null : tag_id || null));
-
-        }}>
+          setSelectedTagId((prevTagId: string | null) =>
+            prevTagId == tag_id ? null : tag_id || null
+          );
+        }}
+      >
         {selectedTagId === tag_id ? (
           <View style={styles.focusedTagBox}>
             <Text style={styles.focusedTagTitle}>{title}</Text>
@@ -52,30 +48,34 @@ function ActivateKeyword({
     );
   };
 
-  
   useEffect(() => {
-    if (selectedTagId !== null) {
-      onValueChange([selectedTagId]);
-    } else {
-      onValueChange([]);
-    }
+    // if (selectedTagId !== null) {
+    //   onValueChange([selectedTagId]);
+    // } else {
+    //   onValueChange([]);
+    // }
+    onValueChange(selectedTagId);
   }, [selectedTagId]);
 
   return (
     <View
       style={[
         styles.keywordContainer,
-        { marginTop: marginProp, marginVertical: marginVertical },
+        { marginVertical: marginVertical },
       ]}
     >
       <FlatList
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.gap10}
-        data={filterTags}
+        data={preferTags}
         renderItem={({ item, index }) => (
-          <TagItem key={index} item={item} status={status} setStatus={setStatus} />
-
+          <TagItem
+            key={index}
+            item={item}
+            status={status}
+            setStatus={setStatus}
+          />
         )}
       />
     </View>
@@ -115,20 +115,20 @@ const styles = StyleSheet.create({
   },
   tagBox: {
     borderRadius: 10,
-    backgroundColor: '#414141',
+    backgroundColor: "#414141",
     padding: 15,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 'auto',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "auto",
   },
   focusedTagBox: {
     borderRadius: 10,
-    backgroundColor: '#FFD600',
+    backgroundColor: "#FFD600",
     padding: 15,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 'auto',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "auto",
   },
 });
