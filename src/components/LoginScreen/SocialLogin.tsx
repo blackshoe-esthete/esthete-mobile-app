@@ -7,13 +7,14 @@ import {
   logout,
   unlink,
   getProfile as getKakaoProfile,
-  KakaoProfile
+  KakaoProfile,
 } from '@react-native-seoul/kakao-login';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NaverLogin, { NaverLoginInitParams } from '@react-native-seoul/naver-login';
 import Config from 'react-native-config';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { socialOkLogin } from 'src/apis/login';
 
 const windowWidth = Dimensions.get('window').width;
 type socialProp = {
@@ -65,6 +66,7 @@ function SocialLogin(props: socialProp): React.JSX.Element {
   //     });
   // };
   const [result, setResult] = useState<string>('');
+  const [nickname, setNickname] = useState('');
 
   useEffect(() => {
     NaverLogin.initialize({
@@ -84,10 +86,24 @@ function SocialLogin(props: socialProp): React.JSX.Element {
       const token: KakaoOAuthToken = await login();
       setResult(JSON.stringify(token));
       console.log('카카오 로그인 성공');
-      const response = await getProfile();
-      navigation.navigate('SignUp2');
+      getProfile();
     } catch (err) {
       console.error('login err', err);
+    }
+  };
+  const getProfile = async (): Promise<void> => {
+    try {
+      const profile = await getKakaoProfile();
+      setNickname(profile.nickname);
+      await AsyncStorage.setItem('profile', JSON.stringify(profile));
+      if(profile){
+        socialOkLogin({
+          provider: 'kakao',
+          nickname: `${profile.nickname}`
+        });
+      }
+    } catch (err) {
+      console.error("signOut error", err);
     }
   };
 
@@ -103,7 +119,7 @@ function SocialLogin(props: socialProp): React.JSX.Element {
     console.log('idToekn : ', idToken);
     if (idToken) {
       setResult(idToken);
-      navigation.navigate('SignUp2');
+      // navigation.navigate('SignUp2');
     }
   }
 
@@ -111,14 +127,6 @@ function SocialLogin(props: socialProp): React.JSX.Element {
     console.log(result);
   }, [result]);
 
-  const getProfile = async (): Promise<void> => {
-    try {
-      const profile = await getKakaoProfile();
-      await AsyncStorage.setItem('profile', JSON.stringify(profile));
-    } catch (err) {
-      console.error("signOut error", err);
-    }
-  };
   return (
     <TouchableOpacity
       onPress={() => {

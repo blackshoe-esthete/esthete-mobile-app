@@ -3,7 +3,6 @@ import {useEffect, useRef, useState} from 'react';
 import {Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
-import {useNavigation} from '@react-navigation/native';
 import Verification from '@components/LoginScreen/Verification';
 import {useMutation} from '@tanstack/react-query';
 import {emailValidation, emailVerification, signUpNext, userCheck} from 'src/apis/login';
