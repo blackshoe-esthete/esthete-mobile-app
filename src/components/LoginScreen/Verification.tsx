@@ -1,16 +1,26 @@
-import { View, Image, Text, StyleSheet } from "react-native";
+import {View, Image, Text, StyleSheet} from 'react-native';
 import verified from '@assets/icons/verified.png';
 import unverified from '@assets/icons/unverified.png';
 
 type verifyProp = {
   label?: string;
-}
+  state?: boolean;
+};
 
-function Verification(props: verifyProp):React.JSX.Element {
-  return(
+function Verification(props: verifyProp): React.JSX.Element {
+  return (
     <View style={styles.alertBox}>
-      <Image source={unverified} style={styles.alertIcon} />
-      <Text style={styles.alertText}>인증번호가 불일치합니다.</Text>
+      {props.state ? (
+        <>
+          <Image source={verified} style={styles.alertIcon} />
+          <Text style={styles.alertText}>{props.label} 일치합니다.</Text>
+        </>
+      ) : (
+        <>
+          <Image source={unverified} style={styles.alertIcon} />
+          <Text style={styles.alertText}>{props.label} 불일치합니다.</Text>
+        </>
+      )}
     </View>
   );
 }
@@ -35,4 +45,4 @@ const styles = StyleSheet.create({
     letterSpacing: -0.24,
     fontFamily: 'Gothic A1',
   },
-})
+});

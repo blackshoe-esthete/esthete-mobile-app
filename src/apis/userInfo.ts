@@ -1,6 +1,7 @@
 import axios, {AxiosError} from 'axios';
-import {mygalleryInstance} from './instance';
+import {mygalleryInstance, userInstance} from './instance';
 import {exhibitionServiceToken} from '@utils/dummy';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const getMyFollowing = async () => {
   try {
@@ -27,9 +28,9 @@ export const getMyFollower = async () => {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
     });
-    // if(response.data.code == 200){
-    //   console.log(response.data.message);
-    // }
+    if(response.data.code == 200){
+      console.log(response.data.message);
+    }
 
     return response.data.payload;
   } catch (error) {
@@ -40,14 +41,18 @@ export const getMyFollower = async () => {
 
 export const getMyInfo = async () => {
   try {
+    const token = AsyncStorage.getItem('token');
+    console.log(token);
     const response = await mygalleryInstance.get(`/authors`, {
       headers: {
         Authorization: `Bearer ${exhibitionServiceToken}`,
+        // Authorization: `Bearer ${token}`
       },
     });
     if (response.data.code == 200) {
       console.log(response.data.message);
     }
+    console.log(response.data.payload);
     return response.data.payload;
   } catch (error) {
     console.log('실패 데이터: ', (error as AxiosError).config);
@@ -57,6 +62,10 @@ export const getMyInfo = async () => {
 
 export const putMyProfile = async (image: string) => {
   try {
+    if (!image) {
+      console.error("Image URI is empty.");
+      return;
+    }
     const formData = new FormData();
     formData.append('file', {
       uri: image as string,
@@ -94,8 +103,28 @@ export const putMyAdditional = async (info: profileInfo) => {
         Authorization: `Bearer ${exhibitionServiceToken}`,
       },
     });
+    if(response.status == 200){
+      console.log('프로필이 정상적으로 수정됐습니다.');
+    }
+    
   } catch (error) {
     console.log('실패 데이터: ', (error as AxiosError).config);
     throw error;
   }
 };
+
+//아이디 중복 체크
+export const duplicateId = async (nickname: string) => {
+  try{
+    const response = await mygalleryInstance.get(`/check-nickname/${nickname}`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    
+    return response.data.is_success;
+  } catch (error) {
+    console.log('아이디 중복 확인 실패 데이터: ', (error as AxiosError).config);
+    throw error;
+  }
+}

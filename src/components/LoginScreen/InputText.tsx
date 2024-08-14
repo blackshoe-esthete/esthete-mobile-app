@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
 
 type inputProp = {
@@ -22,17 +22,42 @@ type inputProp = {
   security?: boolean;
   value?: string;
   onChange?: (text: string) => void;
+  onValidityChange?: (isValid: boolean) => void; 
 };
 function InputText(props: inputProp): React.JSX.Element {
+  const [text, setText] = useState(props.value || '');
+  const [isValid, setIsValid] = useState(false);
+  const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/;
+
+  useEffect(() => {
+    setText(props.value || '');
+    console.log(props.value);
+  }, [props.value]);
+
+  const handleChangeText = (newText: string) => {
+    setText(newText);
+    if (props.onChange) {
+      props.onChange(newText);
+    }
+    if(props.type==='visible-password'){
+      setIsValid(passwordRegex.test(newText));
+    }
+  };
+  useEffect(() => {
+    if (props.onValidityChange) {
+      props.onValidityChange(isValid);
+    }
+  }, [isValid]);
+  
   return (
     <TextInput
       placeholder={props.placeHolder}
       style={[styles.inputBox, {marginTop: props.margin, color: props.color || '#E9E9E9'}]}
       placeholderTextColor="#E9E9E9"
-      value={props.value}
+      value={text}
       keyboardType={props.type || 'default'}
       secureTextEntry={props.security}
-      onChangeText={props.onChange}
+      onChangeText={handleChangeText}
     />
   );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 type FilterModalProps = {

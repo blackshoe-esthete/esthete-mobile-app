@@ -139,9 +139,128 @@ export const myPurchasedFilter = async () => {
     if (response.status == 200) {
       console.log('구매한 필터내역이 조회되었습니다.');
     }
-    return response.data.payload;
-  } catch (error) {
+    return response.data.payload.purchased_filter_list;
+  }catch(error){
     console.log('구매한 필터내역 조회 실패: ', (error as AxiosError).config);
     throw error;
   }
-};
+}
+
+//사용자 전시회 선호 태그 조회
+export const myExhibitionFilterPreferTag = async () => {
+  try{ 
+    const response = await mygalleryInstance.get(`/edit/user/tags`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log("사용자 선호태그가 조회되었습니다.");
+    }
+
+    return response.data.payload.tag_list;
+  }catch(error){
+    console.log('사용자 선호 필터태그 조회 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//사용자 전시회 선호 태그 넣기
+export const putMyExhibitionPreferTag = async (tag_list: string[]) => {
+  try{
+    console.log(tag_list);
+    const response = await mygalleryInstance.put(`/edit/user/tags`, {
+      tag_list
+    }, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자 선호 태그가 정상적으로 선택됐습니다.');
+    }
+
+    return response.data.payload.tag_list;
+  }catch(error){
+    console.log('사용자 선호태그 넣기 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//사용자 필터 선호 태그 조회
+export const myFilterPreferTag = async () => {
+  try{
+    const response = await filterInstance.get(`/tags`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log("사용자 선호 태그가 성공적으로 조회됐습니다.");
+    }
+    
+    return response.data.payload;
+  }catch(error){
+    console.log('사용자 선호태그 조회 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//(수정) 사용자 필터 선호 태그 리스트로 추가
+export const putMyFilterPreferTag = async(tag_list: string[]) => {
+  try{
+    const response = await filterInstance.put(`/tags`, {
+      tag_list
+    }, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자 선호태그가 정상적으로 업로드됐습니다.');
+    }
+    return response.data.payload.tag_list;
+  }catch(error){
+    console.log('사용자 선호태그 넣기 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+
+//사용자 필터 선호 태그 추가
+export const myFilterAddPreferTag = async (filterId: string) => {
+  try{
+    const response = await filterInstance.post(`/tags/${filterId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log("사용자 선호 태그가 성공적으로 추가됐습니다.");
+    }
+    
+    return response.data.payload;
+  }catch(error){
+    console.log('사용자 선호태그 추가 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}
+
+//사용자 필터 선호 태그 삭제
+export const myFilterDeletePreferTag = async (filterId: string) => {
+  try{
+    const response = await filterInstance.delete(`/tags/${filterId}`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log("사용자 선호 태그가 성공적으로 삭제됐습니다.");
+    }
+    
+    return response.data.payload;
+  }catch(error){
+    console.log('사용자 선호태그 삭제 실패: ', (error as AxiosError).config);
+    throw error;
+  }
+}

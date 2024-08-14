@@ -1,15 +1,19 @@
 import InputText from '@components/LoginScreen/InputText';
 import {useEffect, useRef, useState} from 'react';
-import {Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonButton from '@components/SettingScreen/CommonButton';
-import {useNavigation} from '@react-navigation/native';
 import Verification from '@components/LoginScreen/Verification';
+import {useMutation} from '@tanstack/react-query';
+import {emailValidation, emailVerification, signUpNext, userCheck} from 'src/apis/login';
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
+import {Routes} from '@screens/Routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-function SignUp1() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<Routes, 'SignUp1'>;
+function SignUp1({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
   const [email, setEmail] = useState('');
   const [send, setSend] = useState(false);
@@ -17,6 +21,65 @@ function SignUp1() {
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
   const [contentLoaded, setContentLoaded] = useState(false);
+  const [verifiedNum, setVerifiedNum] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [samePwd, setSamePwd] = useState(false);
+  const mutationValidation = useMutation({
+    mutationFn: () => emailValidation(email),
+    onSuccess(data) {
+      console.log(data);
+    },
+    onError(data) {
+      console.log(data);
+      // Alert.alert('이메일 형식이 정확하지 않습니다.');
+    },
+  });
+  const mutationVerification = useMutation({
+    mutationFn: () => emailVerification({email, number}),
+    onSuccess(data) {
+      console.log(data);
+      setVerifiedNum(true);
+    },
+    onError(data) {
+      console.log(data);
+    },
+  });
+  const mutationSignUp = useMutation({
+    mutationFn: () => signUpNext({email, password: rePassword}),
+    onSuccess: async(data) => {
+      console.log(data);
+      try{
+        await AsyncStorage.setItem('userId', data.user_id);
+        navigation.navigate('SignUp2');
+      }catch(error){
+        console.log(error);
+      }
+    },
+    onError(data) {
+      console.log(data);
+      navigation.navigate('SignUp2');
+    },
+  });
+  const mutationIdCheck = useMutation({
+    mutationFn: () => userCheck(email),
+    onSuccess(data){
+      Alert.alert('이미 존재하는 사용자입니다.')
+    },
+    onError(data){
+      console.log(data);
+      console.log("사용가능한 아이디입니다.");
+      mutationSignUp.mutate();
+    }
+  })
+
+  useEffect(() => {
+    if (password === rePassword && password != '') {
+      setSamePwd(true);
+    } else {
+      setSamePwd(false);
+    }
+  }, [password, rePassword]);
+
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
       <ScrollView
@@ -46,7 +109,10 @@ function SignUp1() {
                   backgroundColor: '#FFD600',
                   color: 'black',
                 }}
-                onPress={() => setSend(true)}
+                onPress={() => {
+                  setSend(true);
+                  mutationValidation.mutate();
+                }}
               />
             ) : (
               <SendButton label="전송 완료" pressable={false} />
@@ -54,17 +120,24 @@ function SignUp1() {
           </View>
 
           <View style={styles.numberLayer}>
-            <TextInput style={styles.numberInput} />
-            <SendButton label="인증번호 확인" pressable={!send} />
+            <TextInput style={styles.numberInput} onChangeText={setNumber} />
+            <SendButton label="인증번호 확인" pressable={!send} onPress={() => mutationVerification.mutate()} />
           </View>
-          <Verification label="인증번호" />
+          <Verification label="인증번호가" state={verifiedNum} />
           <InputText
             security={true}
             placeHolder="비밀번호를 입력해주세요"
+            type="visible-password"
             value={password}
             onChange={setPassword}
             margin={21}
+            onValidityChange={setIsPasswordValid}
           />
+          {!isPasswordValid && password.length > 0 && (
+            <Text style={styles.errorText}>
+              비밀번호는 8자리 이상 20자리 이하이며, 특수문자 최소 한개 ($,@,!,%,*,#,?,&) 포함해야 합니다.
+            </Text>
+          )}
           <InputText
             security={true}
             placeHolder="비밀번호를 다시 입력해주세요"
@@ -72,7 +145,7 @@ function SignUp1() {
             onChange={setRePassword}
             margin={20}
           />
-          <Verification label="비밀번호" />
+          <Verification label="비밀번호가" state={samePwd} />
         </View>
       </ScrollView>
       <CommonButton
@@ -80,7 +153,7 @@ function SignUp1() {
         background="#292929"
         color="white"
         paddingNumber={0}
-        func={() => navigation.navigate('SignUp2')}
+        func={() => mutationIdCheck.mutate()}
       />
     </SafeAreaView>
   );
@@ -165,4 +238,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: -0.32,
   },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    letterSpacing: -0.24,
+    fontFamily: 'Gothic A1',
+  }
 });

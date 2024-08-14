@@ -9,3 +9,8 @@ export const useHomeSearchStore = create<HomeSearchStore>(set => ({
   keyword: '',
   setKeyword: (keyword: string) => set({keyword: keyword}),
 }));
+
+export const useFilterSearchStore = create<HomeSearchStore>(set => ({
+  keyword: '',
+  setKeyword: (keyword: string) => set({keyword: keyword})
+}));

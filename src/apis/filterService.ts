@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { filterInstance } from './instance';
+import { filterInstance, mygalleryInstance } from './instance';
 import { CreateFilterParams, CreateFilterResponse } from '#types/filterService.type';
 import { exhibitionServiceToken } from '@utils/dummy';
 import { Alert } from 'react-native';
@@ -129,9 +129,9 @@ export const indexFilterDetail = async (filterId: string) => {
   console.log('이 필터아이디는' + filterId);
   try {
     const response = await filterInstance.get(`/${filterId}/details`, {
-      headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
-      },
+      // headers: {
+      //   Authorization: `Bearer ${exhibitionServiceToken}`,
+      // },
     });
     if (response.status == 200) {
       console.log('개별 필터 상세조회에 성공했습니다.');
@@ -142,4 +142,109 @@ export const indexFilterDetail = async (filterId: string) => {
     console.log('개별 필터 상세조회 실패', (error as AxiosError)?.response?.data);
     throw error;
   }
+}  
+
+//필터 좋아요
+export const pushLikeToFilter = async (filterId: string) => {
+  try{
+    console.log(filterId)
+    const response = await filterInstance.post(`/${filterId}/like`, {}, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자의 좋아요가 정상적으로 동작했습니다.');
+    }
+    return response.data.payload;
+  }catch (error) {
+    console.log('필터 좋아요 api 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
+
+//필터 좋아요 취소
+export const deleteLikeToFilter = async (filterId: string) => {
+  try{
+    const response = await filterInstance.delete(`/${filterId}/unlike`, {
+      headers: {
+        Authorization: `Bearer ${exhibitionServiceToken}`
+      }
+    });
+    if(response.status == 200){
+      console.log('사용자의 좋아요 취소가 정상적으로 동작했습니다.');
+    }
+    return response.data.payload;
+  }catch (error) {
+    console.log('필터 좋아요취소 api 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
+
+type tagIdList = {
+  tagId?: string;
+  keyword?: string;
 };
+
+//필터태그로 검색
+export const searchForTag = async (tags: tagIdList) => {
+  try{
+ 
+     const params = {
+       keyword: tags?.keyword || '',
+       tagId: tags?.tagId || '',
+     };
+
+    const queryString = new URLSearchParams(params).toString();
+    const response = await filterInstance.get(`/searching?${queryString}`, {
+      // headers: {
+      //   Authorization: `Bearer ${exhibitionServiceToken}`
+      // }
+    });
+
+    if(response.status == 200){
+      console.log("필터 태그결과가 정상적으로 조회되었습니다.");
+      console.log(response.data.content);
+    }
+
+    return response.data.content;
+  }catch (error) {
+    console.log('필터 태그로 검색 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}
+
+type deleteProp = {
+  title: string; //filter 인지 exhibition 인지
+  id: string;
+}
+
+//필터 삭제
+export const deleteItem = async ({title, id}: deleteProp) => {
+  try{
+    if(title == 'filter'){
+      const response = await filterInstance.delete(`/${id}`, {
+        headers: {
+          Authorization: `Bearer ${exhibitionServiceToken}`
+        }
+      })
+      if(response.status == 200){
+        console.log("필터가 정상적으로 지워졌습니다.");
+      }
+      return response;
+    }else if(title == 'exhibition'){
+      const response = await mygalleryInstance.delete(`/exhibitions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${exhibitionServiceToken}`
+        }
+      });
+      if(response.status == 200){
+        console.log("전시가 정상적으로 지워졌습니다.");
+      }
+      return response;
+    }
+  }catch (error) {
+    console.log('필터 삭제 실패', (error as AxiosError)?.response?.data);
+    throw error;
+  }
+}

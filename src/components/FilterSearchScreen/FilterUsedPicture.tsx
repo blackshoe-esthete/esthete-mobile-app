@@ -12,12 +12,11 @@ type HorizontalListProps = {
   imgStyles: StyleProp<ImageStyle>;
   title: string;
   data: number[] | String[];
-  imgSource: File | Blob | string;
   children?: React.ReactNode;
 };
 
 function UsedPicture(HorizontalListProps: any): React.JSX.Element {
-  const {imgStyles, title, data, imgSource, children} = HorizontalListProps; 
+  const {imgStyles, title, data, children} = HorizontalListProps; 
   return (
     <>
       <View style={styles.gap10}>
@@ -32,7 +31,7 @@ function UsedPicture(HorizontalListProps: any): React.JSX.Element {
                 imgStyles,
                 index === data.length - 1 && {marginRight: 20},
               ]}
-              source={imgSource}
+              source={{uri: data[index]}}
             />
           )}
         />

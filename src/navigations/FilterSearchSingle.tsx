@@ -1,21 +1,11 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {DefaultTheme} from '@react-navigation/native';
 import FilterSearchScreen from '@screens/FilterSearch/FilterSearchScreen';
 import FilterIndexScreen from '@screens/FilterSearch/FilterIndexScreen';
 import RenderItem from '@components/FilterSearchScreen/RenderItem';
 
 const Stack = createNativeStackNavigator();
-
-const FilterTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    ...DefaultTheme.colors,
-    background: '#030303',
-  },
-};
 
 //index 있는 필터로 이동
 

@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import unverified from '@assets/icons/unverified.png';
@@ -19,12 +20,18 @@ import {useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import GenderButton from '@components/LoginScreen/GenderButton';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Routes } from '@screens/Routes';
+import { useMutation } from '@tanstack/react-query';
+import { signupCompletion } from 'src/apis/login';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowHeight = Dimensions.get('window').height;
+type Props = NativeStackScreenProps<Routes, 'SignUp2'>;
 
-function SignUp2() {
-  const navigation = useNavigation();
+function SignUp2({navigation, route}: Props) {
   const scrollViewRef = useRef<any>(null);
+  const [nickname, setNickname] = useState('');
   const [gender, setGender] = useState('');
   const [date, setDate] = useState(new Date());
   const [birthDate, setBirthDate] = useState('');
@@ -61,6 +68,45 @@ function SignUp2() {
     return `${year}년 ${month}월 ${day}일`;
   };
 
+  const convertDateFormat = (dateString: string) => {
+    // "2009년 07월 21일" 형식의 문자열을 받아옵니다.
+    const regex = /(\d{4})년 (\d{2})월 (\d{2})일/;
+    const match = dateString.match(regex);
+  
+    if (match) {
+      const year = match[1];
+      const month = match[2];
+      const day = match[3];
+  
+      // 원하는 형식인 "2009-07-21"로 변환합니다.
+      return `${year}-${month}-${day}`;
+    } else {
+      throw new Error('Invalid date format');
+    }
+  };
+
+  const mutationSignUpCompletion = useMutation({
+    mutationFn: async() => {
+      const userId = await AsyncStorage.getItem('userId');
+      if(!userId){
+        throw new Error('유저 아이디가 없습니다.');
+      }
+      return signupCompletion({
+        user_id: userId,
+        nickname,
+        gender,
+        birthday: convertDateFormat(birthDate)
+      });
+    },
+    onSuccess(data){
+      Alert.alert('회원가입을 정상적으로 마무리했습니다.');
+      navigation.navigate('LoginPage');
+    },
+    onError(data){
+      console.log(data);
+    }
+  })
+
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
       <ScrollView
@@ -75,13 +121,13 @@ function SignUp2() {
         ref={scrollViewRef}>
         <Text style={styles.header}>ESTHETE</Text>
         <View style={styles.inputLayer}>
-          <InputText placeHolder="닉네임을 입력해주세요" />
-          <Verification />
+          <InputText placeHolder="닉네임을 입력해주세요" value={nickname} onChange={setNickname} />
+          {/* <Verification /> */}
           <View style={styles.genderLayer}>
             <Text style={styles.genderText}>성별</Text>
             <View style={styles.genderButtonLayer}>
-              <GenderButton title="여성" onPress={() => setGender('female')} value={gender == 'female'} />
-              <GenderButton title="남성" onPress={() => setGender('male')} value={gender == 'male'} />
+              <GenderButton title="여성" onPress={() => setGender('FEMALE')} value={gender == 'FEMALE'} />
+              <GenderButton title="남성" onPress={() => setGender('MALE')} value={gender == 'MALE'} />
             </View>
           </View>
           <View style={styles.birthLayer}>
@@ -94,7 +140,7 @@ function SignUp2() {
                 onChange={onChange}
                 textColor="white"
                 locale="ko-KR"
-                style={styles.datePicker} //reduce height and margin at the top
+                style={styles.datePicker}
               />
             )}
             {show && Platform.OS == 'ios' && (
@@ -133,7 +179,7 @@ function SignUp2() {
         background="#292929"
         color="white"
         paddingNumber={0}
-        func={() => navigation.navigate('LoginPage')}
+        func={() => mutationSignUpCompletion.mutate()}
       />
     </SafeAreaView>
   );

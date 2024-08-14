@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '@screens/Routes';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -10,10 +10,18 @@ import { myPurchasedFilter } from "src/apis/mygallery";
 
 type props = NativeStackScreenProps<Routes, 'SubScribe'>
 function SubScribe(){
-  const {data: purchasedFilter} = useQuery({
+  const {data: purchasedFilter, isLoading} = useQuery({
     queryKey: ['purchased-filter'],
     queryFn: myPurchasedFilter
   });
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFF" />
+      </View>
+    );
+  }
 
   return(
     <SafeAreaView edges={['top']} style={{flex: 1, display: 'flex'}}>
@@ -24,3 +32,12 @@ function SubScribe(){
 }
 
 export default SubScribe;
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#030303',
+  },
+})

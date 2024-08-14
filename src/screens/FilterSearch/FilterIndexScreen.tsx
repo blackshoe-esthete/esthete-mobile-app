@@ -4,8 +4,6 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Routes} from '../Routes';
 import Keyword from '@components/FilterSearchScreen/KeywordList';
 import cancel from '@assets/icons/cancel_black.png';
-import ex1 from '@assets/imgs/filter_ex3.png';
-import ex2 from '@assets/imgs/filter_ex2.png';
 import FilterTitle from '@components/FilterSearchScreen/FilterTitle';
 import UsedPicture from '@components/FilterSearchScreen/FilterUsedPicture';
 import {ScrollView, TouchableOpacity, GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -14,6 +12,7 @@ import CommonModal from '@components/common/CommonModal';
 import {useQuery} from '@tanstack/react-query';
 import {indexFilterDetail} from 'src/apis/filterService';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {filterTagsData} from '@utils/filter';
 
 type Props = NativeStackScreenProps<Routes, 'FilterIndexScreen'>;
 const windowWidth = Dimensions.get('window').width;
@@ -25,6 +24,8 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
   const [height, setHeight] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [filterIndex, setFilterIndex] = useState('');
+  const [tagList, setTagList] = useState<string[]>([]);
+  const [imgList, setImgList] = useState<string[]>([]);
   useEffect(() => {
     if (route.params?.filterId) {
       let id: string = route.params?.filterId;
@@ -55,6 +56,30 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
       );
     }
   }, [filterIndexData?.filter_thumbnail]);
+
+  useEffect(() => {
+    if (filterIndexData?.filter_tag_list.filter_tag_list) {
+      let tags: string[] = [];
+      filterIndexData?.filter_tag_list?.filter_tag_list.forEach((item: string) => {
+        filterTagsData.forEach(object => {
+          if (object.id == item) {
+            tags.push(object.name);
+          }
+        });
+      });
+      setTagList(tags);
+    }
+  }, [filterIndexData?.filter_tag_list]);
+
+  useEffect(() => {
+    if(filterIndexData?.representation_img_list.representation_img_list){
+      let imgs: string[] = [];
+      filterIndexData.representation_img_list.representation_img_list.forEach((imgUrl: string) => {
+        imgs.push(imgUrl);
+      });
+      setImgList(imgs);
+    }
+  }, [filterIndexData?.representation_img_list]);
 
   const modalShown = () => {
     setModalVisible(!modalVisible);
@@ -103,22 +128,30 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
       <ScrollView style={{marginBottom: 70}}>
         <View style={{paddingHorizontal: 20, alignItems: 'center'}}>
           <Image
-            source={{ uri: filterIndexData.filter_thumbnail }}
+            source={{uri: filterIndexData.filter_thumbnail}}
             style={[styles.imageSize, {width: imageWidth, height: height, maxHeight: maxHeight}]}
           />
 
           {/* 필터타이틀 */}
           <View style={{width: '100%'}}>
-            <FilterTitle title={filterIndexData?.filter_name} likeCount={filterIndexData?.like_count} isLike={filterIndexData?.is_like} />
+            <FilterTitle
+              title={filterIndexData?.filter_name}
+              likeCount={filterIndexData?.like_count}
+              isLike={filterIndexData.is_like}
+              filterId={filterIndex}
+            />
           </View>
 
           {/* 키워드리스트 */}
-          <Keyword marginProp={20} marginVertical={20} dummy={['풍경', '여행']} />
+          <Keyword marginProp={20} marginVertical={20} dummy={tagList} />
 
           <View style={styles.detailBox}>
             <Text style={styles.detailText}>
-              여기에는 필터에 대한 설명(필터를 만들게 된 스토리, 필터 사용 팁 등) 및 필터를 사용하여 촬영한 사진에 대한
-              설명이 들어갑니다.
+              {filterIndexData?.filter_description ? (
+                <Text style={styles.detailText}>{filterIndexData.filter_description}</Text>
+              ) : (
+                <Text>{filterIndexData.user_id} 의 다른 필터도 둘러보세요!</Text>
+              )}
             </Text>
           </View>
 
@@ -127,9 +160,8 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
             <Text style={styles.photoTitle}>필터를 이용한 사진</Text>
             <UsedPicture
               title="필터를 이용한 사진"
-              data={[1, 2, 3, 4, 5, 6, 7, 8]}
+              data={imgList}
               imgStyles={styles.exhibitionImg}
-              imgSource={ex2}
             />
           </View>
         </View>
@@ -164,7 +196,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     backgroundColor: '#292929',
+    width: '100%',
     height: 'auto',
+    minHeight: 60,
   },
   detailText: {
     color: 'white',

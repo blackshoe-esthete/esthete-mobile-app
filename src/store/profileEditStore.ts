@@ -10,7 +10,7 @@ interface profileStore {
 }
 
 export const useProfileStore = create<profileStore>((set, get) => ({
-  nickname: '홍길동',
+  nickname: '',
   intro: '',
   script: '',
   setNickname: (nickname: string) => {

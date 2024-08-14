@@ -13,7 +13,7 @@ import SubScribe from '@screens/MyMenu/SubscribeScreen';
 import Settings from '@screens/MyMenu/SettingScreen';
 import Information from '@screens/MyMenu/InformationScreen';
 import Logout from '@screens/MyMenu/LogoutScreen';
-import PreferEdit from '@screens/MyMenu/PreferEdit';
+import ExhibitionPreferEdit from '@screens/MyMenu/ExhibitionPreferEdit';
 import ProfileEdit from '@screens/MyMenu/ProfileEdit';
 import GoOut from '@screens/MyMenu/GoOut';
 import Certification from '@screens/MyMenu/Certification';
@@ -24,6 +24,7 @@ import FilterCreationScreen from '@screens/FilterCreation/FilterCreationScreen';
 import ExhibitionCreationScreen from '@screens/ExhibitionCreation/ExhibitionCreationScreen';
 import FollowScreen from '@screens/MyGallery/FollowScreen';
 import GetPhoto from '@components/SettingScreen/GetPhoto';
+import FilterPreferEdit from '@screens/MyMenu/FilterPreferEdit';
 
 const Stack = createNativeStackNavigator();
 
@@ -69,8 +70,11 @@ function GalleryStack({navigation, route}: Props): React.JSX.Element {
           <Stack.Screen name="Settings">
             {(props: any) => <Settings {...props} />}
           </Stack.Screen>
-          <Stack.Screen name="Prefer">
-            {(props: any) => <PreferEdit {...props} />}
+          <Stack.Screen name="ExhibitionPrefer">
+            {(props: any) => <ExhibitionPreferEdit {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="FilterPrefer">
+            {(props: any) => <FilterPreferEdit {...props} />}
           </Stack.Screen>
           <Stack.Screen name="Profile">
             {(props: any) => <ProfileEdit {...props} />}

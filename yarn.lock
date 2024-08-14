@@ -1718,15 +1718,34 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/geolocation/-/geolocation-3.2.1.tgz#a3c17d044215a45bcc364fdd2e66fca8927a3c4e"
   integrity sha512-/+HNzuRl4UCMma7KK+KYL8k2nxAGuW+DGxqmqfpiqKBlCkCUbuFHaZZdqVD6jpsn9r/ghe583ECLmd9SV9I4Bw==
 
+"@react-native-google-signin/google-signin@^12.2.1":
+  version "12.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-12.2.1.tgz#242247ab18ea7bb3a1dcabb50df7ad236f104294"
+  integrity sha512-qt2Cb+bN2NS8BBT06M3UbLVS1gaSYTenNh4uZtPNmyJC23xZAynLkuhvsC6gmeEnxcj0wLVUn1Es+LSHw0OhVQ==
+
 "@react-native-masked-view/masked-view@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.3.1.tgz#5bd76f17004a6ccbcec03856893777ee91f23d29"
   integrity sha512-uVm8U6nwFIlUd1iDIB5cS+lDadApKR+l8k4k84d9hn+GN4lzAIJhUZ9syYX7c022MxNgAlbxoFLt0pqKoyaAGg==
 
+"@react-native-seoul/kakao-login@^5.4.1":
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-seoul/kakao-login/-/kakao-login-5.4.1.tgz#dc3fa6af4ed32fa08cb1a16a4fc598ee4987a8ee"
+  integrity sha512-ezhkX3AsJZ3Qf3b0QDJEpPIvWDqxuz2N9lKd9g90ULpzaYa+d0r7UdfCe4h+/Fo859t7t0vFSXqIbLLIHSlxFw==
+  dependencies:
+    dooboolab-welcome "^1.3.2"
+
 "@react-native-seoul/masonry-list@^1.4.2":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@react-native-seoul/masonry-list/-/masonry-list-1.4.2.tgz#0de8f3e306fa54da71aced3ba0f181568a71ce1c"
   integrity sha512-sqpaDwSP4w94yIrUvhGknKlyN3KZDE1nfnULyiSwhmXrjbQ5c7W38a3HzKl8p9CeEfnsfdklAevnEz8vdTaxxQ==
+  dependencies:
+    dooboolab-welcome "^1.3.2"
+
+"@react-native-seoul/naver-login@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-seoul/naver-login/-/naver-login-4.0.1.tgz#a332633906948bce73df3ed2a3432d069599fe77"
+  integrity sha512-EHA/aW0cn/O2ypeTus2DRE2+R1vcHmhiVHGNMeIBGueM+SvCZxtNyEIacVE7zGve0gkScZbeihlNUm0CfPnGIQ==
   dependencies:
     dooboolab-welcome "^1.3.2"
 
