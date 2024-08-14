@@ -33,8 +33,8 @@ const Comment = ({
   const {mutate: dislikeComment} = useDislikeComment();
 
   const onLikePress = () => {
-    if (currentUserName === userName) {
-      Alert.alert('본인이 작성한 댓글에는 좋아요를 누를 수 없습니다.');
+    if (currentUserName !== exhibitionAuthorName) {
+      Alert.alert('전시회의 작가만 좋아요를 누를 수 있습니다.');
       return;
     }
 

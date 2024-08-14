@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import MapView, { Details, MapPressEvent, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { Details, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // import Geolocation from '@react-native-community/geolocation';
 import backspaceLogo from '@assets/icons/backspace.png';
 import locationIcon from '@assets/icons/location_icon.png';
-import { useQueries, useQuery } from '@tanstack/react-query';
-import { getExhibitionCluster, getExhibitionList, getGeocode } from 'src/apis/mapService';
+import { useQueries } from '@tanstack/react-query';
+import { getGeocode } from 'src/apis/mapService';
 import { Cluster } from '#types/mapService.type';
 import useMyLocation from '@hooks/useMyLocation';
 import { useExhibitionCluster, useNearbyExhibitions } from '@hooks/useNearbyExhibitions';
 
 function MapScreen(): React.JSX.Element {
   const [isClicked, setIsClicked] = useState(false);
-  const [clickedLocation, setClickedLocation] = useState<{ latitude: number; longitude: number } | null>(null); // 클릭한 위치의 좌표 상태 추가
+  // const [, setClickedLocation] = useState<{ latitude: number; longitude: number } | null>(null); // 클릭한 위치의 좌표 상태 추가
   const [clickedCluster, setClickedCluster] = useState<Cluster | null>(null);
   const [region, setRegion] = useState<Region | undefined>({
     latitude: 37.55703563268905,
@@ -27,7 +27,7 @@ function MapScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const { top } = useSafeAreaInsets();
 
-  const group = region?.latitudeDelta! < 0.381 ? 'town' : region?.latitudeDelta! < 4.3 ? 'city' : 'state';
+  const group = region!.latitudeDelta < 0.381 ? 'town' : region!.latitudeDelta < 4.3 ? 'city' : 'state';
 
   const calculateRadius = (latitudeDelta: number, longitudeDelta: number): number => {
     // Approximate calculation of radius based on latitudeDelta and longitudeDelta
@@ -38,14 +38,17 @@ function MapScreen(): React.JSX.Element {
 
   const radius = calculateRadius(region?.latitudeDelta || 0.015, region?.longitudeDelta || 0.0121);
 
-  const { data: clusterData } = useExhibitionCluster(region?.latitude!, region?.longitude!, radius, group);
+  const { data: clusterData } = useExhibitionCluster(region!.latitude, region!.longitude, radius, group);
 
   const geocodeQueries = useQueries({
-    queries: (clusterData?.content || []).map((cluster: Cluster) => ({
-      queryKey: ['geocode', `${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim()],
-      queryFn: () => getGeocode(`${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim()),
-      enabled: !!clusterData, // Ensure the cluster data is available
-    })),
+    queries: (clusterData?.content || []).map((cluster: Cluster) => {
+      const location = `${cluster.state || ''} ${cluster.city || ''} ${cluster.town || ''}`.trim();
+      return {
+        queryKey: ['geocode', location],
+        queryFn: () => getGeocode(location),
+        enabled: !!clusterData, // Ensure the cluster data is available
+      };
+    }),
   });
 
   const geocodedClusters =
@@ -63,24 +66,20 @@ function MapScreen(): React.JSX.Element {
     setIsClicked(true); // Assuming you want to toggle some UI when a cluster is clicked
   };
 
-  const handleMapPress = (event: MapPressEvent) => {
+  /* const handleMapPress = (event: MapPressEvent) => {
     if (isClicked) {
       setIsClicked(false);
     }
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setClickedLocation({ latitude, longitude });
     // console.log(`Clicked location: ${latitude}, ${longitude}`);
-  };
+  }; */
 
   useEffect(() => {
     if (myRegion) {
       setRegion(myRegion);
     }
   }, [myRegion]);
-
-  useEffect(() => {
-    console.log('Region changed:', region);
-  }, [region]);
 
   return (
     <View style={styles.container}>
@@ -121,7 +120,7 @@ function MapScreen(): React.JSX.Element {
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         region={region}
-        onPress={handleMapPress}
+        // onPress={handleMapPress}
         showsUserLocation
         onRegionChangeComplete={(region: Region, detail: Details) => {
           if (detail.isGesture) {
@@ -134,8 +133,8 @@ function MapScreen(): React.JSX.Element {
           <Marker
             key={`${cluster.state}-${cluster.city}-${cluster.town}-${index}`}
             coordinate={{
-              latitude: cluster.location?.lat!,
-              longitude: cluster.location?.lng!,
+              latitude: cluster.location?.lat || 0,
+              longitude: cluster.location?.lng || 0,
             }}
             onPress={() => handleMarkerPress(cluster)}
           >
@@ -143,7 +142,6 @@ function MapScreen(): React.JSX.Element {
               <Image source={locationIcon} style={styles.markerIcon} resizeMode="contain" />
               <Image source={{ uri: cluster.thumbnail }} style={styles.markerImage} resizeMode="cover" />
               <View style={styles.numberContainer}>
-                {/* <Text style={styles.number}>{group === 'town' ? cluster.count : clusterData.content.length}</Text> */}
                 <Text style={styles.number}>{cluster.count}</Text>
               </View>
             </View>

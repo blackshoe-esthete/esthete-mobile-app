@@ -11,6 +11,7 @@ import {
   PanResponder,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import ExhibitionMainPicture from '@components/ExhibitionScreen/ExhibitionMainPicture';
 import ExhibitionPictureList from '@components/ExhibitionScreen/ExhibitionPictureList';
@@ -18,7 +19,13 @@ import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 import CommentInputBox from '@components/common/CommentInputBox';
 import Comment from '@components/ExhibitionScreen/Comment';
-import {useExhibitionComments, useExhibitionDetails} from '@hooks/useExhibitionDetails';
+import {
+  useDislikeComment,
+  useDislikeExhibition,
+  useExhibitionComments,
+  useExhibitionDetails,
+  useLikeExhibition,
+} from '@hooks/useExhibitionDetails';
 import {ExhibitionData, IComment} from '@types/mainExhibitionService.type';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@types/navigations';
@@ -33,12 +40,14 @@ const ExhibitionEnteredScreen = ({ route }: { route: { params: { exhibitionData:
 
   const {data: exhibibitionDetailData, isLoading} = exhibitionQuery;
   const {data: comments, isLoading: isCommentLoading, refetch} = commentQuery;
+  const {mutate: likeExhibition} = useLikeExhibition();
+  const {mutate: dislikeExhibition} = useDislikeExhibition();
 
 
   const screenHeight = Dimensions.get('window').height;
   const modalHeight = screenHeight * 0.9;
 
-  const [onLike, setOnLike] = useState(false);
+  const [onLike, setOnLike] = useState(exhibibitionDetailData.is_liked);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const animatedHeight = useRef(new Animated.Value(0)).current;
@@ -70,6 +79,39 @@ const ExhibitionEnteredScreen = ({ route }: { route: { params: { exhibitionData:
       },
     })
   ).current;
+
+  const onLikePress = () => {
+    if (currentUserName === exhibibitionDetailData.author_name) {
+      Alert.alert('본인 전시는 좋아요를 누를 수 없습니다.');
+      return;
+    }
+
+    if (onLike) {
+      dislikeExhibition(
+        {exhibition_id: id},
+        {
+          onSuccess: () => {
+            setOnLike(false);
+          },
+          onError: error => {
+            console.error('Error unliking the exhibition:', error);
+          },
+        },
+      );
+    } else {
+      likeExhibition(
+        {exhibition_id: id},
+        {
+          onSuccess: () => {
+            setOnLike(true);
+          },
+          onError: error => {
+            console.error('Error liking the exhibition:', error);
+          },
+        },
+      );
+    }
+  };
 
   const handleNewComment = async () => {
     await refetch(); // 새 댓글이 추가되면 댓글 데이터를 다시 가져옴
@@ -109,8 +151,8 @@ const ExhibitionEnteredScreen = ({ route }: { route: { params: { exhibitionData:
             />
           </View>
           <View style={styles.flexContainer}>
-            <TouchableOpacity onPress={() => setOnLike(!onLike)}>
-              <Image style={{ width: 30, height: 25.6 }} source={onLike ? fillLikesIcon : likesIcon} />
+            <TouchableOpacity onPress={() => onLikePress()}>
+              <Image style={{width: 30, height: 25.6}} source={onLike ? fillLikesIcon : likesIcon} />
             </TouchableOpacity>
             <TouchableOpacity onPress={openModal}>
               <Image source={commentsIcon} />

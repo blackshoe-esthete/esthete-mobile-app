@@ -1,6 +1,16 @@
 export interface ExhibitionListResponse {
   exhibition_id: string;
   thumbnail_url: string;
+  title?: string;
+  date?: string;
+  is_liked?: boolean;
+}
+
+export interface AuthorResponse {
+  user_id: string;
+  profile_url: string;
+  name: string;
+  introduce: string;
 }
 
 // 위치 정보 인터페이스
@@ -24,6 +34,7 @@ export interface Photo {
 export interface ExhibitionData {
   exhibition_id: string;
   author_name: string;
+  is_liked?: boolean;
   photographer_name?: string;
   author_profile_url: string;
   date: string;

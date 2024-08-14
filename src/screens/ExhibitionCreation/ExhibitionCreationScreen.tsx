@@ -1,7 +1,7 @@
-import { CameraRoll, PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
-import React, { useEffect, useState } from 'react';
-import { Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {CameraRoll, PhotoIdentifier} from '@react-native-camera-roll/camera-roll';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, FlatList, Platform, Text, View, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import RNFS from 'react-native-fs';
 import hasAndroidPermission from '@hooks/CameraRollPermission';
 import nextIcon from '@assets/icons/backspace_white.png';
@@ -11,10 +11,16 @@ import checkIcon from '@assets/icons/check.png';
 import Carousel from 'react-native-reanimated-carousel';
 
 // import {useExhibitionCreationStore} from '../../store/ExhibitionCreationStore';
-import { useExhibitionCreationStore } from '@store/exhibitionCreationStore';
+import {useExhibitionCreationStore, useExhibitionDetailsStore} from '@store/exhibitionCreationStore';
 
-import { RootStackParamList } from '#types/navigations';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import {RootStackParamList} from '@types/navigations';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+  ExhibitionCreate: {tmp_id: string};
+};
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -23,6 +29,10 @@ interface GalleryItem extends PhotoIdentifier {
 }
 
 function ExhibitionCreationScreen(): React.JSX.Element {
+  const route = useRoute<RouteProp<RootStackParamList, 'ExhibitionCreate'>>();
+  const tmpId = route.params?.tmp_id;
+  const {setDetails} = useExhibitionDetailsStore(); // 스토어 사용
+
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { selectedImageUri, setSelectedImageUri, additionalImageUri, setAdditionalImageUri } =
     useExhibitionCreationStore();
@@ -31,6 +41,12 @@ function ExhibitionCreationScreen(): React.JSX.Element {
   const [multiSelectEnabled, setMultiSelectEnabled] = useState<boolean>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (tmpId) {
+      setDetails({tmpExhibitionId: tmpId});
+    }
+  }, [tmpId, setDetails]);
 
   const onPressNext = () => {
     if (!selectedImageUri && additionalImageUri.length === 0) {
