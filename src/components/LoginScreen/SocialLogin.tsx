@@ -115,10 +115,10 @@ function SocialLogin(props: socialProp): React.JSX.Element {
 
   const signInWithGoogle = async (): Promise<void> => {
     await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-    const {idToken} = await GoogleSignin.signIn();
-    console.log('idToekn : ', idToken);
-    if (idToken) {
-      setResult(idToken);
+    const token = await GoogleSignin.signIn();
+    console.log(JSON.stringify(token));
+    if (token) {
+      setResult(JSON.stringify(token));
       // navigation.navigate('SignUp2');
     }
   }

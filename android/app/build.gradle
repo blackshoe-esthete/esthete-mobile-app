@@ -91,6 +91,14 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        // `local.properties` 파일에서 키 가져오기
+        def kakaoKey = project.hasProperty('KAKAO_APP_KEY') ? project.kakao_native_key : ""
+        println "Kakao Native App Key: ${kakaoKey}"
+
+        // 가져온 키를 manifestPlaceholders에 할당
+        manifestPlaceholders = [
+            KAKAO_SCHEME: "kakao${kakaoKey}"
+        ]
     }
     signingConfigs {
         debug {
