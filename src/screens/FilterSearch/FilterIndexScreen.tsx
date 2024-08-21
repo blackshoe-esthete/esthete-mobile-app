@@ -120,7 +120,8 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <View style={styles.topArea}>
+      <SafeAreaView style={{marginBottom: 50}}>
+        <View style={styles.topArea}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={cancel} style={styles.iconSize} />
         </TouchableOpacity>
@@ -166,9 +167,9 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
           </View>
         </View>
       </ScrollView>
-
-      {/* 탭바 커스텀 */}
-      <View style={styles.bottomTab}>
+      </SafeAreaView>
+            {/* 탭바 커스텀 */}
+            <View style={styles.bottomTab}>
         <TabButton title="미리보기" width={windowWidth} />
         <TabButton title="구매하기" width={windowWidth} func={modalShown} />
         <CommonModal {...customProps} />
