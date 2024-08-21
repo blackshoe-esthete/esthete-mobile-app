@@ -9,9 +9,6 @@ import {
 } from 'react-native';
 import {SAFE_AREA_PADDING} from '../../../Constants';
 import {useIsForeground} from '../../hooks/useIsForeground';
-import {PressableOpacity} from 'react-native-pressable-opacity';
-// import IonIcon from 'react-native-vector-icons/Ionicons'
-// import Video, { LoadError, OnLoadData } from 'react-native-video'
 import {Alert} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -20,7 +17,6 @@ import {useIsFocused} from '@react-navigation/core';
 import FastImage, {OnLoadEvent} from 'react-native-fast-image';
 import {Orientation, useCameraDevice} from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
-// import useCameraStore from '@store/camera-store';
 import useCameraStore from '../../store/camera-store';
 
 const requestSavePermission = async (): Promise<boolean> => {

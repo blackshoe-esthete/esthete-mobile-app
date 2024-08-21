@@ -55,6 +55,7 @@ function FilterIndexScreen({navigation, route}: Props): React.JSX.Element {
         },
       );
     }
+    console.log(filterIndexData);
   }, [filterIndexData?.filter_thumbnail]);
 
   useEffect(() => {
