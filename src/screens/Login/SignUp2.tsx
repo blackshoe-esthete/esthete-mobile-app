@@ -23,7 +23,7 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Routes } from '@screens/Routes';
 import { useMutation } from '@tanstack/react-query';
-import { signupCompletion } from 'src/apis/login';
+import { signupCompletion, socialSignUp } from 'src/apis/login';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowHeight = Dimensions.get('window').height;
@@ -37,6 +37,8 @@ function SignUp2({navigation, route}: Props) {
   const [birthDate, setBirthDate] = useState('');
   const [show, setShow] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const {label, socialToken, provider, email} = route.params ?? {};
+  
   const toggleDatePicker = () => {
     setShow(!show);
   };
@@ -100,7 +102,24 @@ function SignUp2({navigation, route}: Props) {
     },
     onSuccess(data){
       Alert.alert('회원가입을 정상적으로 마무리했습니다.');
-      navigation.navigate('LoginPage');
+      navigation.navigate('Exhibitions');
+    },
+    onError(data){
+      console.log(data);
+    }
+  });
+
+  const mutationSocialSignUpCompletion = useMutation({
+    mutationFn: () => socialSignUp({
+      provider,
+      accessToken: socialToken,
+      email,
+      nickname,
+      gender,
+      birthday: convertDateFormat(birthDate)
+    }),
+    onSuccess(data){
+      console.log(data);
     },
     onError(data){
       console.log(data);
@@ -179,7 +198,7 @@ function SignUp2({navigation, route}: Props) {
         background="#292929"
         color="white"
         paddingNumber={0}
-        func={() => mutationSignUpCompletion.mutate()}
+        func={() => label !== 'social' ? mutationSignUpCompletion.mutate() : mutationSocialSignUpCompletion.mutate()}
       />
     </SafeAreaView>
   );

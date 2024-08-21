@@ -30,5 +30,6 @@ export type Routes = {
   ProfileEdit: {imageUri?: string, currentImage?: string} | undefined;
   LoginPage: undefined;
   SignUp1: undefined;
-  SignUp2: undefined;
+  SignUp2: {socialToken?: string, provider: string, label?: string, email?: string} | undefined;
+  SocialSignUp1: {socialToken?: string, provider: string} | undefined;
 };
