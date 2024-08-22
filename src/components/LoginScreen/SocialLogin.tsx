@@ -30,7 +30,6 @@ import { Routes } from "@screens/Routes";
 const windowWidth = Dimensions.get("window").width;
 type socialProp = {
   img: string;
-  navigation?: () => void;
   label?: string;
 };
 
@@ -66,6 +65,7 @@ function SocialLogin(props: CombinedProps): React.JSX.Element {
     try {
       const token: KakaoOAuthToken = await login();
       setResult(token.accessToken);
+      console.log("카카오토큰",token.accessToken);
       setProvider('kakao');
       console.log("카카오 로그인 성공");
     } catch (err) {
@@ -93,6 +93,8 @@ function SocialLogin(props: CombinedProps): React.JSX.Element {
           socialToken: result,
           provider: 'kakao',
         });
+      }else{
+        navigation.navigate('Exhibitions')
       }
     } catch (err) {
       console.error("signOut error", err);

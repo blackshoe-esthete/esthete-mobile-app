@@ -48,9 +48,9 @@ function LoginScreen({navigation, route}: Props) {
           <LoginButton color="#424242" title="회원가입" navigation={() => navigation.navigate('SignUp1')} />
         </View>
         <View style={styles.socialLayer}>
-          <SocialLogin img={naver} label="naver" />
-          <SocialLogin img={kakao} label="kakao" />
-          <SocialLogin img={google} label="google" />
+          <SocialLogin img={naver} label="naver" route={route} navigation={navigation}/>
+          <SocialLogin img={kakao} label="kakao" route={route} navigation={navigation} />
+          <SocialLogin img={google} label="google" route={route} navigation={navigation} />
         </View>
       </View>
     </SafeAreaView>

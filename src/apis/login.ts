@@ -220,6 +220,7 @@ export const socialIdentifyLogin = async ({
       if(accessToken){
         const token = accessToken.split(" ")[1];
         await AsyncStorage.setItem("token", token);
+        console.log(token);
       }
     }
     return response.data.payload.membered;

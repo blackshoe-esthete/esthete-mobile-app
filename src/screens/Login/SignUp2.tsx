@@ -16,7 +16,6 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import unverified from '@assets/icons/unverified.png';
 import CommonButton from '@components/SettingScreen/CommonButton';
-import {useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import GenderButton from '@components/LoginScreen/GenderButton';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
@@ -120,6 +119,8 @@ function SignUp2({navigation, route}: Props) {
     }),
     onSuccess(data){
       console.log(data);
+      Alert.alert('회원가입을 정상적으로 마무리했습니다.');
+      navigation.navigate('Exhibitions');
     },
     onError(data){
       console.log(data);
