@@ -19,6 +19,7 @@ import ExhibitionFilterApplyAllScreen from './src/screens/ExhibitionCreation/Exh
 import ExhibitionFilterApplyScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyScreen';
 import ExhibitionFilterApplyCompleteScreen from './src/screens/ExhibitionCreation/ExhibitionFilterApplyCompleteScreen';
 import PlacesSearchScreen from './src/screens/ExhibitionCreation/PlacesSearchScreen';
+import LoginNav from './src/navigations/LoginNav';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ function App(): React.JSX.Element {
         <NavigationContainer theme={MyTheme}>
           <Stack.Navigator>
             <Stack.Group>
+              <Stack.Screen name="Login" component={LoginNav} options={{headerShown: false}} />
               <Stack.Screen name="Main" component={BottomTab} options={{headerShown: false}} />
               <Stack.Screen name="Map" component={MapScreen} options={{headerShown: false}} />
               <Stack.Screen name="HomeSearch" component={HomeSearchScreen} options={{headerShown: false}} />

@@ -80,9 +80,9 @@ function BottomTab(): React.JSX.Element {
       />
       <Tab.Screen
         name="Updating"
-        // component={HomeScreen}
+        component={HomeScreen}
         // name="Login"
-        component={LoginNav}
+        // component={LoginNav}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? (
@@ -90,7 +90,7 @@ function BottomTab(): React.JSX.Element {
             ) : (
               <Image source={updatingIcon} style={styles.additionIcon} resizeMode="contain" />
             ),
-            tabBarStyle: {display: 'none'},
+            // tabBarStyle: {display: 'none'},
         }}
       />
       <Tab.Screen
