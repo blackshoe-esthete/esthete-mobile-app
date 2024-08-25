@@ -101,7 +101,7 @@ function SignUp2({navigation, route}: Props) {
     },
     onSuccess(data){
       Alert.alert('회원가입을 정상적으로 마무리했습니다.');
-      navigation.navigate('Exhibitions');
+      navigation.navigate('LoginPage');
     },
     onError(data){
       console.log(data);
@@ -120,7 +120,7 @@ function SignUp2({navigation, route}: Props) {
     onSuccess(data){
       console.log(data);
       Alert.alert('회원가입을 정상적으로 마무리했습니다.');
-      navigation.navigate('Exhibitions');
+      navigation.navigate('LoginPage');
     },
     onError(data){
       console.log(data);

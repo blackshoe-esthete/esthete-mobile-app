@@ -6,6 +6,7 @@ import {
   mygalleryToken,
 } from "@utils/dummy";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getToken } from "./login";
 
 type galleryProp = {
   token: string | undefined;
@@ -15,11 +16,11 @@ type galleryProp = {
 //토큰만 넣고 보냄
 export const mineExhibition = async () => {
   try {
-    const token = await AsyncStorage.getItem("token");
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(`/exhibitions`, {
       headers: {
         // Authorization: `Bearer ${mygalleryToken}`,
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
 
@@ -34,9 +35,10 @@ export const mineExhibition = async () => {
 //토큰 필수
 export const mineFilter = async () => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.get(`/created`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
 
@@ -51,9 +53,10 @@ export const mineFilter = async () => {
 //토큰 필수
 export const myLikeExhibition = async () => {
   try {
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(`/exhibitions/likes`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
 
@@ -68,9 +71,10 @@ export const myLikeExhibition = async () => {
 //토큰 필수
 export const myLikeFilter = async () => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.get(`/like`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
 
@@ -84,9 +88,10 @@ export const myLikeFilter = async () => {
 //내가 임시저장한 전시 조회
 export const myTempExhibition = async () => {
   try {
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(`/temp-exhibitions`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.data.code == 200) {
@@ -102,11 +107,12 @@ export const myTempExhibition = async () => {
 //내가 임시저장한 전시 id로 불러오기
 export const myTempExhibitionDetails = async (temp_exhibitions_id: string) => {
   try {
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(
       `/temp-exhibitions/${temp_exhibitions_id}`,
       {
         headers: {
-          Authorization: `Bearer ${exhibitionServiceToken}`,
+          Authorization: `Bearer ${userToken}`,
         },
       }
     );
@@ -123,9 +129,10 @@ export const myTempExhibitionDetails = async (temp_exhibitions_id: string) => {
 //내가 임시저장한 필터 조회
 export const myTempFilter = async () => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.get(`/temporary`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status == 200) {
@@ -141,9 +148,10 @@ export const myTempFilter = async () => {
 //내가 구매한 필터
 export const myPurchasedFilter = async () => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.get(`/purchased`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status == 200) {
@@ -159,9 +167,10 @@ export const myPurchasedFilter = async () => {
 //사용자 전시회 선호 태그 조회
 export const myExhibitionFilterPreferTag = async () => {
   try {
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(`/edit/user/tags`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status == 200) {
@@ -182,6 +191,7 @@ export const myExhibitionFilterPreferTag = async () => {
 export const putMyExhibitionPreferTag = async (tag_list: string[]) => {
   try {
     console.log(tag_list);
+    const userToken = await getToken();
     const response = await mygalleryInstance.put(
       `/edit/user/tags`,
       {

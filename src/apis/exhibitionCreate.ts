@@ -1,13 +1,14 @@
 import {AxiosError} from 'axios';
 import {exhibitionInstance, filterInstance} from './instance';
+import { getToken } from './login';
 
-export const getPurchasedFilters = async (token: string | undefined) => {
+export const getPurchasedFilters = async () => {
   try {
     const url = '/purchased';
-
+    const userToken = await getToken();
     const response = await filterInstance.get(url, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
 
@@ -18,13 +19,13 @@ export const getPurchasedFilters = async (token: string | undefined) => {
   }
 };
 
-export const getCreatedFilters = async (token: string | undefined) => {
+export const getCreatedFilters = async () => {
   try {
     const url = '/created';
-
+    const userToken = await getToken();
     const response = await filterInstance.get(url, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     return response.data;
@@ -34,13 +35,14 @@ export const getCreatedFilters = async (token: string | undefined) => {
   }
 };
 
-export const getFilterDetails = async (filterId: string, authToken: string) => {
+export const getFilterDetails = async (filterId: string) => {
   if (filterId === '0') {
     return;
   }
   const url = `/${filterId}/details`;
+  const userToken = await getToken();
   const headers = {
-    Authorization: `Bearer ${authToken}`,
+    Authorization: `Bearer ${userToken}`,
   };
 
   try {
@@ -54,13 +56,13 @@ export const getFilterDetails = async (filterId: string, authToken: string) => {
 };
 
 //임시저장 및 업데이트
-export const saveOrUpdateExhibition = async ({token, formData}: FinalizeExhibitionParams) => {
+export const saveOrUpdateExhibition = async ({formData}: FinalizeExhibitionParams) => {
   try {
     const url = '/addition/temporary_exhibition';
-
+    const userToken = await getToken();
     const response = await exhibitionInstance.post(url, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
         'Content-Type': 'multipart/form-data',
       },
     });
@@ -73,18 +75,18 @@ export const saveOrUpdateExhibition = async ({token, formData}: FinalizeExhibiti
 };
 
 interface FinalizeExhibitionParams {
-  token: string | undefined;
+  token?: string | undefined;
   formData: any;
 }
 
 //전시 제작
-export const finalizeExhibition = async ({token, formData}: FinalizeExhibitionParams) => {
+export const finalizeExhibition = async ({formData}: FinalizeExhibitionParams) => {
   try {
     const url = '/addition';
-
+    const userToken = await getToken();
     const response = await exhibitionInstance.post(url, formData, {
       headers: {
-        Authorization: `Bearer ${token}`, // JWT 토큰을 이용한 인증
+        Authorization: `Bearer ${userToken}`, // JWT 토큰을 이용한 인증
         'Content-Type': 'multipart/form-data',
       },
     });

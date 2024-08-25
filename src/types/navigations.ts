@@ -2,6 +2,7 @@ import {TemporaryFilter} from './filterService.type';
 import {ExhibitionData} from './mainExhibitionService.type';
 
 export type RootStackParamList = {
+  Login: undefined;
   Main: undefined;
   Map: undefined;
   HomeSearch: undefined;

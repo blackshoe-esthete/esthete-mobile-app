@@ -6,14 +6,16 @@ import {
 } from "#types/filterService.type";
 import { exhibitionServiceToken } from "@utils/dummy";
 import { Alert } from "react-native";
+import { getToken } from "./login";
 
 // 썸네일 불러오기 (GET 테스트 해보려고)
-export const getThumbnail = async (filterId: string, token: string) => {
+export const getThumbnail = async (filterId: string) => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.get(`/${filterId}/thumbnail`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     return response;
@@ -26,7 +28,6 @@ export const getThumbnail = async (filterId: string, token: string) => {
 // 필터 제작 및 임시저장 (multipart/form-data)
 export const createFilter = async ({
   url,
-  token,
   thumbnail,
   representationImg,
   requestDto,
@@ -39,7 +40,7 @@ export const createFilter = async ({
     name: thumbnail.name,
     type: thumbnail.type,
   });
-
+ 
   // representation 이미지 파일 추가
   representationImg.forEach((img) => {
     formData.append("representation_img", {
@@ -55,9 +56,10 @@ export const createFilter = async ({
 
   try {
     // console.log('진입');
+    const userToken = await getToken();
     const response = await filterInstance.post(url, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
         "Content-Type": "multipart/form-data",
       },
       //   timeout: 5000, // 타임아웃을 5초로 설정
@@ -78,12 +80,13 @@ export const createFilter = async ({
 };
 
 // 임시 필터 리스트 조회
-export const getTemporaryFilterList = async (token: string) => {
+export const getTemporaryFilterList = async () => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.get("/temporary", {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     return response.data.content;
@@ -99,10 +102,11 @@ export const deleteTemporaryFilter = async (
   token: string
 ) => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.delete(`/temporary/${filterId}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     return response.data;
@@ -118,9 +122,10 @@ export const deleteTemporaryFilter = async (
 //필터조회
 export const filterSearch = async () => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.get("/searching", {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status == 200) {
@@ -157,12 +162,13 @@ export const indexFilterDetail = async (filterId: string) => {
 export const pushLikeToFilter = async (filterId: string) => {
   try {
     console.log(filterId);
+    const userToken = await getToken();
     const response = await filterInstance.post(
       `/${filterId}/like`,
       {},
       {
         headers: {
-          Authorization: `Bearer ${exhibitionServiceToken}`,
+          Authorization: `Bearer ${userToken}`,
         },
       }
     );
@@ -179,9 +185,10 @@ export const pushLikeToFilter = async (filterId: string) => {
 //필터 좋아요 취소
 export const deleteLikeToFilter = async (filterId: string) => {
   try {
+    const userToken = await getToken();
     const response = await filterInstance.delete(`/${filterId}/unlike`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status == 200) {
@@ -233,10 +240,11 @@ type deleteProp = {
 //필터 삭제
 export const deleteItem = async ({ title, id }: deleteProp) => {
   try {
+    const userToken = await getToken();
     if (title == "filter") {
       const response = await filterInstance.delete(`/${id}`, {
         headers: {
-          Authorization: `Bearer ${exhibitionServiceToken}`,
+          Authorization: `Bearer ${userToken}`,
         },
       });
       if (response.status == 200) {
@@ -246,7 +254,7 @@ export const deleteItem = async ({ title, id }: deleteProp) => {
     } else if (title == "exhibition") {
       const response = await mygalleryInstance.delete(`/exhibitions/${id}`, {
         headers: {
-          Authorization: `Bearer ${exhibitionServiceToken}`,
+          Authorization: `Bearer ${userToken}`,
         },
       });
       if (response.status == 200) {

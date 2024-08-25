@@ -8,6 +8,16 @@ type loginProp = {
   pwd: string;
 };
 
+// 토큰 꺼내오기
+export const getToken = async () => {
+  try {
+    return await AsyncStorage.getItem("token");
+  } catch (error) {
+    console.error("토큰을 가져오는데 실패했습니다:", error);
+    return null;
+  }
+};
+
 // 로그인
 export const login = async ({ id, pwd }: loginProp) => {
   try {
@@ -270,3 +280,4 @@ export const socialSignUp = async ({
     throw error;
   }
 };
+

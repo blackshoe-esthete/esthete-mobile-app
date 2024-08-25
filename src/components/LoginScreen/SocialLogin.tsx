@@ -3,24 +3,16 @@ import {
   Dimensions,
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
 } from "react-native";
-import naver from "@assets/imgs/naverlogin.png";
 import {
   KakaoOAuthToken,
   login,
-  logout,
-  unlink,
   getProfile as getKakaoProfile,
-  KakaoProfile,
 } from "@react-native-seoul/kakao-login";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NaverLogin, {
-  NaverLoginInitParams,
-} from "@react-native-seoul/naver-login";
+import NaverLogin from "@react-native-seoul/naver-login";
 import Config from "react-native-config";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { socialIdentifyLogin } from "src/apis/login";
@@ -67,7 +59,6 @@ function SocialLogin(props: CombinedProps): React.JSX.Element {
       setResult(token.accessToken);
       console.log("카카오토큰",token.accessToken);
       setProvider('kakao');
-      console.log("카카오 로그인 성공");
     } catch (err) {
       console.error("login err", err);
     }
@@ -87,14 +78,13 @@ function SocialLogin(props: CombinedProps): React.JSX.Element {
         provider: 'kakao',
         accessToken: result,
       } as SocialLoginParams);
-      console.log(res);
       if (!res) {
-        navigation.navigate('SocialSignUp1', {
+        (navigation as any).navigate('SocialSignUp1', {
           socialToken: result,
           provider: 'kakao',
         });
       }else{
-        navigation.navigate('Exhibitions')
+        (navigation as any).navigate('Main', { screen: 'Exhibitions'});
       }
     } catch (err) {
       console.error("signOut error", err);
@@ -103,19 +93,19 @@ function SocialLogin(props: CombinedProps): React.JSX.Element {
 
   const signInWithNaver = async (): Promise<void> => {
     const token = await NaverLogin.login();
-    // setResult(JSON.stringify(token));
-    console.log(token);
-    console.log(token.successResponse?.accessToken);
     let socialToken = token.successResponse?.accessToken;
+    console.log("네이버 토큰", socialToken);
     const res = await socialIdentifyLogin({
       provider: 'naver',
       accessToken: socialToken,
     });
     if(!res){
-      navigation.navigate('SocialSignUp1', {
+      (navigation as any).navigate('SocialSignUp1', {
         socialToken: socialToken,
         provider: 'naver',
       });
+    }else{
+      (navigation as any).navigate('Main', { screen: 'Exhibitions'});
     }
     console.log("네이버 로그인 성공");
   };
@@ -125,18 +115,21 @@ function SocialLogin(props: CombinedProps): React.JSX.Element {
     const token = await GoogleSignin.signIn();
     let email = token.user.email;
     let idToken = token.idToken as string;
+    console.log("구글 토큰", idToken);
     const res = await socialIdentifyLogin({
       provider: 'google',
       accessToken: idToken,
       email
     });
     if(!res){
-      navigation.navigate('SignUp2', {
+      (navigation as any).navigate('SignUp2', {
         socialToken: idToken,
         provider: 'google',
         email,
         label: 'social'
       });
+    }else{
+      (navigation as any).navigate('Main', { screen: 'Exhibitions'});
     }
   };
 
