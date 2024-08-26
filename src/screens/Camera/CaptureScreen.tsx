@@ -28,29 +28,30 @@ import edit from '@assets/icons/_edit-icon.png';
 import CameraFn from '@components/CaptureScreen/Camera';
 import convert from '@assets/icons/convert_white.png';
 import useCameraStore from '../../store/camera-store';
+import useCameraPermissions from '@screens/  useCameraPermissions';
 Reanimated.addWhitelistedNativeProps({
   zoom: true,
 });
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
-//안드로이드 버전 사진촬영 함수
-const requestCameraPermission = async () => {
-  try {
-    const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA, {
-      title: 'Sample Photo App Camera Permission',
-      message: 'Sample Photo App needs access to your camera ' + 'so you can take awesome pictures.',
-      buttonNeutral: 'Ask Me Later',
-      buttonNegative: 'Cancel',
-      buttonPositive: 'OK',
-    });
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('You can use the camera');
-    } else {
-      console.log('Camera permission denied');
-    }
-  } catch (err) {
-    console.warn(err);
-  }
-};
+// //안드로이드 버전 사진촬영 함수
+// const requestCameraPermission = async () => {
+//   try {
+//     const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA, {
+//       title: 'Sample Photo App Camera Permission',
+//       message: 'Sample Photo App needs access to your camera ' + 'so you can take awesome pictures.',
+//       buttonNeutral: 'Ask Me Later',
+//       buttonNegative: 'Cancel',
+//       buttonPositive: 'OK',
+//     });
+//     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+//       console.log('You can use the camera');
+//     } else {
+//       console.log('Camera permission denied');
+//     }
+//   } catch (err) {
+//     console.warn(err);
+//   }
+// };
 
 type Props = NativeStackScreenProps<Routes, 'CameraPage'>;
 function CaptureScreen({navigation, route}: Props): React.JSX.Element {
@@ -77,6 +78,9 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
   const minZoom = device?.minZoom ?? 1;
   const maxZoom = Math.min(device?.maxZoom ?? 1, MAX_ZOOM_FACTOR);
   const supportsFlash = device?.hasFlash ?? false;
+
+  //카메라 권한 허용여부
+  useCameraPermissions();
 
   // 카메라 촬영했는지 여부
   const setIsPressingButton = useCallback(
@@ -142,25 +146,28 @@ function CaptureScreen({navigation, route}: Props): React.JSX.Element {
     setFlash(f => (f === 'off' ? 'on' : 'off'));
   }, []);
 
-  //안드로이드 버전 카메라 허용
-  useEffect(() => {
-    requestCameraPermission();
-  }, []);
+  // //안드로이드 버전 카메라 허용
+  // useEffect(() => {
+  //   requestCameraPermission();
+  // }, []);
 
-  useEffect(() => {
-    let a = Camera.getCameraPermissionStatus();
-    setCameraPermission(a);
-    let b = Camera.getMicrophonePermissionStatus();
-    setMicrophonePermission(b);
-  }, [cameraPermission, microphonePermission]);
+  // useEffect(() => {
+  //   let a = Camera.getCameraPermissionStatus();
+  //   setCameraPermission(a);
+  //   let b = Camera.getMicrophonePermissionStatus();
+  //   setMicrophonePermission(b);
+  // }, [cameraPermission, microphonePermission]);
 
-  const requestCameraPermission = React.useCallback(async () => {
-    const permission = await Camera.requestCameraPermission();
-    if (permission == 'denied') {
-      console.log('Permission not granted');
-      await Linking.openSettings();
-    }
-  }, []);
+  // const requestCameraPermission = React.useCallback(async () => {
+  //   const permission = await Camera.requestCameraPermission();
+  //   if (permission == 'denied') {
+  //     console.log('Permission not granted');
+  //     await Linking.openSettings();
+  //   }
+  // }, []);
+
+  //ios 버전 카메라 허용
+  
 
   return (
     <GestureHandlerRootView>
