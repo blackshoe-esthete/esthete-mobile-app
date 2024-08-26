@@ -38,7 +38,7 @@ export interface RequestDto {
 
 export interface CreateFilterParams {
   url: '' | '/temporary_filter';
-  token: string;
+  token?: string;
   thumbnail: FileData;
   representationImg: FileData[] | [];
   requestDto: RequestDto;

@@ -76,7 +76,7 @@ const ExhibitionFilterApplyScreen: React.FC = () => {
 
   const applyFilterAttributes = async (id: string) => {
     try {
-      const filterDetails = await getFilterDetails(id, filterServiceToken);
+      const filterDetails = await getFilterDetails(id);
       setSelectedFilterAttributes(filterDetails.payload.filter_attributes);
       setTemporaryFilterAttributes(filterDetails.payload.filter_attributes);
     } catch (error) {
