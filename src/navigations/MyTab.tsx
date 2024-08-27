@@ -39,7 +39,7 @@ function MyTab({ navigation, route }: Props): React.JSX.Element {
 
   const renderScene = SceneMap({
     first: () => <MyCollections props={galleryData} temporary={false} />,
-    second: () => <MyFilter props={filterData} temporary={false} />,
+    second: () => <MyFilter props={filterData} temporary={false} navigation={navigation}/>,
   });
 
   const handleIndexChange = (newIndex: number) => {
