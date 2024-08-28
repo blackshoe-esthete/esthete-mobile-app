@@ -5,7 +5,6 @@ import {
   filterServiceToken,
   mygalleryToken,
 } from "@utils/dummy";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToken } from "./login";
 
 type galleryProp = {

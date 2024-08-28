@@ -2,12 +2,14 @@ import axios, {AxiosError} from 'axios';
 import {mygalleryInstance, userInstance} from './instance';
 import {exhibitionServiceToken} from '@utils/dummy';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getToken } from './login';
 
 export const getMyFollowing = async () => {
   try {
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(`/followings`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     // if(response.data.code == 200){
@@ -23,9 +25,10 @@ export const getMyFollowing = async () => {
 
 export const getMyFollower = async () => {
   try {
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(`/followers`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if(response.data.code == 200){
@@ -73,9 +76,10 @@ export const putMyProfile = async (image: string) => {
       type: 'image/jpg',
     });
     // formData.append('file', image);
+    const userToken = await getToken();
     const response = await mygalleryInstance.put(`/edit/user/profile/img`, formData, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
         'Content-Type': 'multipart/form-data',
       },
     });
@@ -98,9 +102,10 @@ type profileInfo = {
 
 export const putMyAdditional = async (info: profileInfo) => {
   try {
+    const userToken = await getToken();
     const response = await mygalleryInstance.put(`/edit/user/profile/infos`, info, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if(response.status == 200){
@@ -116,9 +121,10 @@ export const putMyAdditional = async (info: profileInfo) => {
 //아이디 중복 체크
 export const duplicateId = async (nickname: string) => {
   try{
+    const userToken = await getToken();
     const response = await mygalleryInstance.get(`/check-nickname/${nickname}`, {
       headers: {
-        Authorization: `Bearer ${exhibitionServiceToken}`
+        Authorization: `Bearer ${userToken}`
       }
     });
     

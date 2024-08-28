@@ -11,25 +11,36 @@ import {
   Platform,
 } from "react-native";
 import trash from "@assets/icons/trash.png";
+import { RouteProp, useNavigation } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Routes } from "@screens/Routes";
 
-type filterProp = {
+type filterProp<T extends keyof Routes> = {
   filter_id: string;
   filter_name: string;
   filter_thumbnail_url: string;
+  navigation: NativeStackScreenProps<Routes, T>;
+  route: RouteProp<Routes, T>;
 };
+
 const { width } = Dimensions.get("window");
-function FilterItem(props: filterProp): React.JSX.Element {
+
+function FilterItem<T extends keyof Routes>(props: filterProp<T>): React.JSX.Element {
   const { tab, editable, setId, setDelete } = useEditStore();
   const onHandleDelete = (id: string) => {
     setId(id);
     setDelete(true);
   };
+  const navigation = useNavigation();
   return (
     <>
       {editable ? (
         <View style={styles.photoBox}>
           <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
-          <TouchableOpacity onPress={() => onHandleDelete(props.filter_id)} style={styles.trashContainer}>
+          <TouchableOpacity
+            onPress={() => onHandleDelete(props.filter_id)}
+            style={styles.trashContainer}
+          >
             <Image source={trash} style={styles.trashIcon} />
           </TouchableOpacity>
           <ImageBackground style={styles.titleBox} borderRadius={4}>
@@ -37,12 +48,14 @@ function FilterItem(props: filterProp): React.JSX.Element {
           </ImageBackground>
         </View>
       ) : (
-        <View style={styles.photoBox}>
-          <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
-          <ImageBackground style={styles.titleBox} borderRadius={4}>
-            <Text style={styles.textStyle}>{props.filter_name}</Text>
-          </ImageBackground>
-        </View>
+        <TouchableOpacity onPress={() => (props.navigation as any).navigate('FilterIndexScreen', {filterId: props.filter_id})}>
+          <View style={styles.photoBox}>
+            <Image src={props.filter_thumbnail_url} style={styles.photoIcon} />
+            <ImageBackground style={styles.titleBox} borderRadius={4}>
+              <Text style={styles.textStyle}>{props.filter_name}</Text>
+            </ImageBackground>
+          </View>
+        </TouchableOpacity>
       )}
     </>
   );
@@ -62,7 +75,7 @@ const styles = StyleSheet.create({
     resizeMode: "stretch",
     height: "100%",
   },
-  trashContainer:{
+  trashContainer: {
     position: "absolute",
     top: 15,
     right: 50,
