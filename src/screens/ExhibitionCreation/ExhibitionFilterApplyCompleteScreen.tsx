@@ -194,10 +194,10 @@ const ExhibitionFilterApplyCompleteScreen = () => {
       const token = apiToken;
 
       if (type === 'save') {
-        await saveOrUpdateExhibition({token, formData});
+        await saveOrUpdateExhibition({formData});
         Alert.alert('전시 임시저장 완료!');
       } else {
-        await finalizeExhibition({token, formData});
+        await finalizeExhibition({formData});
         Alert.alert('전시 업로드 완료!');
       }
 

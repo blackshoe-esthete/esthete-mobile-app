@@ -22,12 +22,12 @@ const FilterTab: React.FC<FilterTabProps> = ({onPressFilter, selectedFilter}) =>
   useEffect(() => {
     const fetchFilters = async () => {
       try {
-        const createdResults = await getCreatedFilters(filterServiceToken);
+        const createdResults = await getCreatedFilters();
         if (createdResults && createdResults.payload && createdResults.payload.created_filter_list) {
           setMyFilters(createdResults.payload.created_filter_list);
         }
 
-        const purchasedResults = await getPurchasedFilters(filterServiceToken);
+        const purchasedResults = await getPurchasedFilters();
         if (purchasedResults && purchasedResults.payload && purchasedResults.payload.purchased_filter_list) {
           setPurchasedFilters(purchasedResults.payload.purchased_filter_list);
         }

@@ -88,7 +88,7 @@ const ExhibitionFilterApplyAllScreen = () => {
     setSliderValueForAll(100);
 
     try {
-      const filterDetails = await getFilterDetails(id, filterServiceToken);
+      const filterDetails = await getFilterDetails(id);
       const newFilterAttributes = filterDetails.payload.filter_attributes;
 
       // 새로운 필터 속성으로 상태 업데이트

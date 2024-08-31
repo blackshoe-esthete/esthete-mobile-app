@@ -39,10 +39,6 @@ function FilterTitle({title, likeCount, isLike, filterId}: titleProp) : React.JS
     }
   });
 
-  useEffect(() => {
-    console.log(isLike);
-  }, [isLike])
-
   return(
     <>
     <View style={styles.titleBox}>

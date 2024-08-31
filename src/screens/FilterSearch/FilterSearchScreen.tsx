@@ -33,7 +33,7 @@ type ImageItem = {
 function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
   const {top} = useSafeAreaInsets();
   const [tagId, setTagId] = useState<string>('');
-  const { keyword } = useFilterSearchStore();
+  const { keyword, setKeyword } = useFilterSearchStore();
   const deferredKeyword = useDeferredValue(keyword);
 
   const handleTagChange = useCallback((newTagId: string) => {
@@ -44,14 +44,13 @@ function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
     queryKey: ['tag-filter', {tagId, deferredKeyword}],
     queryFn: () => searchForTag({tagId, keyword}),
     enabled: !!(deferredKeyword || tagId),
-    staleTime: 5 * 60 * 1000,
   });
 
   //필터 검색 전체 데이터
   const filterDataQuery = useQuery({
     queryKey: ['filter-searched'],
     queryFn: filterSearch,
-    staleTime: 5 * 60 * 1000,
+    // staleTime: 5 * 60 * 1000,
   });
 
   const isLoading = tagFilterDataQuery.isLoading || filterDataQuery.isLoading;
@@ -90,7 +89,7 @@ function FilterSearchScreen({navigation, route}: Props): React.JSX.Element {
         {/* 검색창 */}
         <FilterSearchBar
           iconSource={searchIcon}
-          to={'FilterSearchPage'}
+          onSearch={setKeyword}
           back={true}
           placeHolder={'필터, 작가 검색'}
           label={'filter'}

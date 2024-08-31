@@ -2,13 +2,15 @@ import {AxiosError, AxiosResponse} from 'axios';
 import {exhibitionInstance, mygalleryInstance} from './instance';
 import Config from 'react-native-config';
 import {useMutation} from '@tanstack/react-query';
+import { getToken } from './login';
 
 const apiToken = Config.API_TOKEN;
 
 export const getExhibitionDetails = async (id: string) => {
+  const userToken = await getToken();
   const headers = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${apiToken}`,
+    Authorization: `Bearer ${userToken}`,
   };
 
   const response = await exhibitionInstance.get(`/details/${id}`, {headers});
@@ -38,9 +40,10 @@ export const reportPhoto = async ({
     report_description,
   };
 
+  const userToken = await getToken();
   const headers = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${apiToken}`,
+    Authorization: `Bearer ${userToken}`,
   };
 
   const response = await exhibitionInstance.post('/photos/report', data, {headers});
@@ -78,9 +81,10 @@ export const reportComment = async ({
     report_description,
   };
 
+  const userToken = await getToken();
   const headers = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${apiToken}`,
+    Authorization: `Bearer ${userToken}`,
   };
 
   const response = await exhibitionInstance.post('/comments/report', data, {headers});
@@ -115,9 +119,10 @@ export const postExhibitionComment = async ({
     content,
   };
 
+  const userToken = await getToken();
   const headers = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${apiToken}`,
+    Authorization: `Bearer ${userToken}`,
   };
 
   const response = await exhibitionInstance.post(`/comments`, data, {headers});
@@ -130,13 +135,14 @@ interface PostCommentLikeParams {
 }
 
 export const postExhibitionCommentLike = async ({commentId}: PostCommentLikeParams): Promise<AxiosResponse<any>> => {
+  const userToken = await getToken();
   const response = await exhibitionInstance.post(
     `/comments/like/${commentId}`,
     {},
     {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     },
   );
@@ -144,10 +150,11 @@ export const postExhibitionCommentLike = async ({commentId}: PostCommentLikePara
 };
 
 export const postExhibitionCommentDislike = async ({commentId}: PostCommentLikeParams): Promise<AxiosResponse<any>> => {
+  const userToken = await getToken();
   const response = await exhibitionInstance.delete(`/comments/like/${commentId}`, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiToken}`,
+      Authorization: `Bearer ${userToken}`,
     },
   });
   return response.data.payload;
@@ -159,13 +166,14 @@ interface PostExhibitionLikeParams {
 }
 
 export const postExhibitionLike = async ({exhibition_id}: PostExhibitionLikeParams): Promise<AxiosResponse<any>> => {
+  const userToken = await getToken();
   const response = await mygalleryInstance.post(
     `/exhibitions/likes/${exhibition_id}`,
     {},
     {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiToken}`,
+        Authorization: `Bearer ${userToken}`,
       },
     },
   );
@@ -173,10 +181,11 @@ export const postExhibitionLike = async ({exhibition_id}: PostExhibitionLikePara
 };
 
 export const postExhibitionDislike = async ({exhibition_id}: PostExhibitionLikeParams): Promise<AxiosResponse<any>> => {
+  const userToken = await getToken();
   const response = await mygalleryInstance.delete(`/exhibitions/likes/${exhibition_id}`, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiToken}`,
+      Authorization: `Bearer ${userToken}`,
     },
   });
   return response.data.payload;

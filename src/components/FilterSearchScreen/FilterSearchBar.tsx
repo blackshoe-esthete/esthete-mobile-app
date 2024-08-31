@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, ImageSourcePropType, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import backIcon from '@assets/icons/backspace_white.png';
@@ -8,23 +8,26 @@ import { useFilterSearchStore, useHomeSearchStore } from '@store/searchStore';
 
 type SearchBarProps = {
   iconSource: ImageSourcePropType;
-  to: any;
+  // to: any;
+  onSearch: (searchKeyword: string) => void;
   back?: boolean;
   placeHolder?: string;
   label?: string;
 };
 
-function FilterSearchBar({ iconSource, to, back, placeHolder, label }: SearchBarProps): React.JSX.Element {
+function FilterSearchBar({ iconSource, onSearch, back, placeHolder, label }: SearchBarProps): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const {keyword, setKeyword} = useFilterSearchStore();
+  const [input, setInput] = useState(keyword || ''); // 기본값으로 현재 키워드 사용
   
-  const onPressSearch = () => {
-    if (keyword === '') {
+  const onPressSearch = useCallback(() => {
+    if (input.trim() === '') {
       Alert.alert('검색어를 입력해주세요.');
       return;
     }
-    navigation.navigate(to);
-  };
+    setKeyword(input);
+    onSearch(input);
+  }, [input, onSearch, setKeyword]);
 
   return (
     <View style={[styles.textInput, back && styles.wrapper]}>
@@ -35,8 +38,8 @@ function FilterSearchBar({ iconSource, to, back, placeHolder, label }: SearchBar
       )}
       <TextInput
         editable
-        value={keyword}
-        onChangeText={setKeyword}
+        value={input}
+        onChangeText={setInput}
         placeholder={placeHolder ? placeHolder : '전시회, 작가 검색'}
         placeholderTextColor="#DADADA"
         style={[styles.text, { fontWeight: '400' }, back && { width: '80%' }]}

@@ -3,6 +3,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FilterItem from '@components/MyGalleryScreen/FilterItem';
 import TempoItem from '@components/MyMenuScreen/TempoItem';
 import { TemporaryFilter } from '#types/filterService.type';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Routes } from '@screens/Routes';
+import { RouteProp } from '@react-navigation/native';
 
 // 구매한 필터, 내가 만든 필터, 내가 좋아요한 필터
 type filterProp = {
@@ -10,16 +13,15 @@ type filterProp = {
   filter_name: string;
   filter_thumbnail_url: string;
 };
-
 // 임시저장한 필터
 type tempoProp = TemporaryFilter;
-
-type DataType = {
+type DataType<T extends keyof Routes> = {
   temporary?: boolean;
   props: (filterProp | tempoProp)[];
+  navigation: NativeStackNavigationProp<Routes, T>;
 };
 
-function MyFilter(data: DataType): React.JSX.Element {
+function MyFilter<T extends keyof Routes>(data: DataType<T>): React.JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <FlatList
@@ -33,12 +35,14 @@ function MyFilter(data: DataType): React.JSX.Element {
             return <TempoItem {...tempoItem} label="filter" />;
           } else {
             const filterItem = item as filterProp;
-            return <FilterItem {...filterItem} />;
+            
+            const combinedProps = {...filterItem, navigation: data.navigation};
+            return <FilterItem {...combinedProps} />;
           }
         }}
       />
     </SafeAreaView>
   );
-}
+}  
 
 export default MyFilter;
